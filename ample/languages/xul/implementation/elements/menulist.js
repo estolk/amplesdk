@@ -11,8 +11,7 @@ var cXULElement_menulist	= function() {
 	// Collections
 	this.items	  	= new AMLNodeList;
 };
-cXULElement_menulist.prototype   = new cXULElement;
-cXULElement_menulist.prototype.tabIndex	= 0;
+cXULElement_menulist.prototype   = new cXULInputElement;
 
 // Default Attributes
 cXULElement_menulist.attributes	= {
@@ -107,13 +106,12 @@ cXULElement_menulist.prototype._onChange = function(oEvent) {
 // Class event handlers
 cXULElement_menulist.handlers	= {
 	"mousedown":	function(oEvent) {
-		if (this.getAttribute("disabled") == "true")
+		if (!this.$isAccessible())
 			return;
 
 		// click on ::button
-		if (oEvent.target == this && oEvent.button == 0 && oEvent.$pseudoTarget == this.$getContainer("button")) {
+		if (oEvent.target == this && oEvent.button == 0 && oEvent.$pseudoTarget == this.$getContainer("button"))
 			this.toggle();
-		}
 	},
 	"mouseenter":	function(oEvent) {
 		// for now..
@@ -177,9 +175,7 @@ cXULElement_menulist.handlers	= {
 				}
 
 				// Fire Event
-				var oEvent2  = this.ownerDocument.createEvent("UIEvents");
-				oEvent2.initUIEvent("change", true, false, window, null);
-				this.dispatchEvent(oEvent2);
+				cXULInputElement.dispatchChange(this);
 
 				// Prevent submit
 				oEvent.preventDefault();
@@ -247,9 +243,7 @@ cXULElement_menulist.handlers	= {
 
 			if (sValue != this.$getValue()) {
 			    // Fire Event
-			    var oEvent2  = this.ownerDocument.createEvent("UIEvents");
-			    oEvent2.initUIEvent("change", true, false, window, null);
-			    this.dispatchEvent(oEvent2);
+				cXULInputElement.dispatchChange(this);
 			}
 		}
 	},

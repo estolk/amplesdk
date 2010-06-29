@@ -64,7 +64,9 @@ cXULElement_datepicker_pane.prototype.hide	= function() {
 cXULElement_datepicker_pane.prototype.refresh	= function() {
 	// Render
 	this.$getContainer("days-pane").innerHTML	= cXULElement_datepicker_pane.$getTagDays(this, this.current);
-	this._elementMonth.setAttribute("value", this.current.getMonth());
+	var oItem	= this._elementMonth.firstChild.querySelector("[value='" + this.current.getMonth() + "']");
+	this._elementMonth.firstChild.selectItem(oItem);
+	this._elementMonth.setAttribute("value", oItem.getAttribute("label"));	// TODO: should be handled in menulist
 	this._elementYear.setAttribute("value", this.current.getFullYear());
 };
 
@@ -80,9 +82,9 @@ cXULElement_datepicker_pane.prototype._onSelectDay	= function(nDay) {
 		this.setAttribute("value", sValue);
 
 		// dispatch "change" event
-		var oEvent	= this.ownerDocument.createEvent("UIEvent");
-		oEvent.initUIEvent("change", true, false, window, null);
-		this.dispatchEvent(oEvent);
+	    var oEvent  = this.ownerDocument.createEvent("UIEvents");
+	    oEvent.initEvent("change", false, false, window, null);
+	    this.dispatchEvent(oEvent);
 	}
 
 	// dispatch change event
@@ -326,6 +328,7 @@ cXULElement_datepicker_pane.$getTagDays	= function(oInstance, oDate) {
 								class="xul-datepicker-pane-day' +(nWeekDay > 4 ? " xul-datepicker-pane-weekend" : '') + (oInstance.value && oDateCurrent.getTime() == oInstance.value.getTime() ? ' xul-datepicker-pane-day_selected' : '') + '\
 								' + (oDateToday.getDate() == oDateCurrent.getDate() && oDateToday.getMonth() == oDateCurrent.getMonth() && oDateToday.getFullYear() == oDateCurrent.getFullYear() ? ' xul-datepicker-pane-day_today' : '') + '\
 								' + (bDateDisabled ? ' xul-datepicker-pane-day_disabled' : '" onclick="ample.$instance(this)._onSelectDay(' + nIndex + ')') + '"\
+								onmouseover="this.className += \' xul-datepicker-pane-day_hover\'" onmouseout="this.className = this.className.replace(\' xul-datepicker-pane-day_hover\', \'\')"\
 								>' + nIndex + '</div>\
 						</td>');
 		if ((nWeekDay == 6) && (nIndex < nDays))
