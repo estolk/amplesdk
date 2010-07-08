@@ -1,0 +1,97 @@
+/*
+ * Ample SDK - JavaScript GUI Framework
+ *
+ * Copyright (c) 2009 Sergey Ilinsky
+ * Dual licensed under the MIT and GPL licenses.
+ * See: http://www.amplesdk.com/about/licensing/
+ *
+ */
+
+var cXULElement_progressmeter	= function(){};
+cXULElement_progressmeter.prototype  = new cXULElement;
+
+// Private Properties
+cXULElement_progressmeter.prototype._interval	= null;
+cXULElement_progressmeter.prototype._left		= 0;
+
+// Attributes Defaults
+cXULElement_progressmeter.attributes	= {};
+cXULElement_progressmeter.attributes.value	= "100";
+
+// Private Methods
+cXULElement_progressmeter.prototype._onInterval  = function() {
+    this._left  = this._left + 1 > 100 + 30 ? 0 : this._left + 1;
+
+    this.$getContainer("value").style.left  =(this._left > 30 ? this._left - 30 : 0)+ '%';
+    this.$getContainer("value").style.width =(this._left < 30 ? this._left : 100 + 30 - this._left < 30 ? 100 + 30 - this._left : 30)+ '%';
+};
+
+// Class handlers
+cXULElement_progressmeter.handlers	= {
+	"DOMAttrModified":	function(oEvent) {
+		if (oEvent.target == this) {
+			switch (oEvent.attrName) {
+				case "value":
+					if (this.attributes["mode"] != "undetermined")
+						this.$getContainer("value").style.width = oEvent.newValue + '%';
+					break;
+
+				case "mode":
+					if (oEvent.newValue == "undetermined") {
+						if (!this._interval) {
+							var oElementDOM	= this.$getContainer("value");
+							oElementDOM.style.width = '0%';
+							oElementDOM.style.left  = '0%';
+
+							this._left  = 0;
+							var oSelf	= this;
+							this._interval  = setInterval(function() {
+								oSelf._onInterval();
+							}, 40);
+						}
+					}
+					else {
+						if (this._interval) {
+							clearInterval(this._interval);
+							this._interval  = null;
+						}
+						var oElementDOM	= this.$getContainer("value");
+						oElementDOM.style.width = this.attributes["value"] + '%';
+						oElementDOM.style.left  = '0%';
+					}
+					break;
+
+				default:
+					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
+			}
+		}
+	},
+	"DOMNodeInsertedIntoDocument":	function(oEvent) {
+	    if (this.getAttribute("mode") == "undetermined") {
+	        var oSelf	= this;
+	        this._interval	= setInterval(function() {
+	        	oSelf._onInterval();
+	        }, 40);
+	    }
+	},
+	"DOMNodeRemovedFromDocument":	function(oEvent) {
+		if (this._interval)
+			clearInterval(this._interval);
+	}
+};
+
+// Element Render: open
+cXULElement_progressmeter.prototype.$getTagOpen	= function() {
+	return '<div class="xul-progressmeter" style="'+
+				'width:' + (this.attributes["width"] ? this.attributes["width"] : "100%") + ';' +
+				(this.attributes["hidden"] == "true" ? 'display:none;' : "") + '">\
+				<div class="xul-progressmeter--before" style="float:left"></div>\
+				<div class="xul-progressmeter--after" style="float:right"></div>\
+				<div class="xul-progressmeter--bar">\
+					<div class="xul-progressmeter--value" style="position:relative;font-size:1px;width:' + this.attributes["value"] + '%"></div>\
+				</div>\
+			</div>';
+};
+
+// Register Element with language
+oXULNamespace.setElement("progressmeter", cXULElement_progressmeter);

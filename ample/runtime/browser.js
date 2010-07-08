@@ -757,10 +757,10 @@ function fAML_parseStyleSheet(sCSS, sUri) {
 	if (bTrident && nVersion < 9) {
 		// Rewrite display:inline-block to display:inline (IE8-)
 		if (nVersion < 8)
-			sCSS	= sCSS.replace(/display\s*:\s*inline-block/g, 'display:inline;zoom:1;');
+			sCSS	= sCSS.replace(/display\s*:\s*inline-block/g, 'display:inline;zoom:1');
 		// Rewrite opacity
 		sCSS	= sCSS.replace(/(?:[^-])opacity\s*:\s*([\d.]+)/g, function(sMatch, nOpacity) {
-			return "filter" + ':' + "progid" + ':' + "DXImageTransform.Microsoft.Alpha" + '(' + "opacity" + '=' + nOpacity * 100 + ');' + "opacity" + ':' + nOpacity;
+			return "filter" + ':' + "progid" + ':' + "DXImageTransform.Microsoft.Alpha" + '(' + "opacity" + '=' + nOpacity * 100 + ');zoom:1';
 		});
 	}
 	else
@@ -853,9 +853,19 @@ function fAML_setStyle(oElementDOM, sName, sValue) {
 	var oStyle	= oElementDOM.style;
 	if (sName == "opacity") {
 		if (bTrident && nVersion < 9) {
-			if (!cString(oElementDOM.currentStyle.filter).match(/opacity=([\.0-9]+)/i))
-				oStyle.filter	= oElementDOM.currentStyle.filter + ' ' + "progid" + ':' + "DXImageTransform.Microsoft.Alpha" + '(' + "opacity" + '=100)';
-			oElementDOM.filters.item("DXImageTransform.Microsoft.Alpha").opacity	= cMath.round(sValue * 100);
+			var sFilter	= cString(oElementDOM.currentStyle.filter),
+				bFilter	= sFilter.match(/opacity=([\.0-9]+)/i);
+			if (sValue < 1) {
+				if (!bFilter) {
+					oStyle.filter	= sFilter + ' ' + "progid" + ':' + "DXImageTransform.Microsoft.Alpha" + '(' + "opacity" + '=100)';
+					if (!oElementDOM.currentStyle.hasLayout)
+						oElementDOM.style.zoom	= '1';
+				}
+				oElementDOM.filters.item("DXImageTransform.Microsoft.Alpha").opacity	= cMath.round(sValue * 100);
+			}
+			else
+			if (oElementDOM.filters.length == 1 && bFilter)	// Single opacity filter applied
+				oStyle.removeAttribute("filter");
 		}
 		else
 			oStyle[sName]	= sValue;
