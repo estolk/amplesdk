@@ -16,7 +16,7 @@ var cXULElement_editor	= function() {
 };
 
 // component prototype
-cXULElement_editor.prototype	= new cXULInputElement;
+cXULElement_editor.prototype	= new cXULInputElement("editor");
 
 cXULElement_editor.prototype.contentDocument	= null;
 
@@ -55,7 +55,7 @@ cXULElement_editor.handlers	= {
 						cXULElement_editor.finalizeDocument(that);
 						setTimeout(function() {
 							cXULElement_editor.initializeDocument(that);
-						});
+						}, 0);
 					}
 					break;
 			}
@@ -67,16 +67,19 @@ cXULElement_editor.handlers	= {
 	"DOMNodeInsertedIntoDocument":	function() {
 		var oDOMElement	= this.$getContainer("frame"),
 			bGecko	= navigator.userAgent.match(/Gecko\/([\d\.]+)/),
+			bEnabled	= this.$isAccessible(),
 			that	= this;
-		if (!bGecko && that.$isAccessible())
-			oDOMElement.contentWindow.document.designMode	= "on";
-		setTimeout(function(){
-			if (bGecko && that.$isAccessible())
+		if (bEnabled) {
+			if (!bGecko)
 				oDOMElement.contentWindow.document.designMode	= "on";
 			setTimeout(function(){
-				cXULElement_editor.initializeDocument(that);
-			});
-		});
+				if (bGecko)
+					oDOMElement.contentWindow.document.designMode	= "on";
+				setTimeout(function(){
+					cXULElement_editor.initializeDocument(that);
+				}, 0);
+			}, 200);
+		}
 	},
 	"DOMNodeRemovedFromDocument":	function() {
 		cXULElement_editor.finalizeDocument(this);
@@ -259,36 +262,36 @@ cXULElement_editor.handlers	= {
 cXULElement_editor.commands	= [
 	// command, display name, title
 	[
-	 	["undo", "Undo", "Undo last editing operation"],
-	 	["redo", "Redo", "Redo last editing operation"]
+	 	["undo",	"Undo",		oXULLocaleManager.getText("editor.button.undo")],
+	 	["redo",	"Redo",		oXULLocaleManager.getText("editor.button.redo")]
 	],
 	[
-		["justifyleft", "Left", "Align block to left"],
-		["justifycenter", "Center", "Align block to center"],
-		["justifyright", "Right", "Align block to right"],
-		["justifyfull", "None", "Default alignment"]
+		["justifyleft", 	"Left",		oXULLocaleManager.getText("editor.button.justifyleft")],
+		["justifycenter",	"Center",	oXULLocaleManager.getText("editor.button.justifycenter")],
+		["justifyright",	"Right",	oXULLocaleManager.getText("editor.button.justifyright")],
+		["justifyfull",		"None",		oXULLocaleManager.getText("editor.button.justifyfull")]
 	],
 	[
-	 	["outdent", "Outdent", "Outdent the block where the caret is located"],
-	 	["indent", "Indent", "Indent the block where the caret is located"]
+	 	["outdent",		"Outdent",	oXULLocaleManager.getText("editor.button.outdent")],
+	 	["indent",		"Indent",	oXULLocaleManager.getText("editor.button.indent")]
 	],
 	[
-		["insertunorderedlist", "Unordered", "Make an unordered list"],
-		["insertorderedlist", "Ordered", "Make an ordered list"]
+		["insertunorderedlist",		"Unordered",	oXULLocaleManager.getText("editor.button.insertunorderedlist")],
+		["insertorderedlist",		"Ordered",		oXULLocaleManager.getText("editor.button.insertorderedlist")]
 	],
 	[
-	 	["createlink", "Link", "Create a hyperlink"],
-	 	["unlink", "Unlink", "Remove hyperlink"]
+	 	["createlink",	"Link",		oXULLocaleManager.getText("editor.button.createlink")],
+	 	["unlink",		"Unlink",	oXULLocaleManager.getText("editor.button.unlink")]
 	],
 	[
-		["bold", "Bold", "Give text strength"],
-		["italic", "Emphasis", "Give text emphasis"],
-		["underline", "Underline", "Give text an underline"],
-		["strikethrough", "Strikethrough", "Give text strikethrough"]
+		["bold",			"Bold",				oXULLocaleManager.getText("editor.button.bold")],
+		["italic",			"Emphasis",			oXULLocaleManager.getText("editor.button.italic")],
+		["underline",		"Underline",		oXULLocaleManager.getText("editor.button.underline")],
+		["strikethrough",	"Strikethrough",	oXULLocaleManager.getText("editor.button.strikethrough")]
 	],
 	[
-		["subscript", "Subscript", "Give text subscript"],
-		["superscript", "Superscript", "Give text superscript"]
+		["subscript",		"Subscript",		oXULLocaleManager.getText("editor.button.subscript")],
+		["superscript",		"Superscript",		oXULLocaleManager.getText("editor.button.superscript")]
 	]
 	/*	// TODO
 	[
@@ -576,5 +579,5 @@ cXULElement_editor.prototype.$getTagClose	= function() {
 			</div>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("editor", cXULElement_editor);
+// Register Element
+ample.extend(cXULElement_editor);

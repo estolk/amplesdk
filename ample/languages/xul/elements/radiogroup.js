@@ -11,7 +11,7 @@ var cXULElement_radiogroup	= function() {
     // Collections
     this.items      = new AMLNodeList;
 };
-cXULElement_radiogroup.prototype	= new cXULInputElement;
+cXULElement_radiogroup.prototype	= new cXULInputElement("radiogroup");
 cXULElement_radiogroup.prototype.viewType	= cXULElement.VIEW_TYPE_BOXED;
 
 // Public Properties
@@ -53,8 +53,6 @@ cXULElement_radiogroup.handlers	= {
 				case "disabled":
 					var oElementDOM	= this.$getContainer();
 					this.$setPseudoClass("disabled", oEvent.newValue == "true");
-					for (var nIndex = 0; nIndex < this.items.length; nIndex++)
-						this.items.setAttribute("disabled", oEvent.newValue);
 					break;
 
 				default:
@@ -66,7 +64,7 @@ cXULElement_radiogroup.handlers	= {
 
 // Element Render: open
 cXULElement_radiogroup.prototype.$getTagOpen	= function() {
-    return '<div class="xul-radiogroup' + (this.attributes["disabled"] == "true" ? " xul-radiogroup_disabled" : "") + '">';
+    return '<div class="xul-radiogroup' + (!this.$isAccessible() ? " xul-radiogroup_disabled" : "") + '">';
 };
 
 // Element Render: close
@@ -74,5 +72,5 @@ cXULElement_radiogroup.prototype.$getTagClose	= function() {
     return '</div>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("radiogroup", cXULElement_radiogroup);
+// Register Element
+ample.extend(cXULElement_radiogroup);

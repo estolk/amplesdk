@@ -7,14 +7,18 @@
  *
  */
 
-var cXHTMLElement	= function(){};
+var cXHTMLElement	= function(sLocalName) {
+	this.localName	= sLocalName;
+};
 
 cXHTMLElement.prototype	= new AMLElement;
+cXHTMLElement.prototype.namespaceURI= "http://www.w3.org/1999/xhtml";
+cXHTMLElement.prototype.localName	= "#element";
 cXHTMLElement.prototype.accessKey	= null;
 
 // Public methods
 cXHTMLElement.prototype.$isAccessible	= function() {
-	return !this.getAttribute("disabled");
+	return !this.attributes["disabled"];
 };
 
 // Static method
@@ -38,9 +42,22 @@ cXHTMLElement.mapAttribute	= function(oElement, sName, sValue) {
 	}
 };
 
+cXHTMLElement.html524	= {
+	"article":	"div",
+	"aside":	"div",
+	"section":	"div",
+	"footer":	"div",
+	"header":	"div",
+	"nav":		"div",
+	//
+	"datalist":	"div",
+	"option":	"div",
+	"output":	"span"
+};
+
 // Default Element Render: open
 cXHTMLElement.prototype.$getTagOpen	= function() {
-	var sHtml   = '<' + this.localName;
+	var sHtml   = '<' + (this.localName in cXHTMLElement.html524 ? cXHTMLElement.html524[this.localName] : this.localName);
 	for (var sName in this.attributes)
 		if (this.attributes.hasOwnProperty(sName) && sName != "class" && sName != "id" && sName.indexOf(':') ==-1)
 			sHtml  += ' ' + sName + '="' + this.getAttribute(sName).replace(/"/g, '\"') + '"';
@@ -50,8 +67,8 @@ cXHTMLElement.prototype.$getTagOpen	= function() {
 
 // Default Element Render: close
 cXHTMLElement.prototype.$getTagClose	= function() {
-    return '</' + this.localName + '>';
+    return '</' + (this.localName in cXHTMLElement.html524 ? cXHTMLElement.html524[this.localName] : this.localName) + '>';
 };
 
-// Register Element with language
-oXHTMLNamespace.setElement("#element", cXHTMLElement);
+// Register Element
+ample.extend(cXHTMLElement);

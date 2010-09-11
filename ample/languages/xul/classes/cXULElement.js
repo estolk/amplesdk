@@ -7,7 +7,9 @@
  *
  */
 
-var cXULElement	= function(){};
+var cXULElement	= function(sLocalName) {
+	this.localName	= sLocalName;
+};
 
 // Constants
 cXULElement.VIEW_TYPE_VIRTUAL	= 0;    // Element is not rendered [keyset, key, stringset, string]
@@ -15,6 +17,8 @@ cXULElement.VIEW_TYPE_BOXED		= 1;    // Element is rendered as boxed
 cXULElement.VIEW_TYPE_NORMAL	= 2;    // Element is rendered as not boxed
 
 cXULElement.prototype	= new AMLElement;
+cXULElement.prototype.namespaceURI	= "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+cXULElement.prototype.localName		= "#element";
 cXULElement.prototype.viewType		= cXULElement.VIEW_TYPE_NORMAL;
 
 // Private Methods
@@ -95,7 +99,7 @@ cXULElement.prototype.doCommand		= function()
 
 cXULElement.prototype.$isAccessible	= function()
 {
-	return this.getAttribute("disabled") != "true";
+	return this.attributes["disabled"] != "true";
 };
 
 cXULElement.prototype.reflow   = function()
@@ -120,7 +124,7 @@ cXULElement.prototype.reflow   = function()
             if (oElement.namespaceURI == this.namespaceURI && oElement.viewType != cXULElement.VIEW_TYPE_VIRTUAL)
             {
                 nElements++;
-                if (oElement.hasAttribute("flex") && !isNaN(oElement.attributes["flex"]))
+                if ("flex" in oElement.attributes && !isNaN(oElement.attributes["flex"]))
                     nFlex  += oElement.attributes["flex"] * 1;
             }
         }
@@ -337,5 +341,5 @@ cXULElement.getBoxClose         = function(oElement)
     return (oElement.attributes["orient"] != "vertical" ? '</tr>' : '')+ '</tbody></table>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("#element", cXULElement);
+// Register Element
+ample.extend(cXULElement);

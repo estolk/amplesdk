@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<object name="AMLResizeEvent" extends="runtime:AMLUIEvent">
+<class name="AMLResizeEvent" extends="runtime:AMLUIEvent">
 	<abstract>
 		<locale>
 			The AMLResizeEvent interface provides specific contextual information associated with Resize Events.
@@ -74,7 +74,7 @@
 				</arguments>
 				<description>
 					<locale>
-						Initializes attributes of a <link type="object">AMLResizeEvent</link> object.
+						Initializes attributes of a <link type="class">AMLResizeEvent</link> object.
 					</locale>
 					<locale xml:lang="ru">
 						Метод initResizeEvent используется для инициализации значения объекта ResizeEvent.
@@ -98,11 +98,11 @@
 			<locale>Events of that type:</locale>
       <locale xml:lang="ru">События этого типа:</locale>
       <ul>
-        <li><link type="event" href="runtime:mResize">resize</link></li>
-        <li><link type="event" href="runtime:mResize">resizestart</link></li>
-        <li><link type="event" href="runtime:mResize">resizeend</link></li>
+        <li><link type="event" href="runtime:AMLElement">resize</link></li>
+        <li><link type="event" href="runtime:AMLElement">resizestart</link></li>
+        <li><link type="event" href="runtime:AMLElement">resizeend</link></li>
       </ul>
 		</remark>
 	</remarks>
 	<examples />
-</object>
+</class>

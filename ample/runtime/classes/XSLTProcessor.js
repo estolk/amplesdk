@@ -9,16 +9,16 @@
 
 if (!cXSLTProcessor) {
 	cXSLTProcessor	= function() {
-		this._template	= new fActiveXObject("MSXML2" + '.' + "XSLTemplate");
+		this._template	= new cActiveXObject("MSXML2" + '.' + "XSLTemplate");
 		this.reset();
 	};
 	cXSLTProcessor.prototype.importStylesheet	= function(oNode) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["stylesheet",	cXMLNode]
 		]);
 
-		var oStylesheet	= new fActiveXObject("MSXML2" + '.' + "FreeThreadedDOMDocument");
+		var oStylesheet	= new cActiveXObject("MSXML2" + '.' + "FreeThreadedDOMDocument");
 //		oStylesheet.resolveExternals	= true;
 		oStylesheet.loadXML(oNode.xml);
 		oStylesheet.setProperty("SelectionNamespaces", "xmlns" + ':' + "xsl" + '="' + "http://www.w3.org/1999/XSL/Transform" + '"');
@@ -40,7 +40,7 @@ if (!cXSLTProcessor) {
 	};
 	cXSLTProcessor.prototype.getParameter		= function(sNameSpaceURI, sLocalName) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["namespaceURI",	cString, false, true],
 			["localName",		cString]
 		]);
@@ -54,7 +54,7 @@ if (!cXSLTProcessor) {
 	};
 	cXSLTProcessor.prototype.removeParameter	= function(sNameSpaceURI, sLocalName) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["namespaceURI",	cString, false, true],
 			["localName",		cString]
 		]);
@@ -71,7 +71,7 @@ if (!cXSLTProcessor) {
 	};
 	cXSLTProcessor.prototype.setParameter		= function(sNameSpaceURI, sLocalName, sValue) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["namespaceURI",	cString, false, true],
 			["localName",		cString],
 			["value",			cObject]
@@ -95,12 +95,12 @@ if (!cXSLTProcessor) {
 	};
 	cXSLTProcessor.prototype.transformToDocument	= function(oNode) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["source",	cXMLNode]
 		]);
 
 		var oProcessor	= this._processor,
-			oOutput		= new fActiveXObject("Microsoft.XMLDOM");
+			oOutput		= new cActiveXObject("Microsoft.XMLDOM");
 
 		// check if importStylesheet initialized processor
 		if (!oProcessor)
@@ -115,13 +115,13 @@ if (!cXSLTProcessor) {
 	};
 	cXSLTProcessor.prototype.transformToFragment	= function(oNode, oDocument) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["source",	cXMLNode],
 			["output",	cXMLDocument]
 		]);
 
 		var oProcessor	= this._processor,
-			oOutput		= new fActiveXObject("Microsoft.XMLDOM"),
+			oOutput		= new cActiveXObject("Microsoft.XMLDOM"),
 			oFragment	= oDocument.createDocumentFragment();
 
 		// check if importStylesheet initialized processor

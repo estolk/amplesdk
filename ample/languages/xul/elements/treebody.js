@@ -8,7 +8,7 @@
  */
 
 var cXULElement_treebody	= function(){};
-cXULElement_treebody.prototype   = new cXULElement;
+cXULElement_treebody.prototype   = new cXULElement("treebody");
 
 // Public Properties
 cXULElement_treebody.prototype.children	= null;
@@ -56,8 +56,8 @@ cXULElement_treebody.prototype.$getTagOpen	= function() {
 	var bOldTrident	= navigator.userAgent.match(/MSIE ([\d.]+)/) && RegExp.$1 < 8;
     return '<tr' +(this.attributes["hidden"] == "true" ? ' style="display:hidden;"' : '')+ '>\
 				<td style="height:100%">\
-					<div class="xul-treebody--area" style="height:100%;width:100%;overflow:scroll;position:relative;" onscroll="return ample.$instance(this)._onScroll(event)">'+
-						(bOldTrident ? '<div style="position:absolute;border-left:solid 18px white;margin-left:-18px;">' : '')+'\
+					<div class="xul-treebody--area" style="height:100%;width:100%;overflow:scroll;position:relative;" onscroll="return ample.$instance(this)._onScroll(event)">\
+						' + (bOldTrident ? '<div style="position:absolute;border-left:solid 18px white;margin-left:-18px;">' : '')+'\
 						<table cellpadding="0" cellspacing="0" border="0" width="100%" class="xul-treebody' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '"' + (!bOldTrident ? ' style="position:absolute"' : '')+ '>\
 							<tbody class="xul-treebody--gateway">';
 };
@@ -70,9 +70,10 @@ cXULElement_treebody.prototype.$getTagClose	= function() {
     	aHtml.push('<tfoot class="xul-treebody--foot">');
     	aHtml.push('<tr>');
         if (this.parentNode.attributes["type"] == "checkbox" || this.parentNode.attributes["type"] == "radio")
-        	aHtml.push('<td width="20" style="width:20px"><div style="width:20px" /></td>');
-       for (var nIndex = 0, aItems = this.parentNode.head.items, oItem; oItem = aItems[nIndex]; nIndex++)
-        	aHtml.push('<td' + (oItem.attributes["width"] ? ' width="' + oItem.attributes["width"] + '"' : '') + '><div style="height:1px;' + (oItem.attributes["minwidth"] ? 'width:' + oItem.attributes["minwidth"] + 'px' : '') + '"/></td>');
+        	aHtml.push('<td width="20"><div style="width:20px"></div></td>');
+        for (var nIndex = 0, aItems = this.parentNode.head.items, oItem; oItem = aItems[nIndex]; nIndex++)
+        	aHtml.push('<td style="padding-top:0px;padding-bottom:0px;height:1px;' + (oItem.attributes["hidden"] == "true" ? 'display:none' : '') + '" class="xul-treecell"><div style="height:1px;' + (oItem.attributes["width"] ? 'width:' + oItem.attributes["width"] + 'px;' : '') + '"></div><div style="height:1px;' + (oItem.attributes["minwidth"] ? 'width:' + oItem.attributes["minwidth"] + 'px' : '') + '"></div></td>');
+        aHtml.push('<td></td>');
         aHtml.push('</tr>');
         aHtml.push('</tfoot>');
     }
@@ -86,5 +87,5 @@ cXULElement_treebody.prototype.$getTagClose	= function() {
     return aHtml.join('');
 };
 
-// Register Element with language
-oXULNamespace.setElement("treebody", cXULElement_treebody);
+// Register Element
+ample.extend(cXULElement_treebody);

@@ -8,7 +8,7 @@
  */
 
 var cSVGElement_tspan	= function(){};
-cSVGElement_tspan.prototype	= new cSVGElement;
+cSVGElement_tspan.prototype	= new cSVGElement("tspan");
 
 if (cSVGElement.useVML) {
 
@@ -33,7 +33,7 @@ if (cSVGElement.useVML) {
 		},
 		'DOMNodeInsertedIntoDocument':	function(oEvent) {
 			if (this.firstChild instanceof AMLCharacterData)
-				this.$getContainer().getElementsByTagName("textpath")[0].string	= this.firstChild.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+				this.$getContainer().getElementsByTagName("textpath")[0].string	= this.firstChild.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 
 			var sValue;
 
@@ -49,7 +49,7 @@ if (cSVGElement.useVML) {
 		},
 		'DOMCharacterDataModified':	function(oEvent) {
 			if (oEvent.target.parentNode == this)
-				this.$getContainer().getElementsByTagName("textpath")[0].string	= oEvent.target.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+				this.$getContainer().getElementsByTagName("textpath")[0].string	= oEvent.target.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 		}
 	};
 
@@ -85,5 +85,5 @@ if (cSVGElement.useVML) {
 	};
 };
 
-// Register Element with language
-oSVGNamespace.setElement("tspan", cSVGElement_tspan);
+// Register Element
+ample.extend(cSVGElement_tspan);

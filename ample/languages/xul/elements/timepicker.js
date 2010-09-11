@@ -8,12 +8,12 @@
  */
 
 var cXULElement_timepicker	= function(){};
-cXULElement_timepicker.prototype	= new cXULInputElement;
+cXULElement_timepicker.prototype	= new cXULInputElement("timepicker");
 
 // Default attributes
 cXULElement_timepicker.attributes	= {
-	"mask":		'YYYY-MM-DDThh:mm:ss',
-	"value":	'1970-01-01T00:00:00'
+	"mask":		'hh:mm:ss',
+	"value":	'00:00:00'
 };
 
 
@@ -24,53 +24,169 @@ cXULElement_timepicker.prototype._onInputTimeChange    = function(oEvent, sName,
     cXULInputElement.dispatchChange(this);
 };
 
-cXULElement_timepicker.prototype._onTimeKeyDown    = function(oEvent, sName) {
-    if (oEvent.keyIdentifier == "Up") {	// Arrow Up
-        this._onInterval(1);
-    }
-    else
-    if (oEvent.keyIdentifier == "Down")	{ // Arrow Down
-        this._onInterval(-1);
-    }
-};
-
-cXULElement_timepicker.prototype._onSpinMouseDown	= function(oEvent, sName) {
-
-};
-
 // Class handlers
 cXULElement_timepicker.handlers	= {
 	"focus":	function(oEvent) {
-		this.$getContainer("input").focus();
+		var oInput	= this.$getContainer("input");
+		cXULElement_timepicker.setEditComponent(this, oInput.lastCursorPosition || 'h');
+		oInput.focus();
 	},
 	"blur":		function(oEvent) {
-		this.$getContainer("input").blur();
+		var oInput	= this.$getContainer("input");
+		oInput.lastCursorPosition	= cXULElement_timepicker.getEditComponent(this);
+		oInput.blur();
+	},
+	"keydown":	function(oEvent) {
+		if (oEvent.keyIdentifier == "Up") {
+			this.spinButtons.spin(true);
+			oEvent.preventDefault();
+		}
+		else
+		if (oEvent.keyIdentifier == "Down") {
+			this.spinButtons.spin(false);
+			oEvent.preventDefault();
+		}
+		else
+		if (oEvent.keyIdentifier == "Left") {
+			switch (cXULElement_timepicker.getEditComponent(this)) {
+				case "s":
+					cXULElement_timepicker.setEditComponent(this, 'm');
+					break;
+				case "m":
+					cXULElement_timepicker.setEditComponent(this, 'h');
+					break;
+			}
+			oEvent.preventDefault();
+		}
+		else
+		if (oEvent.keyIdentifier == "Right") {
+			switch (cXULElement_timepicker.getEditComponent(this)) {
+				case "m":
+					cXULElement_timepicker.setEditComponent(this, 's');
+					break;
+				case "h":
+					cXULElement_timepicker.setEditComponent(this, 'm');
+					break;
+			}
+			oEvent.preventDefault();
+		}
+	},
+	"mouseup":	function(oEvent) {
+		if (oEvent.$pseudoTarget == this.$getContainer("input"))
+			cXULElement_timepicker.setEditComponent(this, cXULElement_timepicker.getEditComponent(this));
 	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this) {
 			switch (oEvent.attrName) {
 				case "disabled":
-					this.$setPseudoClass("disabled", oEvent.newValue == "true")
+					this.$setPseudoClass("disabled", oEvent.newValue == "true");
+					this.spinButtons.setAttribute("disabled", oEvent.newValue);
+					break;
+
+				case "value":
+					this.$getContainer("input").value	= oEvent.newValue || '';
 					break;
 
 				default:
 					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 			}
 		}
+	},
+	"DOMNodeInserted":	function(oEvent) {
+		if (oEvent.target == this) {
+			var that	= this;
+			this.spinButtons	= this.ownerDocument.createElementNS(this.namespaceURI, "xul:spinbuttons");
+			this.spinButtons.setAttribute("disabled", this.$isAccessible() ? "false" : "true");
+			this.spinButtons.addEventListener("spin", function(oEvent) {
+				var aTime	= that.attributes["value"].split(":"),
+					aRange	= cXULInputElement.getSelectionRange(that);
+				var sComponent	= cXULElement_timepicker.getEditComponent(that),
+					nComponent;
+				switch (sComponent) {
+					case 'h':
+						nComponent	= aTime[0] * 1 + (oEvent.detail ? 1 :-1);
+						if (nComponent > 23)
+							nComponent	= 0;
+						else
+						if (nComponent < 0)
+							nComponent	= 23;
+						aTime[0]	= (nComponent.toString().length < 2 ? '0' : '') + nComponent;
+						break;
+					case 'm':
+						nComponent	= aTime[1] * 1 + (oEvent.detail ? 1 :-1);
+						if (nComponent > 59)
+							nComponent	= 0;
+						else
+						if (nComponent < 0)
+							nComponent	= 59;
+						aTime[1]	= (nComponent.toString().length < 2 ? '0' : '') + nComponent;
+						break;
+					case 's':
+					default:
+						nComponent	= aTime[2] * 1 + (oEvent.detail ? 1 :-1);
+						if (nComponent > 59)
+							nComponent	= 0;
+						else
+						if (nComponent < 0)
+							nComponent	= 59;
+						aTime[2]	= (nComponent.toString().length < 2 ? '0' : '') + nComponent;
+				}
+				that.setAttribute("value", aTime.join(':'));
+				cXULElement_timepicker.setEditComponent(that, sComponent);
+			}, false);
+			this.$appendChildAnonymous(this.spinButtons);
+		}
+	},
+	"DOMNodeRemoved":	function(oEvent) {
+		if (oEvent.target == this) {
+			this.$removeChildAnonymous(this.spinButtons);
+			this.spinButtons	= null;
+		}
 	}
+};
+
+cXULElement_timepicker.getEditComponent	= function(oInstance) {
+	var aRange	= cXULInputElement.getSelectionRange(oInstance);
+	if (aRange[1] > 5)
+		return 's';
+	else
+	if (aRange[1] > 2)
+		return 'm';
+	else
+		return 'h';
+};
+
+cXULElement_timepicker.setEditComponent	= function(oInstance, sComponent) {
+	var nStart	= 0,
+		nEnd	= 8;
+	switch (sComponent) {
+		case 's':
+			nStart	= 6;
+			nEnd	= 8;
+			break;
+		case 'm':
+			nStart	= 3;
+			nEnd	= 5;
+			break;
+		case 'h':
+		default:
+			nStart	= 0;
+			nEnd	= 2;
+			break;
+	}
+	cXULInputElement.setSelectionRange(oInstance, nStart, nEnd);
 };
 
 // Element Render: open
 cXULElement_timepicker.prototype.$getTagOpen		= function() {
-    var aTime    = this.attributes["value"].match(/([0-9]{2}):([0-9]{2}):([0-9]{2})$/);
-    return '<div class="xul-timepicker' + (this.attributes["disabled"] == "true" ? " xul-timepicker_disabled" : '') + '">\
+    var aTime    = this.attributes["value"].split(":");
+    return '<div class="xul-timepicker' + (!this.$isAccessible() ? " xul-timepicker_disabled" : '') + '">\
 				<div class="xul-timepicker--field">\
-					<div class="xul-timepicker--button-up" onmouseover="if (!ample.$instance(this).attributes[\'disabled\']) ample.$instance(this).$setPseudoClass(\'hover\', true, \'button-up\')" onmouseout="if (!ample.$instance(this).attributes[\'disabled\']) ample.$instance(this).$setPseudoClass(\'hover\', false, \'button-up\')" onmousedown="if (!ample.$instance(this).attributes[\'disabled\']) {ample.$instance(this).$setPseudoClass(\'active\', true, \'button-up\'); ample.$instance(this)._onSpinMouseDown(event, \'up\')}"><br/></div>\
-					<div class="xul-timepicker--button-down" onmouseover="if (!ample.$instance(this).attributes[\'disabled\']) ample.$instance(this).$setPseudoClass(\'hover\', true, \'button-down\')" onmouseout="if (!ample.$instance(this).attributes[\'disabled\']) ample.$instance(this).$setPseudoClass(\'hover\', false, \'button-down\')" onmousedown="if (!ample.$instance(this).attributes[\'disabled\']) {ample.$instance(this).$setPseudoClass(\'active\', true, \'button-down\'); ample.$instance(this)._onSpinMouseDown(event, \'down\')}"><br/></div>\
-					<input type="text" class="xul-timepicker--input" maxlength="8"' +(this.attributes["disabled"] == "true" ? ' disabled="true"' : '')+ ' style="border:0px solid white;width:100%;" value="' + (aTime ? aTime[1] : "00") + ':' + (aTime ? aTime[2] : "00") + ':' + (aTime ? aTime[3] : "00") + '" onchange="ample.$instance(this)._onInputTimeChange(event,  \'minutes\', this.value)" onkeydown="return ample.$instance(this)._onTimeKeyDown(event, \'minutes\')" onselectstart="event.cancelBubble=true" onkeypress="if (event.keyCode == 38 || event.keyCode == 40) return false" />\
+   					' + this.spinButtons.$getTag() + '\
+					<input type="text" class="xul-timepicker--input" maxlength="8"' +(!this.$isAccessible() ? ' disabled="true"' : '')+ ' style="border:0px solid white;width:100%;" value="' + (aTime ? aTime[0] : "00") + ':' + (aTime ? aTime[1] : "00") + ':' + (aTime ? aTime[2] : "00") + '" />\
 				</div>\
 			</div>';
 };
 
-// Register Widget with language
-oXULNamespace.setElement("timepicker", cXULElement_timepicker);
+// Register Element
+ample.extend(cXULElement_timepicker);

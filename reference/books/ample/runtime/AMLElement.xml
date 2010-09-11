@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<object name="AMLElement" extends="runtime:AMLNode">
+<class name="AMLElement" extends="runtime:AMLNode">
 	<abstract>
 		<locale>
 			Represents an element.
@@ -11,47 +11,8 @@
 	</abstract>
 	<remarks />
 	<examples />
-	<implements>
-		<interface name="runtime:mCapture" />
-		<interface name="runtime:mDragAndDrop" />
-		<interface name="runtime:mFocus" />
-		<interface name="runtime:mResize" />
-		<interface name="runtime:mSelection" />
-	</implements>
 	<members>
-		<constants>
-			<!-- Effects -->
-			<constant name="EFFECT_LINEAR" value="1">
-				<description>
-					<locale>
-						Value change is linear.
-					</locale>
-					<locale xml:lang="ru">
-						Значение изменяется линейно.
-					</locale>
-				</description>
-			</constant>
-			<constant name="EFFECT_ACCELERATE" value="2">
-				<description>
-					<locale>
-						Value change is accelerated.
-					</locale>
-					<locale xml:lang="ru">
-						Изменение значения ускоряется.
-					</locale>
-				</description>
-			</constant>
-			<constant name="EFFECT_DECELERATE" value="3">
-				<description>
-					<locale>
-						Value change is decelerated.
-					</locale>
-					<locale xml:lang="ru">
-						Изменение значения замедляется.
-					</locale>
-				</description>
-			</constant>
-		</constants>
+		<constants />
 		<attributes>
 			<attribute name="id" readonly="true">
 				<description>
@@ -129,6 +90,143 @@
 					</locale>
 					<locale xml:lang="ru">
 						Указывает, будут ли пробелы представлены в объектной модели фрагмента документа.
+					</locale>
+				</description>
+			</attribute>
+			<!-- Drag And Drop -->
+			<attribute name="aml:draggable" readonly="false" default="false">
+				<values>
+					<value name="true">
+						<description>
+							<locale>
+								Element can be dragged.
+							</locale>
+							<locale xml:lang="ru">
+								Элемент может перетаскиваться.
+							</locale>
+						</description>
+					</value>
+					<value name="false">
+						<description>
+							<locale>
+								Element can not be dragged.
+							</locale>
+							<locale xml:lang="ru">
+								Элемент не может перетаскиваться.
+							</locale>
+						</description>
+					</value>
+				</values>
+				<description>
+					<locale>
+						Specifies wether element can be dragged by user.
+					</locale>
+					<locale xml:lang="ru">
+						Указывает, может ли пользователь перетаскивать элемент или нет.
+					</locale>
+				</description>
+			</attribute>
+			<attribute name="aml:droppable" readonly="false" default="false">
+				<values>
+					<value name="true">
+						<description>
+							<locale>
+								Element can be used as drop target.
+							</locale>
+							<locale xml:lang="ru">
+								Элемент является местом оставления перетаскиваемого объекта.
+							</locale>
+						</description>
+					</value>
+					<value name="false">
+						<description>
+							<locale>
+								Element can not be used as drop target.
+							</locale>
+							<locale xml:lang="ru">
+								Элемент не является местом оставления перетаскиваемого объекта.
+							</locale>
+						</description>
+					</value>
+				</values>
+				<description>
+					<locale>
+						Specifies wether element can be used as drop target.
+					</locale>
+					<locale xml:lang="ru">
+						Указывает, является ли элемент местом оставления перетаскиваемого объекта.
+					</locale>
+				</description>
+			</attribute>
+			<!-- Resize -->
+			<attribute name="aml:resizable" readonly="false" default="false">
+				<values>
+					<value name="true">
+						<description>
+							<locale>
+								Elements boundaries can be modified.
+							</locale>
+							<locale xml:lang="ru">
+								Размеры элемента могут быть изменены пользователем.
+							</locale>
+						</description>
+					</value>
+					<value name="false">
+						<description>
+							<locale>
+								Elements boundaries can not be modified.
+							</locale>
+							<locale xml:lang="ru">
+								Размеры элемента не изменяемы.
+							</locale>
+						</description>
+					</value>
+				</values>
+				<description>
+					<locale>
+						Specifies whether element boundaries can be modified by user.
+					</locale>
+					<locale xml:lang="ru">
+						Указывает, может ли пользователь изменять размеры элемента.
+					</locale>
+				</description>
+			</attribute>
+
+			<attribute name="aml:resize-edges" readonly="false" default="false">
+				<description>
+					<locale>
+						Specifies what edges can be resized. The attribute value is a space separated list of "top", "right", "bottom" and "left" tokens.
+					</locale>
+				</description>
+			</attribute>
+			<!-- Selection -->
+			<attribute name="aml:selectable" readonly="false" default="inherit">
+				<values>
+					<value name="true">
+						<description>
+							<locale>
+								Text selection is enabled on element
+							</locale>
+						</description>
+					</value>
+					<value name="false">
+						<description>
+							<locale>
+								Text selection is disabled on element
+							</locale>
+						</description>
+					</value>
+					<value name="inherit">
+						<description>
+							<locale>
+								Text selection behavior is inherited from its parent container.
+							</locale>
+						</description>
+					</value>
+				</values>
+				<description>
+					<locale>
+						Enables/disables text selection on element.
 					</locale>
 				</description>
 			</attribute>
@@ -277,10 +375,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Retrieves a <link type="object">AMLNodeList</link> collection of <link type="object">AMLElement</link> objects based on the specified element name.
+						Retrieves a <link type="class">AMLNodeList</link> collection of <link type="class">AMLElement</link> objects based on the specified element name.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает коллекцию <link type="object">AMLNodeList</link> объектов <link type="object">AMLElement</link> по заданному имени в порядке следования их в документе.
+						Возвращает коллекцию <link type="class">AMLNodeList</link> объектов <link type="class">AMLElement</link> по заданному имени в порядке следования их в документе.
 					</locale>
 				</description>
 			</method>
@@ -309,10 +407,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Retrieves a <link type="object">AMLNodeList</link> collection of <link type="object">AMLElement</link> objects based on the specified element name from the given namespace.
+						Retrieves a <link type="class">AMLNodeList</link> collection of <link type="class">AMLElement</link> objects based on the specified element name from the given namespace.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает коллекцию <link type="object">AMLNodeList</link> объектов <link type="object">AMLElement</link> по заданным имени и пространству имен в порядке следования их в документе.
+						Возвращает коллекцию <link type="class">AMLNodeList</link> объектов <link type="class">AMLElement</link> по заданным имени и пространству имен в порядке следования их в документе.
 					</locale>
 				</description>
 			</method>
@@ -334,7 +432,7 @@
 						Returns a value that indicates whether the object has specified attribute.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращаемое значение указывает, имеет ли объект <link type="object">AMLElement</link> заданный атрибут или нет.
+						Возвращаемое значение указывает, имеет ли объект <link type="class">AMLElement</link> заданный атрибут или нет.
 					</locale>
 				</description>
 			</method>
@@ -366,7 +464,7 @@
 						Returns a value that indicates whether the object has specified attribute from the given namespace.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращаемое значение указывает, имеет ли объект <link type="object">AMLElement</link> заданный атрибут из заданного пространства имен или нет.
+						Возвращаемое значение указывает, имеет ли объект <link type="class">AMLElement</link> заданный атрибут из заданного пространства имен или нет.
 					</locale>
 				</description>
 			</method>
@@ -444,10 +542,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns <link type="object">AMLElement</link> that matches CSS query.
+						Returns <link type="class">AMLElement</link> that matches CSS query.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает объект <link type="object">AMLElement</link> по заданному CSS запросу.
+						Возвращает объект <link type="class">AMLElement</link> по заданному CSS запросу.
 					</locale>
 				</description>
 			</method>
@@ -470,10 +568,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns <link type="object">AMLNodeList</link> of <link type="object">AMLElement</link> that match CSS query.
+						Returns <link type="class">AMLNodeList</link> of <link type="class">AMLElement</link> that match CSS query.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает коллекцию <link type="object">AMLNodeList</link> из объектов <link type="object">AMLElement</link> по заданному запросу в порядке, в котором элементы следуют в документе.
+						Возвращает коллекцию <link type="class">AMLNodeList</link> из объектов <link type="class">AMLElement</link> по заданному запросу в порядке, в котором элементы следуют в документе.
 					</locale>
 				</description>
 			</method>
@@ -598,95 +696,80 @@
 					</locale>
 				</description>
 			</method>
-			<!-- Content Loader -->
-			<method name="$load" type="Void">
+			<!-- Capture -->
+			<method name="setCapture" type="Void">
 				<arguments>
-					<argument name="sUrl" type="String" required="true">
+					<argument name="bContainerCapture" type="Boolean" required="false">
 						<description>
 							<locale>
-								URL
-							</locale>
-							<locale xml:lang="ru">
-								URL для загрузки.
+								A Boolean that specifies capture mode.
 							</locale>
 						</description>
 					</argument>
 				</arguments>
 				<description>
 					<locale>
-						Loads element content from the remote resource specified by the sUrl argument
-					</locale>
-					<locale xml:lang="ru">
-						Загружает данные с удаленного ресурса, заданного аргументом.
+						Sets the mouse capture to the object that belongs to the current document.
 					</locale>
 				</description>
 			</method>
-			<method name="$abort" type="Void">
+			<method name="releaseCapture" type="Void">
 				<description>
 					<locale>
-						Aborts load operation initated by the call of <link type="method">$load</link> method.
+						Removes mouse capture from the object in the current document.
 					</locale>
 				</description>
 			</method>
-			<!-- Effects -->
-			<method name="$play" type="Number">
-				<arguments>
-					<argument name="sStyle" type="String" required="true">
-						<description>
-							<locale>
-								CSS declaration.
-							</locale>
-							<locale xml:lang="ru">
-								Декларация CSS.
-							</locale>
-						</description>
-					</argument>
-					<argument name="nDuration" type="Number" required="true">
-						<description>
-							<locale>
-								Effect duration in milliseconds
-							</locale>
-							<locale xml:lang="ru">
-								Длительность эффекта в миллисекундах.
-							</locale>
-						</description>
-					</argument>
-					<argument name="nType" type="Number" required="false">
-						<description>
-							<locale>
-								Type of timing.
-							</locale>
-						</description>
-					</argument>
-				</arguments>
+			<method name="$setModal" type="Void">
 				<description>
 					<locale>
-						Starts playing effect and returns the process identifier.
-					</locale>
-					<locale xml:lang="ru">
-						Начинает воспроизведение эффекта и возвращает идентификатор процесса.
+						Sets element in a modal state if it is not yet modal, otherwise throws exception.
+						UI Events originated outside this element get supressed,
+						except for one <link type="event">capture</link> that is fired upon a click outside modal area.
+						If there was an element set in modal state before, it will pushed to the stack of modals.
 					</locale>
 				</description>
 			</method>
-			<method name="$stop" type="Void">
-				<arguments>
-					<argument name="nEffect" type="String" required="true">
-						<description>
-							<locale>
-								Process identifier got from <link type="method">play</link> method call.
-							</locale>
-							<locale xml:lang="ru">
-								Идентификатор ресурса, возвращенный методом <link type="method">play</link>.
-							</locale>
-						</description>
-					</argument>
-				</arguments>
+			<method name="$releaseModal" type="Void">
 				<description>
 					<locale>
-						Stops plying effect.
+						Brings element to a normal (non-modal) state if it was set to modal before, otherwise throws exception.
+						In case there was another element set in modal mode before the one being released,
+						it will regain modal state.
+					</locale>
+				</description>
+			</method>
+			<!-- Focus -->
+			<method name="focus" type="Void">
+				<arguments />
+				<description>
+					<locale>
+						Moves focus to the element.
 					</locale>
 					<locale xml:lang="ru">
-						Останавливает воспроизведение эффекта.
+						Перемещает фокус на элемент.
+					</locale>
+				</description>
+			</method>
+			<method name="blur" type="Void">
+				<arguments />
+				<description>
+					<locale>
+						Removes focus from the element.
+					</locale>
+					<locale xml:lang="ru">
+						Убирает фокус с элемента.
+					</locale>
+				</description>
+			</method>
+			<method name="$isAccessible" type="Boolean">
+				<arguments />
+				<description>
+					<locale>
+						Indicates wether element can be focused.
+					</locale>
+					<locale xml:lang="ru">
+						Возвращаемое значение указывает, доступен ли элемент.
 					</locale>
 				</description>
 			</method>
@@ -698,7 +781,7 @@
 						Retrieves the tag name of the object.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает имя тега для объекта <link type="object">AMLElement</link>.
+						Возвращает имя тега для объекта <link type="class">AMLElement</link>.
 					</locale>
 				</description>
 			</property>
@@ -713,6 +796,13 @@
 				</description>
 			</property>
 			<!-- Ample SDK -->
+			<property name="contentFragment" type="AMLFragmentNode" readonly="false">
+				<description>
+					<locale>
+						A reference to the anonymous subtree. The subtree should be created in constructor.
+					</locale>
+				</description>
+			</property>
 			<property name="$childNodesAnonymous" type="AMLNodeList" readonly="true">
 				<description>
 					<locale>
@@ -720,50 +810,70 @@
 					</locale>
 				</description>
 			</property>
+			<!-- Drag And Drop -->
+			<property name="$draggable" type="Boolean">
+				<description>
+					<locale>
+						If true, element is draggable.
+					</locale>
+					<locale xml:lang="ru">
+						Если true, элемент может перетаскиваться.
+					</locale>
+				</description>
+			</property>
+			<property name="$droppable" type="Boolean">
+				<description>
+					<locale>
+						If true, element is a valid drag target.
+					</locale>
+					<locale xml:lang="ru">
+						Если true, элемент может являться местом оставления перетаскиваемого объекта.
+					</locale>
+				</description>
+			</property>
+			<!-- Focus -->
+			<property name="tabIndex" type="Number">
+				<description>
+					<locale>
+						Sets value used to specify
+						control position in tab sequence. When value is set to 0,
+						control will be accessed in the document order, when -1,
+						control will not be accessible at all.
+					</locale>
+					<locale xml:lang="ru">
+						Позволяет прочитать/выставить значение, указывающее на позицию элемента в последовательности перехода фокуса. Когда значение выставлено в 0, элемент получит фокус согласно его расположению в иерархии внутри документа; когда значение выставлено в -1, элемент не получит фокус.
+					</locale>
+				</description>
+			</property>
+			<!-- Resize -->
+			<property name="$resizable" type="Boolean">
+				<description>
+					<locale>
+						Keeps a flag indicating whether element size can be modified.
+					</locale>
+					<locale xml:lang="ru">
+						Если true, размеры элемента могут быть изменены.
+					</locale>
+				</description>
+			</property>
+			<!-- Selection -->
+			<property name="$selectable" type="Boolean">
+				<description>
+					<locale>
+						Keeps a flag indicating whether element's text content can be selected.
+					</locale>
+				</description>
+			</property>
 		</properties>
 		<events>
-			<!-- event name="focus" group="UIEvent" cancelable="false" bubbles="false">
-				<description>
-					<locale>
-						An event target receives focus.
-					</locale>
-					<locale xml:lang="ru">
-						Элемент получает фокус.
-					</locale>
-				</description>
-			</event>
-			<event name="blur" group="UIEvent" cancelable="false" bubbles="false">
-				<description>
-					<locale>
-						An event target loses focus.
-					</locale>
-					<locale xml:lang="ru">
-						Элемент теряет фокус.
-					</locale>
-				</description>
-			</event>
-			<event name="DOMFocusIn" group="UIEvent" cancelable="false" bubbles="true">
-				<description>
-					<locale xml:lang="ru">
-						Элемент получает фокус.
-					</locale>
-				</description>
-			</event>
-			<event name="DOMFocusOut" group="UIEvent" cancelable="false" bubbles="true">
-				<description>
-					<locale xml:lang="ru">
-						Элемент теряет фокус.
-					</locale>
-				</description>
-			</event-->
-			<event name="DOMActivate" group="UIEvent" cancelable="true" bubbles="true">
+			<event name="DOMActivate" type="UIEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						An activation behavior requested from element.
 					</locale>
 				</description>
 			</event>
-			<event name="click" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="click" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A pointing device button is clicked over an element.
@@ -773,7 +883,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="dblclick" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="dblclick" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Fires when the user double-clicks the object.
@@ -783,7 +893,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="contextmenu" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="contextmenu" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						<b>* legacy.</b> Fires when the user clicks the right mouse button in the client area, opening the context menu.
@@ -794,7 +904,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mouseup" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="mouseup" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A pointing device button is released over an element.
@@ -804,7 +914,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mousedown" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="mousedown" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A pointing device button is pressed over an element.
@@ -814,7 +924,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mouseover" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="mouseover" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A pointing device is moved onto an element.
@@ -824,7 +934,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mouseout" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="mouseout" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A pointing device is moved away from an element.
@@ -834,7 +944,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mousemove" group="MouseEvent" cancelable="true" bubbles="true">
+			<event name="mousemove" type="MouseEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A pointing device is moved while it is over an element.
@@ -844,7 +954,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mouseenter" group="MouseEvent" cancelable="false" bubbles="false">
+			<event name="mouseenter" type="MouseEvent" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires when the user moves the mouse pointer into the object.
@@ -854,7 +964,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mouseleave" group="MouseEvent" cancelable="false" bubbles="false">
+			<event name="mouseleave" type="MouseEvent" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires when the user moves the mouse pointer outside the boundaries of the object.
@@ -864,7 +974,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="mousewheel" group="MouseWheelEvent" cancelable="true" bubbles="true">
+			<event name="mousewheel" type="MouseWheelEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Fires when the user wheels the mouse within the boundaries of the object.
@@ -874,7 +984,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="keyup" group="KeyboardEvent" cancelable="true" bubbles="true">
+			<event name="keyup" type="KeyboardEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A key is released.
@@ -884,7 +994,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="keydown" group="KeyboardEvent" cancelable="true" bubbles="true">
+			<event name="keydown" type="KeyboardEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						A key is pressed down.
@@ -894,7 +1004,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="keypress" group="KeyboardEvent" cancelable="true" bubbles="true">
+			<event name="keypress" type="KeyboardEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						<b>* legacy.</b> Fires when the user presses key on the keyboard.
@@ -905,32 +1015,32 @@
 					</locale>
 				</description>
 			</event>
-			<event name="textInput" group="TextEvent" cancelable="true" bubbles="true">
+			<event name="textInput" type="TextEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						User typed in a character.
 					</locale>
 				</description>
 			</event>
-			<event name="DOMAttrModified" group="MutationEvent" cancelable="false" bubbles="true">
+			<event name="DOMAttrModified" type="MutationEvent" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						Occurs after Attr.value has been modified and after an Attr node has been added to or removed from an Element.
 					</locale>
 					<locale xml:lang="ru">
-						Загорается, если значение объекта <link type="object">AMLAttr</link> элемента было изменено или этот объект было добавлен/удален из элемента.
+						Загорается, если значение объекта <link type="class">AMLAttr</link> элемента было изменено или этот объект было добавлен/удален из элемента.
 					</locale>
 				</description>
 			</event>
 			<!-- Content Loader -->
-			<event name="abort" group="Event" cancelable="false" bubbles="false">
+			<event name="abort" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires when the loading of a resource has been aborted.
 					</locale>
 				</description>
 			</event>
-			<event name="load" group="Event" cancelable="false" bubbles="false">
+			<event name="load" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires after the DOM implementation finishes loading the resource.
@@ -940,7 +1050,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="unload" group="Event" cancelable="false" bubbles="false">
+			<event name="unload" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires before the DOM Implementation removes from the environment the resource.
@@ -950,7 +1060,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="error" group="Event" cancelable="false" bubbles="false">
+			<event name="error" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires when a resource failed to load.
@@ -961,7 +1071,7 @@
 				</description>
 			</event>
 			<!-- Effects -->
-			<event name="effectstart" group="Event" cancelable="false" bubbles="false">
+			<event name="effectstart" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires when effect is started.
@@ -971,7 +1081,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="effectend" group="Event" cancelable="false" bubbles="false">
+			<event name="effectend" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires when effect is ended.
@@ -982,28 +1092,28 @@
 				</description>
 			</event>
 			<!-- Touch Events -->
-			<event name="touchstart" group="TouchEvent" cancelable="true" bubbles="true">
+			<event name="touchstart" type="TouchEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when a finger for a given event touches the surface.
 					</locale>
 				</description>
 			</event>
-			<event name="touchmove" group="TouchEvent" cancelable="true" bubbles="true">
+			<event name="touchmove" type="TouchEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when a given event moves on the surface.
 					</locale>
 				</description>
 			</event>
-			<event name="touchend" group="TouchEvent" cancelable="true" bubbles="true">
+			<event name="touchend" type="TouchEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when a given event lifts from the surface.
 					</locale>
 				</description>
 			</event>
-			<event name="touchcancel" group="TouchEvent" cancelable="true" bubbles="true">
+			<event name="touchcancel" type="TouchEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when the system cancels tracking for the touch.
@@ -1011,27 +1121,229 @@
 				</description>
 			</event>
 			<!-- Gesture Events -->
-			<event name="gesturestart" group="GestureEvent" cancelable="true" bubbles="true">
+			<event name="gesturestart" type="GestureEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when two or more fingers touch the surface.
 					</locale>
 				</description>
 			</event>
-			<event name="gesturechange" group="GestureEvent" cancelable="true" bubbles="true">
+			<event name="gesturechange" type="GestureEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when fingers are moved during a gesture.
 					</locale>
 				</description>
 			</event>
-			<event name="gestureend" group="GestureEvent" cancelable="true" bubbles="true">
+			<event name="gestureend" type="GestureEvent" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Sent when the gesture ends (when there are 1 or 0 fingers touching the surface).
 					</locale>
 				</description>
 			</event>
+			<!-- Capture -->
+			<event name="losecapture" type="UIEvent" cancelable="false" bubbles="false">
+				<description>
+					<locale>
+						Fires when the object is losing the mouse capture.
+					</locale>
+				</description>
+			</event>
+			<event name="capture" type="UIEvent" cancelable="false" bubbles="true">
+				<description>
+					<locale>
+						Fires when user clicks outside either an element set as modal or to receive capture.
+					</locale>
+				</description>
+			</event>
+			<!-- Drag And Drop -->
+			<event name="dragstart" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires on the source object when the user starts to drag an object.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте, когда пользователь начинает его перетаскивать.
+					</locale>
+				</description>
+			</event>
+			<event name="dragend" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires on the source object when the user releases the mouse at the close of a drag operation.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте, когда пользователь отпускает кнопку мыши, заканчивая его перетаскивание.
+					</locale>
+				</description>
+			</event>
+			<event name="dragenter" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires on the target element when the user drags the object to a valid drop target.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте - валидном месте оставления, когда указатель мыши входит в пределы границ  во время перетаскивания другого объекта.
+					</locale>
+				</description>
+			</event>
+			<event name="dragover" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+
+					</locale>
+				</description>
+			</event>
+			<event name="dragleave" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires on the target object when the user moves the mouse out of a valid drop target during a drag operation.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте - валидном месте оставления, когда указатель мыши выходит за пределы границ  во время перетаскивания другого объекта.
+					</locale>
+				</description>
+			</event>
+			<event name="drag" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires on the source object continuously during a drag operation.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте непрерывно, пока его перетаскивает пользователь.
+					</locale>
+				</description>
+			</event>
+			<event name="drop" type="DragEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires on the target object when the mouse button is released during a drag-and-drop operation.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте - валидном месте оставления, когда кнопка мыши отпускается во время операции перетаскивания.
+					</locale>
+				</description>
+			</event>
+			<!-- Focus -->
+			<event name="focus" type="UIEvent" cancelable="false" bubbles="false">
+				<description>
+					<locale>
+						Fires when element receives focus.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается, когда элемент получает фокус.
+					</locale>
+				</description>
+			</event>
+			<event name="blur" type="UIEvent" cancelable="false" bubbles="false">
+				<description>
+					<locale>
+						Fires when element looses focus.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается, когда элемент теряет фокус.
+					</locale>
+				</description>
+			</event>
+			<event name="DOMFocusIn" type="UIEvent" cancelable="false" bubbles="true">
+				<description>
+					<locale>
+						An object receives focus.
+						The focus is given to the element before the dispatch of this event type.
+						This event type is dispatched after the event type focus.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается, когда элемент получает фокус.
+					</locale>
+				</description>
+			</event>
+			<event name="DOMFocusOut" type="UIEvent" cancelable="false" bubbles="true">
+				<description>
+					<locale>
+						An object loses focus.
+						The focus is taken from the element before the dispatch of this event type.
+						This event type is dispatched after the event type blur.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается, когда элемент теряет фокус.
+					</locale>
+				</description>
+			</event>
+			<!-- Resize -->
+			<event name="resizestart" type="ResizeEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires when user starts resizing an object.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте, когда пользователь начинает операцию над ним.
+						Свойство <link type="property">edge</link> содержит значение of the edge
+					</locale>
+				</description>
+			</event>
+			<event name="resizeend" type="ResizeEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires when user ends resizing an object.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте, когда пользователь отпускает кнопку мыши, заканчивая операцию над ним.
+						Свойство <link type="property">edge</link> содержит значение of the edge
+					</locale>
+				</description>
+			</event>
+			<event name="resize" type="ResizeEvent" cancelable="true" bubbles="true">
+				<description>
+					<locale>
+						Fires continuously while user is resizing object.
+					</locale>
+					<locale xml:lang="ru">
+						Загорается на объекте непрерывно, пока его размеры изменяются пользователем.
+						Свойство <link type="property">edge</link> содержит значение of the edge
+					</locale>
+				</description>
+			</event>
 		</events>
+		<pseudoclasses>
+			<pseudoclass name="hover">
+				<description>
+					<locale>
+						Applied to the element while mouse is over
+					</locale>
+				</description>
+			</pseudoclass>
+			<!-- Drag And Drop -->
+			<pseudoclass name="drag">
+				<description>
+					<locale>
+						Applied to the drag source during operation
+					</locale>
+				</description>
+			</pseudoclass>
+			<pseudoclass name="drop">
+				<description>
+					<locale>
+						Applied to the drop target when it is allowed
+					</locale>
+				</description>
+			</pseudoclass>
+			<!-- Focus -->
+			<pseudoclass name="focus">
+				<description>
+					<locale>
+						Applied to the element when it has focus
+					</locale>
+				</description>
+			</pseudoclass>
+			<!--  Resize -->
+			<pseudoclass name="resize">
+				<description>
+					<locale>
+						Applied to the resized element during operation
+					</locale>
+				</description>
+			</pseudoclass>
+		</pseudoclasses>
 	</members>
-</object>
+</class>

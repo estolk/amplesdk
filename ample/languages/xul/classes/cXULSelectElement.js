@@ -7,8 +7,11 @@
  *
  */
 
-var cXULSelectElement	= function(){};
+var cXULSelectElement	= function() {
+	cXULElement.apply(this, arguments);
+};
 cXULSelectElement.prototype	= new cXULElement;
+cXULSelectElement.prototype.localName	= "#element-select";
 
 // Public Properties
 cXULSelectElement.prototype.currentItem		= null; // last selected item element
@@ -274,8 +277,6 @@ cXULSelectElement.getSettingsPopup	= function(oInstance) {
 			oItem.setAttribute("label", oInstance.items[nIndex].getAttribute("label"));
 			if (oInstance.items[nIndex].getAttribute("hidden") != "true")
 				oItem.setAttribute("checked", "true");
-			if (!oInstance.items[nIndex].hasAttribute("width"))
-				oItem.setAttribute("disabled",  "true");
 			oPopup.appendChild(oItem);
 		}
 	}
@@ -347,3 +348,6 @@ cXULSelectElement.onResizeEnd	= function(oEvent) {
 		oHeader.setAttribute("width", nWidth);
 	}
 };
+
+// Register Element
+ample.extend(cXULSelectElement);

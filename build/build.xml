@@ -23,8 +23,8 @@
 	<property name="build.package" value="ample-${project.version}" />
 	<property name="build.signature" value="${tstamp.full}" />
 
-	<property name="temp.dir" value="${basedir}/temp/"/>
-	<property name="work.dir" value="${basedir}/work/"/>
+	<property name="temp.dir" value="${basedir}/../../amplesdk-builds/temp/"/>
+	<property name="work.dir" value="${basedir}/../../amplesdk-builds/work/"/>
 	<property name="source.dir" value="${basedir}/../"/>
 
 	<property name="target.dir" value="${work.dir}/${build.package}/"/>
@@ -65,6 +65,7 @@
 		<mkdir dir="${target.ample.dir}" />
 
 		<antcall target="BUILD_AMPLE_RUNTIME" />
+		<antcall target="BUILD_AMPLE_PLUGINS" />
 		<antcall target="BUILD_AMPLE_LANGUAGES" />
 	</target>
 
@@ -110,7 +111,7 @@
 		<concat destfile="${temp.runtime.dir}/runtime-core.js" fixlastline="yes">
 			<!-- Helper Objects -->
 			<filelist dir="${source.runtime.dir}/classes/" files="
-				AMLNamespace.js"/>
+				AMLQuery.js"/>
 			<!-- DOM Core/Events/Selectors -->
 			<filelist dir="${source.runtime.dir}/classes/events/" files="
 				AMLEvent.js,
@@ -145,9 +146,10 @@
 				AMLTouchList.js"/>
 			<filelist dir="${source.runtime.dir}/classes/selectors/" files="
 				AMLNodeSelector.js"/>
-			<!-- Animation engine -->
 			<filelist dir="${source.runtime.dir}/classes/animation/" files="
-				AMLElementAnimation.js"/>
+				AMLNodeAnimation.js"/>
+			<filelist dir="${source.runtime.dir}/classes/range/" files="
+				AMLRange.js"/>
 			<!-- JS API Objects -->
 			<filelist dir="${source.runtime.dir}/classes/" files="
 				JSON.js"/>
@@ -158,6 +160,8 @@
 				XSLTProcessor.js"/>
 			<!-- Browser integration and runner -->
 			<filelist dir="${source.runtime.dir}/" files="
+				utilities.js,
+				guard.js,
 				browser.js,
 				ample.js"/>
 			<!-- UI Managers -->
@@ -166,109 +170,100 @@
 				mAMLResize.js,
 				mAMLDragAndDrop.js,
 				mAMLSelection.js,
-				mAMLUI.js,
 				mAMLCapture.js,
-				mAMLHistory.js,
 				mAMLTouch.js"/>
+			<!-- API Modules -->
+			<filelist dir="${source.runtime.dir}/modules/" files="
+				ajax.js,
+				attributes.js,
+				css.js,
+				data.js,
+				dimensions.js,
+				effects.js,
+				event.js,
+				history.js,
+				manipulation.js,
+				offset.js"/>
 		</concat>
 	</target>
 
 	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES" unless="skip.ample.runtime.languages">
-		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XINCLUDE" />
-		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XMLEVENTS" />
+		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_AML" />
 		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_SMIL" />
-		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XMLSCHEMA" />
+		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XMLEVENTS" />
+		<antcall target="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XLINK" />
 	</target>
 
 	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XBL" unless="skip.ample.runtime.languages.xbl">
 		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
 			<!-- XBL 2.0 -->
-			<filelist dir="${source.runtime.dir}/processors/xbl20/" files="
-				xbl20.js"/>
+			<filelist dir="${source.runtime.dir}/processors/xbl/classes/" files="
+				XBLElement.js,
+				XBLImplementation.js,
+				XBLImplementationsList.js"/>
 		</concat>
 	</target>
 
 	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_REX" unless="skip.ample.runtime.languages.rex">
 		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
 			<!-- REX 1.0 -->
-			<filelist dir="${source.runtime.dir}/processors/rex10/" files="
-				rex10.js"/>
+			<filelist dir="${source.runtime.dir}/processors/rex/classes/" files="
+				REXElement.js"/>
 		</concat>
 	</target>
 
-	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XINCLUDE" unless="skip.ample.runtime.languages.xinclude">
+	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_AML" unless="skip.ample.runtime.languages.aml">
 		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
-			<!-- XInclude 1.0 -->
-			<filelist dir="${source.runtime.dir}/processors/xinclude10/" files="
-				xinclude10.js"/>
-		</concat>
-	</target>
-
-	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XMLEVENTS" unless="skip.ample.runtime.languages.xmlevents">
-		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
-			<!-- XML Events 1.0 -->
-			<filelist dir="${source.runtime.dir}/processors/xmlevents10/" files="
-				xmlevents10.js"/>
+			<!-- SMIL 3.0 -->
+			<filelist dir="${source.runtime.dir}/processors/aml/classes/" files="
+				cAMLAttr.js,
+				cAMLElement.js"/>
+			<fileset dir="${source.runtime.dir}/processors/aml/attributes/">
+				<include name="*.js" />
+			</fileset>
+			<fileset dir="${source.runtime.dir}/processors/aml/elements/">
+				<include name="*.js" />
+			</fileset>
 		</concat>
 	</target>
 
 	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_SMIL" unless="skip.ample.runtime.languages.smil">
 		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
 			<!-- SMIL 3.0 -->
-			<filelist dir="${source.runtime.dir}/processors/smil30/" files="
-				smil30.js,
-				smil30-timing.js,
-				smil30-animation.js"/>
-			<!--filelist dir="${source.runtime.dir}/processors/smil30/classes/" files="
-				cAMLTimeEvent.js"/-->
+			<filelist dir="${source.runtime.dir}/processors/smil/classes/" files="
+				SMILElement.js,
+				SMILTimeElement.js,
+				SMILAnimationElement.js,
+				SMILTimeEvent.js"/>
+			<filelist dir="${source.runtime.dir}/processors/smil/elements/" files="
+				animate.js,
+				animateColor.js,
+				animateMotion.js,
+				animateTransform.js,
+				excl.js,
+				par.js,
+				seq.js,
+				set.js"/>
 		</concat>
 	</target>
 
-	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XMLSCHEMA" unless="skip.ample.runtime.languages.xmlschema">
+	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XMLEVENTS" unless="skip.ample.runtime.languages.xmlevents">
 		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
-			<!-- XML Schema 1.1 (core) -->
-			<!-- Temporary disabled -->
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11/classes/" files="
-				cAMLXSConstants.js,
-				cAMLXSException.js,
-				cAMLXSObject.js,
-				cAMLXSModel.js,
-				cAMLXSNamedMap.js,
-				cAMLXSNamespaceItem.js,
-				cAMLXSNamespaceItemList.js,
-				cAMLXSObjectList.js,
-				cAMLXSTypeDefinition.js"/>
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11/" files="
-				xmlschema11.js"/>
+			<!-- XML Events 1.0 -->
+			<filelist dir="${source.runtime.dir}/processors/xmlevents/classes/" files="
+				XMLEventsElement.js"/>
+			<filelist dir="${source.runtime.dir}/processors/xmlevents/elements/" files="
+				listener.js"/>
+		</concat>
+	</target>
 
-			<!-- XML Schema 1.1 (datatypes) -->
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11/classes/datatypes/" files="
-				cAMLXSSimpleTypeDefinition.js,
-				cAMLXSMultiValueFacet.js,
-				cAMLXSFacet.js"/>
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11/" files="
-				xmlschema11-datatypes.js"/>
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11/builtin/" files="
-				xmlschema11-builtin.js"/>
-
-			<!-- XML Schema 1.1 (structure) -->
-			<!-- filelist dir="${source.runtime.dir}/processors/xmlschema11/" files="
-				xmlschema11-structures.js"/>
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11-instance/" files="
-				xmlschema11-instance.js"/>
-			<filelist dir="${source.runtime.dir}/processors/xmlschema11/classes/structures/" files="
-				cAMLXSTerm.js,
-				cAMLXSAnnotation.js,
-				cAMLXSAttributeDeclaration.js,
-				cAMLXSAttributeGroupDefinition.js,
-				cAMLXSAttributeUse.js,
-				cAMLXSComplexTypeDefinition.js,
-				cAMLXSElementDeclaration.js,
-				cAMLXSModelGroup.js,
-				cAMLXSModelGroupDefinition.js,
-				cAMLXSNotationDeclaration.js,
-				cAMLXSParticle.js,
-				cAMLXSWildcard.js"/-->
+	<target name="BUILD_AMPLE_RUNTIME_PREPARE_LANGUAGES_XLINK" unless="skip.ample.runtime.languages.xlink">
+		<concat destfile="${temp.runtime.dir}/runtime-languages.js" fixlastline="yes" append="yes">
+			<filelist dir="${source.runtime.dir}/processors/xlink/classes/" files="
+				XLAttr.js"/>
+			<fileset dir="${source.runtime.dir}/processors/xlink/attributes/">
+				<include name="*.js" />
+			</fileset>
 		</concat>
 	</target>
 
@@ -310,12 +305,13 @@
 		<mkdir dir="${target.languages.dir}" />
 		<mkdir dir="${temp.languages.dir}" />
 
-		<antcall target="BUILD_AMPLE_LANGUAGES_AML" />
+		<antcall target="BUILD_AMPLE_LANGUAGES_AUI" />
 		<antcall target="BUILD_AMPLE_LANGUAGES_XUL" />
 		<antcall target="BUILD_AMPLE_LANGUAGES_XHTML" />
 		<antcall target="BUILD_AMPLE_LANGUAGES_SVG" />
+		<antcall target="BUILD_AMPLE_LANGUAGES_XFORMS" />
+		<antcall target="BUILD_AMPLE_LANGUAGES_XMLSCHEMA" />
 		<antcall target="BUILD_AMPLE_LANGUAGES_CHART" />
-		<antcall target="BUILD_AMPLE_LANGUAGES_HTML5" />
 		<antcall target="BUILD_AMPLE_LANGUAGES_MOBILE" />
 
 		<!-- clean up temp dir -->
@@ -328,7 +324,6 @@
 
 		<echo message="Merging into: ${temp.languages.dir}/xhtml-raw.js" level="info"/>
 		<concat destfile="${temp.languages.dir}/xhtml-raw.js" fixlastline="yes">
-			<fileset file="${source.xhtml.dir}/xhtml.js" />
 			<fileset dir="${source.xhtml.dir}/classes/">
 				<include name="*.js" />
 			</fileset>
@@ -336,7 +331,7 @@
 				<include name="*.js" />
 			</fileset>
 			<fileset dir="${source.xhtml.dir}/elements/">
-				<include name="*.js" />
+				<include name="*/*.js" />
 			</fileset>
 		</concat>
 
@@ -354,81 +349,84 @@
 			<fileset file="${copying.js}" />
 			<fileset file="${temp.languages.dir}/xhtml-raw-wrapped.js" />
 		</concat>
-	</target>
 
-	<target name="BUILD_AMPLE_LANGUAGES_HTML5" unless="skip.ample.languages.html5">
-		<property name="source.html5.dir" value="${source.languages.dir}/html5/" />
-		<property name="target.html5.dir" value="${target.languages.dir}/html5/" />
-
-		<echo message="Merging into: ${temp.languages.dir}/html5-raw.js" level="info"/>
-		<concat destfile="${temp.languages.dir}/html5-raw.js" fixlastline="yes">
-			<fileset file="${source.html5.dir}/html5.js" />
-			<fileset dir="${source.html5.dir}/classes/">
-				<include name="*.js" />
-			</fileset>
-			<fileset dir="${source.html5.dir}/elements/">
-				<include name="*.js" />
-			</fileset>
-		</concat>
-
-		<echo message="Wrapping into: ${temp.languages.dir}/html5-raw-wrapped.js" level="info"/>
-		<exec executable="${executable.php}" failonerror="true">
-			<arg value="resources/compiler/js.php" />
-			<arg value="${temp.languages.dir}/html5-raw.js" />
-			<arg value="${temp.languages.dir}/html5-raw-wrapped.js" />
-			<arg value="--strip-Source" />
-		</exec>
-
-		<!-- package -->
-		<mkdir dir="${target.html5.dir}" />
-		<concat destfile="${target.html5.dir}/html5.js" fixlastline="yes">
-			<fileset file="${copying.js}" />
-			<fileset file="${temp.languages.dir}/html5-raw-wrapped.js" />
-		</concat>
-	</target>
-
-	<target name="BUILD_AMPLE_LANGUAGES_AML" unless="skip.ample.languages.aml">
-		<property name="source.aml.dir" value="${source.languages.dir}/aml/" />
-		<property name="target.aml.dir" value="${target.languages.dir}/aml/" />
-
-		<echo message="Merging into: ${temp.languages.dir}/aml-raw.js" level="info"/>
-		<concat destfile="${temp.languages.dir}/aml-raw.js" fixlastline="yes">
-			<fileset file="${source.aml.dir}/aml.js" />
-			<fileset dir="${source.aml.dir}/classes/">
-				<include name="*.js" />
-			</fileset>
-			<fileset dir="${source.aml.dir}/attributes/">
-				<include name="*.js" />
-			</fileset>
-			<fileset dir="${source.aml.dir}/elements/">
-				<include name="*.js" />
-			</fileset>
-		</concat>
-
-		<echo message="Wrapping into: ${temp.languages.dir}/aml-raw-wrapped.js" level="info"/>
-		<exec executable="${executable.php}" failonerror="true">
-			<arg value="resources/compiler/js.php" />
-			<arg value="${temp.languages.dir}/aml-raw.js" />
-			<arg value="${temp.languages.dir}/aml-raw-wrapped.js" />
-			<arg value="--strip-Source" />
-		</exec>
-
-		<!-- package -->
-		<mkdir dir="${target.aml.dir}" />
-		<concat destfile="${target.aml.dir}/aml.js" fixlastline="yes">
-			<fileset file="${copying.js}" />
-			<fileset file="${temp.languages.dir}/aml-raw-wrapped.js" />
-		</concat>
-
-		<echo message="Copying default theme to: ${target.aml.dir}/themes/default/" level="info"/>
-		<mkdir dir="${target.aml.dir}/themes/default/" />
-		<concat destfile="${target.aml.dir}/themes/default/aml.css" fixlastline="yes">
-			<fileset dir="${source.aml.dir}/themes/default/">
+		<!-- Themes -->
+		<echo message="Merging into: ${temp.languages.dir}/xhtml-raw.css" level="info"/>
+		<concat destfile="${temp.languages.dir}/xhtml-raw.css" fixlastline="yes">
+			<fileset dir="${source.xhtml.dir}/themes/default/">
 				<include name="*.css"/>
 			</fileset>
 		</concat>
-		<copy todir="${target.aml.dir}/themes/default/">
-			<fileset dir="${source.aml.dir}/themes/default/">
+
+		<echo message="Wrapping into: ${temp.languages.dir}/xhtml.css" level="info"/>
+		<exec executable="${executable.php}" failonerror="true">
+			<arg value="resources/compiler/css.php" />
+			<arg value="${temp.languages.dir}/xhtml-raw.css" />
+			<arg value="${temp.languages.dir}/xhtml.css" />
+			<arg value="--obfuscate" />
+		</exec>
+
+		<echo message="Copying default theme to: ${target.xhtml.dir}/themes/default/" level="info"/>
+		<mkdir dir="${target.xhtml.dir}/themes/default/" />
+		<copy tofile="${target.xhtml.dir}/themes/default/style-raw.css" file="${temp.languages.dir}/xhtml-raw.css" />
+		<copy tofile="${target.xhtml.dir}/themes/default/style.css" file="${temp.languages.dir}/xhtml.css" />
+		<copy todir="${target.xhtml.dir}/themes/default/">
+			<fileset dir="${source.xhtml.dir}/themes/default/">
+				<include name="media/**"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="BUILD_AMPLE_LANGUAGES_AUI" unless="skip.ample.languages.aui">
+		<property name="source.aui.dir" value="${source.languages.dir}/aui/" />
+		<property name="target.aui.dir" value="${target.languages.dir}/aui/" />
+
+		<echo message="Merging into: ${temp.languages.dir}/aui-raw.js" level="info"/>
+		<concat destfile="${temp.languages.dir}/aui-raw.js" fixlastline="yes">
+			<fileset dir="${source.aui.dir}/classes/">
+				<include name="*.js" />
+			</fileset>
+			<fileset dir="${source.aui.dir}/elements/">
+				<include name="*.js" />
+			</fileset>
+		</concat>
+
+		<echo message="Wrapping into: ${temp.languages.dir}/aui-raw-wrapped.js" level="info"/>
+		<exec executable="${executable.php}" failonerror="true">
+			<arg value="resources/compiler/js.php" />
+			<arg value="${temp.languages.dir}/aui-raw.js" />
+			<arg value="${temp.languages.dir}/aui-raw-wrapped.js" />
+			<arg value="--strip-Source" />
+		</exec>
+
+		<echo message="Merging into: ${temp.languages.dir}/aui-raw.css" level="info"/>
+		<concat destfile="${temp.languages.dir}/aui-raw.css" fixlastline="yes">
+			<fileset dir="${source.aui.dir}/themes/default/">
+				<include name="*.css"/>
+			</fileset>
+		</concat>
+
+		<echo message="Wrapping into: ${temp.languages.dir}/aui.css" level="info"/>
+		<exec executable="${executable.php}" failonerror="true">
+			<arg value="resources/compiler/css.php" />
+			<arg value="${temp.languages.dir}/aui-raw.css" />
+			<arg value="${temp.languages.dir}/aui.css" />
+			<arg value="--obfuscate" />
+		</exec>
+
+		<!-- package -->
+		<mkdir dir="${target.aui.dir}" />
+		<concat destfile="${target.aui.dir}/aui.js" fixlastline="yes">
+			<fileset file="${copying.js}" />
+			<fileset file="${temp.languages.dir}/aui-raw-wrapped.js" />
+		</concat>
+
+		<echo message="Copying default theme to: ${target.aui.dir}/themes/default/" level="info"/>
+		<mkdir dir="${target.aui.dir}/themes/default/" />
+		<copy tofile="${target.aui.dir}/themes/default/style-raw.css" file="${temp.languages.dir}/aui-raw.css" />
+		<copy tofile="${target.aui.dir}/themes/default/style.css" file="${temp.languages.dir}/aui.css" />
+		<copy todir="${target.aui.dir}/themes/default/">
+			<fileset dir="${source.aui.dir}/themes/default/">
 				<include name="media/**"/>
 			</fileset>
 		</copy>
@@ -440,11 +438,13 @@
 
 		<echo message="Merging into: ${temp.languages.dir}/xul-raw.js" level="info"/>
 		<concat destfile="${temp.languages.dir}/xul-raw.js" fixlastline="yes">
-			<fileset file="${source.xul.dir}/xul.js" />
 			<fileset dir="${source.xul.dir}/classes/">
 				<include name="*.js" />
 			</fileset>
 			<fileset dir="${source.xul.dir}/managers/">
+				<include name="*.js" />
+			</fileset>
+			<fileset dir="${source.xul.dir}/locale/">
 				<include name="*.js" />
 			</fileset>
 			<fileset dir="${source.xul.dir}/elements/">
@@ -460,18 +460,18 @@
 			<arg value="--strip-Source" />
 		</exec>
 
-		<echo message="Merging into: ${temp.languages.dir}/xul.css" level="info"/>
-		<concat destfile="${temp.languages.dir}/xul.css" fixlastline="yes">
+		<echo message="Merging into: ${temp.languages.dir}/xul-raw.css" level="info"/>
+		<concat destfile="${temp.languages.dir}/xul-raw.css" fixlastline="yes">
 			<fileset dir="${source.xul.dir}/themes/default/">
 				<include name="*.css"/>
 			</fileset>
 		</concat>
 
-		<echo message="Wrapping into: ${temp.languages.dir}/xul-pre.css" level="info"/>
+		<echo message="Wrapping into: ${temp.languages.dir}/xul.css" level="info"/>
 		<exec executable="${executable.php}" failonerror="true">
 			<arg value="resources/compiler/css.php" />
+			<arg value="${temp.languages.dir}/xul-raw.css" />
 			<arg value="${temp.languages.dir}/xul.css" />
-			<arg value="${temp.languages.dir}/xul-pre.css" />
 			<arg value="--obfuscate" />
 		</exec>
 
@@ -481,11 +481,12 @@
 			<fileset file="${copying.js}" />
 			<fileset file="${temp.languages.dir}/xul-raw-wrapped.js" />
 		</concat>
+
 		<echo message="Copying default theme to: ${target.xul.dir}/themes/default/" level="info"/>
 		<mkdir dir="${target.xul.dir}/themes/default/" />
+		<copy tofile="${target.xul.dir}/themes/default/style-raw.css" file="${temp.languages.dir}/xul-raw.css" />
+		<copy tofile="${target.xul.dir}/themes/default/style.css" file="${temp.languages.dir}/xul.css" />
 		<copy todir="${target.xul.dir}/themes/default/">
-			<fileset file="${temp.languages.dir}/xul.css" />
-			<fileset file="${temp.languages.dir}/xul-pre.css" />
 			<fileset dir="${source.xul.dir}/themes/default/">
 				<include name="media/**"/>
 			</fileset>
@@ -521,19 +522,6 @@
 			<fileset file="${copying.js}" />
 			<fileset file="${temp.languages.dir}/mobile-raw-wrapped.js" />
 		</concat>
-
-		<echo message="Copying default theme to: ${target.mobile.dir}/themes/default/" level="info"/>
-		<mkdir dir="${target.mobile.dir}/themes/default/" />
-		<concat destfile="${target.mobile.dir}/themes/default/mobile.css" fixlastline="yes">
-			<fileset dir="${source.mobile.dir}/themes/default/">
-				<include name="*.css"/>
-			</fileset>
-		</concat>
-		<copy todir="${target.mobile.dir}/themes/default/">
-			<fileset dir="${source.mobile.dir}/themes/default/">
-				<include name="media/**"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="BUILD_AMPLE_LANGUAGES_SVG" unless="skip.ample.languages.svg">
@@ -542,7 +530,6 @@
 
 		<echo message="Merging into: ${temp.languages.dir}/svg-raw.js" level="info"/>
 		<concat destfile="${temp.languages.dir}/svg-raw.js" fixlastline="yes">
-			<fileset file="${source.svg.dir}/svg.js" />
 			<fileset dir="${source.svg.dir}/classes/">
 				<include name="*.js" />
 			</fileset>
@@ -564,6 +551,66 @@
 		<concat destfile="${target.svg.dir}/svg.js" fixlastline="yes">
 			<fileset file="${copying.js}" />
 			<fileset file="${temp.languages.dir}/svg-raw-wrapped.js" />
+		</concat>
+	</target>
+
+	<target name="BUILD_AMPLE_LANGUAGES_XFORMS" unless="skip.ample.languages.xforms">
+		<property name="source.xforms.dir" value="${source.languages.dir}/xforms/" />
+		<property name="target.xforms.dir" value="${target.languages.dir}/xforms/" />
+
+		<echo message="Merging into: ${temp.languages.dir}/xforms-raw.js" level="info"/>
+		<concat destfile="${temp.languages.dir}/xforms-raw.js" fixlastline="yes">
+			<fileset dir="${source.xforms.dir}/classes/">
+				<include name="*.js" />
+			</fileset>
+			<fileset dir="${source.xforms.dir}/elements/">
+				<include name="*.js" />
+			</fileset>
+		</concat>
+
+		<echo message="Wrapping into: ${temp.languages.dir}/xforms-raw-wrapped.js" level="info"/>
+		<exec executable="${executable.php}" failonerror="true">
+			<arg value="resources/compiler/js.php" />
+			<arg value="${temp.languages.dir}/xforms-raw.js" />
+			<arg value="${temp.languages.dir}/xforms-raw-wrapped.js" />
+			<arg value="--strip-Source" />
+		</exec>
+
+		<!-- package -->
+		<mkdir dir="${target.xforms.dir}" />
+		<concat destfile="${target.xforms.dir}/xforms.js" fixlastline="yes">
+			<fileset file="${copying.js}" />
+			<fileset file="${temp.languages.dir}/xforms-raw-wrapped.js" />
+		</concat>
+	</target>
+
+	<target name="BUILD_AMPLE_LANGUAGES_XMLSCHEMA" unless="skip.ample.languages.xmlschema">
+		<property name="source.xmlschema.dir" value="${source.languages.dir}/xmlschema/" />
+		<property name="target.xmlschema.dir" value="${target.languages.dir}/xmlschema/" />
+
+		<echo message="Merging into: ${temp.languages.dir}/xmlschema-raw.js" level="info"/>
+		<concat destfile="${temp.languages.dir}/xmlschema-raw.js" fixlastline="yes">
+			<fileset dir="${source.xmlschema.dir}/classes/">
+				<include name="*.js" />
+			</fileset>
+			<fileset dir="${source.xmlschema.dir}/elements/">
+				<include name="*.js" />
+			</fileset>
+		</concat>
+
+		<echo message="Wrapping into: ${temp.languages.dir}/xmlschema-raw-wrapped.js" level="info"/>
+		<exec executable="${executable.php}" failonerror="true">
+			<arg value="resources/compiler/js.php" />
+			<arg value="${temp.languages.dir}/xmlschema-raw.js" />
+			<arg value="${temp.languages.dir}/xmlschema-raw-wrapped.js" />
+			<arg value="--strip-Source" />
+		</exec>
+
+		<!-- package -->
+		<mkdir dir="${target.xmlschema.dir}" />
+		<concat destfile="${target.xmlschema.dir}/xmlschema.js" fixlastline="yes">
+			<fileset file="${copying.js}" />
+			<fileset file="${temp.languages.dir}/xmlschema-raw-wrapped.js" />
 		</concat>
 	</target>
 
@@ -590,18 +637,18 @@
 			<arg value="--strip-Source" />
 		</exec>
 
-		<echo message="Merging into: ${temp.languages.dir}/chart.css" level="info"/>
-		<concat destfile="${temp.languages.dir}/chart.css" fixlastline="yes">
+		<echo message="Merging into: ${temp.languages.dir}/chart-raw.css" level="info"/>
+		<concat destfile="${temp.languages.dir}/chart-raw.css" fixlastline="yes">
 			<fileset dir="${source.chart.dir}/themes/default/">
 				<include name="*.css"/>
 			</fileset>
 		</concat>
 
-		<echo message="Wrapping into: ${temp.languages.dir}/chart-pre.css" level="info"/>
+		<echo message="Wrapping into: ${temp.languages.dir}/chart.css" level="info"/>
 		<exec executable="${executable.php}" failonerror="true">
 			<arg value="resources/compiler/css.php" />
+			<arg value="${temp.languages.dir}/chart-raw.css" />
 			<arg value="${temp.languages.dir}/chart.css" />
-			<arg value="${temp.languages.dir}/chart-pre.css" />
 			<arg value="--obfuscate" />
 		</exec>
 
@@ -613,15 +660,52 @@
 		</concat>
 		<echo message="Copying default theme to: ${target.chart.dir}/themes/default/" level="info"/>
 		<mkdir dir="${target.chart.dir}/themes/default/" />
+		<copy tofile="${target.chart.dir}/themes/default/style-raw.css" file="${temp.languages.dir}/chart-raw.css" />
+		<copy tofile="${target.chart.dir}/themes/default/style.css" file="${temp.languages.dir}/chart.css" />
 		<copy todir="${target.chart.dir}/themes/default/">
-			<fileset file="${temp.languages.dir}/chart.css" />
-			<fileset file="${temp.languages.dir}/chart-pre.css" />
 			<fileset dir="${source.chart.dir}/themes/default/">
 				<include name="media/**"/>
 			</fileset>
 		</copy>
 	</target>
 
+	<target name="BUILD_AMPLE_PLUGINS" unless="skip.ample.plugins">
+		<property name="source.ample.plugins.dir" value="${source.dir}/ample/plugins/" />
+		<property name="target.ample.plugins.dir" value="${target.dir}/ample/plugins/" />
+		<property name="temp.ample.plugins.dir" value="${temp.dir}/plugins/" />
+
+		<mkdir dir="${temp.ample.plugins.dir}" />
+		<mkdir dir="${target.ample.plugins.dir}" />
+
+		<antcall target="BUILD_AMPLE_PLUGINS_COOKIE" />
+		<antcall target="BUILD_AMPLE_PLUGINS_FORM" />
+		<antcall target="BUILD_AMPLE_PLUGINS_GLOB" />
+		<antcall target="BUILD_AMPLE_PLUGINS_STORAGE" />
+		<antcall target="BUILD_AMPLE_PLUGINS_TMPL" />
+
+		<!-- clean up temp dir -->
+		<delete dir="${temp.ample.plugins.dir}" />
+	</target>
+
+	<target name="BUILD_AMPLE_PLUGINS_COOKIE" unless="skip.ample.plugins.cookie">
+
+	</target>
+
+	<target name="BUILD_AMPLE_PLUGINS_FORM" unless="skip.ample.plugins.form">
+
+	</target>
+
+	<target name="BUILD_AMPLE_PLUGINS_GLOB" unless="skip.ample.plugins.glob">
+
+	</target>
+
+	<target name="BUILD_AMPLE_PLUGINS_STORAGE" unless="skip.ample.plugins.storage">
+
+	</target>
+
+	<target name="BUILD_AMPLE_PLUGINS_TMPL" unless="skip.ample.plugins.tmpl">
+
+	</target>
 
 	<!-- Examples -->
 	<target name="BUILD_EXAMPLES" unless="skip.examples">

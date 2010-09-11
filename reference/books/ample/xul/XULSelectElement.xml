@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<object name="XULSelectElement" extends="xul:XULElement">
+<class name="XULSelectElement" extends="xul:XULElement">
 	<abstract>
 		<locale>
 			Represents base functionality for selection elements.
@@ -247,7 +247,7 @@
 			</attribute>
 		</attributes>
 		<events>
-			<event name="select" group="Event" cancelable="false" bubbles="true">
+			<event name="select" type="Event" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						Fires when selection changes.
@@ -268,4 +268,4 @@
 			</pseudoclass>
 		</pseudoclasses>
 	</members>
-</object>
+</class>

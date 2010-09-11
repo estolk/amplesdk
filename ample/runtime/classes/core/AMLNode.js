@@ -56,6 +56,16 @@ cAMLNode.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC	= 32;
 // Private Properties
 cAMLNode.prototype.$listeners	= null;
 
+function fAMLNode_getTextContent(oNode) {
+	for (var nIndex = 0, aText = [], oChild; oChild = oNode.childNodes[nIndex]; nIndex++)
+		if (oChild.nodeType == cAMLNode.TEXT_NODE || oChild.nodeType == cAMLNode.CDATA_SECTION_NODE)
+			aText.push(oChild.data);
+		else
+		if (oChild.nodeType == cAMLNode.ELEMENT_NODE && oChild.firstChild)
+			aText.push(fAMLNode_getTextContent(oChild));
+	return aText.join('');
+};
+
 // nsIDOMNode
 function fAMLNode_appendChild(oParent, oNode)
 {
@@ -73,10 +83,11 @@ function fAMLNode_appendChild(oParent, oNode)
 	// Set DOM properties
     oNode.parentNode	= oParent;
 
-    if (oParent.lastChild)
+    var oLast	= oParent.lastChild;
+    if (oLast)
     {
-        oNode.previousSibling	= oParent.lastChild;
-        oParent.lastChild.nextSibling	= oNode;
+        oNode.previousSibling	= oLast;
+        oLast.nextSibling	= oNode;
     }
     else
     	oParent.firstChild	= oNode;
@@ -95,15 +106,26 @@ function fAMLNode_appendChild(oParent, oNode)
 cAMLNode.prototype.appendChild	= function(oNode)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["node",	cAMLNode]
 	]);
+
+	// Additional check: do not allow adding document nodes as children
+	if (oNode.nodeType == cAMLNode.DOCUMENT_NODE)
+		throw new cAMLException(cAMLException.HIERARCHY_REQUEST_ERR);
+
+	// Additional check: if document has documentElement already, no other children can be added
+	if (this.nodeType == cAMLNode.DOCUMENT_NODE && this.lastChild && this.lastChild.nodeType == cAMLNode.ELEMENT_NODE)
+		throw new cAMLException(cAMLException.HIERARCHY_REQUEST_ERR);
 
 	return fAMLNode_appendChild(this, oNode);
 };
 
 function fAMLNode_insertBefore(oParent, oNode, oBefore)
 {
+	// Save index
+	var nIndex	= oParent.childNodes.$indexOf(oBefore);
+
 	// Remove element from previous location
 	if (oNode.parentNode) {
 		// Fire Mutation event
@@ -118,10 +140,11 @@ function fAMLNode_insertBefore(oParent, oNode, oBefore)
 	// Set DOM properties
     oNode.parentNode	= oParent;
 
-	if (oBefore.previousSibling)
+    var oPrevious	= oBefore.previousSibling;
+	if (oPrevious)
 	{
-		oNode.previousSibling	= oBefore.previousSibling;
-		oBefore.previousSibling.nextSibling	= oNode;
+		oNode.previousSibling	= oPrevious;
+		oPrevious.nextSibling	= oNode;
 	}
 	else
 		oParent.firstChild	= oNode;
@@ -129,7 +152,7 @@ function fAMLNode_insertBefore(oParent, oNode, oBefore)
 	oNode.nextSibling	= oBefore;
 	oBefore.previousSibling	= oNode;
 
-	oParent.childNodes.$add(oNode, oParent.childNodes.$indexOf(oBefore));
+	oParent.childNodes.$add(oNode, nIndex);
 
 	// Fire Mutation event
     var oEvent = new cAMLMutationEvent;
@@ -142,10 +165,18 @@ function fAMLNode_insertBefore(oParent, oNode, oBefore)
 cAMLNode.prototype.insertBefore	= function(oNode, oBefore)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["node",	cAMLNode],
 		["before",	cAMLNode, false, true]
 	]);
+
+	// Additional check: do not allow adding document nodes as children
+	if (oNode.nodeType == cAMLNode.DOCUMENT_NODE)
+		throw new cAMLException(cAMLException.HIERARCHY_REQUEST_ERR);
+
+	// Additional check: if document has documentElement already, no other children can be added
+	if (this.nodeType == cAMLNode.DOCUMENT_NODE && this.lastChild && this.lastChild.nodeType == cAMLNode.ELEMENT_NODE)
+		throw new cAMLException(cAMLException.HIERARCHY_REQUEST_ERR);
 
 	if (oBefore) {
 		if (this.childNodes.$indexOf(oBefore) !=-1)
@@ -159,15 +190,18 @@ cAMLNode.prototype.insertBefore	= function(oNode, oBefore)
 
 function fAMLNode_removeChild(oParent, oNode)
 {
-	if (oNode.nextSibling)
-		oNode.nextSibling.previousSibling	= oNode.previousSibling;
-	else
-		oParent.lastChild	= oNode.previousSibling;
+	var oNext		= oNode.nextSibling,
+		oPrevious	= oNode.previousSibling;
 
-	if (oNode.previousSibling)
-		oNode.previousSibling.nextSibling	= oNode.nextSibling;
+	if (oNext)
+		oNext.previousSibling	= oPrevious;
 	else
-		oParent.firstChild	= oNode.nextSibling;
+		oParent.lastChild	= oPrevious;
+
+	if (oPrevious)
+		oPrevious.nextSibling	= oNext;
+	else
+		oParent.firstChild	= oNext;
 
 	// Reset DOM properties
     oNode.parentNode  		= null;
@@ -180,7 +214,7 @@ function fAMLNode_removeChild(oParent, oNode)
 cAMLNode.prototype.removeChild	= function(oNode)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["node",	cAMLNode]
 	]);
 
@@ -199,7 +233,7 @@ function fAMLNode_replaceChild(oParent, oNode, oOld)
 cAMLNode.prototype.replaceChild	= function(oNode, oOld)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["node",	cAMLNode],
 		["old",		cAMLNode, false, true]
 	]);
@@ -210,9 +244,47 @@ cAMLNode.prototype.replaceChild	= function(oNode, oOld)
     	throw new cAMLException(cAMLException.NOT_FOUND_ERR);
 };
 
+function fAMLNode_cloneNode(oNode, bDeep)
+{
+	var oClone;
+	switch (oNode.nodeType) {
+		case cAMLNode.ELEMENT_NODE:
+			// Create Element
+			oClone	= fAMLDocument_createElementNS(oNode.ownerDocument, oNode.namespaceURI, oNode.nodeName);
+
+			// Copy Attributes
+			for (var sName in oNode.attributes)
+				if (oNode.attributes.hasOwnProperty(sName))
+					oClone.attributes[sName]	= oNode.attributes[sName];
+
+			// Append Children
+			if (bDeep)
+				for (var nIndex = 0; nIndex < oNode.childNodes.length; nIndex++)
+					fAMLNode_appendChild(oClone, fAMLNode_cloneNode(oNode.childNodes[nIndex], bDeep));
+			break;
+
+		case cAMLNode.TEXT_NODE:
+			oClone	= fAMLDocument_createTextNode(oNode.ownerDocument, oNode.data);
+			break;
+
+		case cAMLNode.CDATA_SECTION_NODE:
+			oClone	= fAMLDocument_createCDATASection(oNode.ownerDocument, oNode.data);
+			break;
+
+		default:
+			throw new cAMLException(cAMLException.NOT_SUPPORTED_ERR);
+	}
+	return oClone;
+};
+
 cAMLNode.prototype.cloneNode	= function(bDeep)
 {
-	throw new cAMLException(cAMLException.NOT_SUPPORTED_ERR);
+	// Validate arguments
+	fGuard(arguments, [
+		["deep",	cBoolean]
+	]);
+
+	return fAMLNode_cloneNode(this, bDeep);
 };
 
 // nsIDOM3Node
@@ -265,7 +337,7 @@ function fAMLNode_lookupPrefix(oNode, sNameSpaceURI)
 cAMLNode.prototype.lookupPrefix	= function(sNameSpaceURI)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["namespaceURI",	cString, false, true]
 	]);
 
@@ -299,7 +371,7 @@ function fAMLNode_lookupNamespaceURI(oNode, sPrefix)
 cAMLNode.prototype.lookupNamespaceURI	= function(sPrefix)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["prefix",	cString, false, true]
 	]);
 
@@ -342,7 +414,7 @@ function fAMLNode_compareDocumentPosition(oNode, oChild)
 cAMLNode.prototype.compareDocumentPosition	= function(oChild)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["node",	cAMLNode]
 	]);
 
@@ -460,9 +532,9 @@ function fAMLEventTarget_addEventListener(oNode, sEventType, fListener, bUseCapt
 cAMLNode.prototype.addEventListener		= function(sEventType, fListener, bUseCapture)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["eventType",	cString],
-		["listener",	cFunction],
+		["listener",	cObject],
 		["useCapture",	cBoolean,	true]
 	]);
 
@@ -485,9 +557,9 @@ function fAMLEventTarget_removeEventListener(oNode, sEventType, fListener, bUseC
 cAMLNode.prototype.removeEventListener	= function(sEventType, fListener, bUseCapture)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["eventType",	cString],
-		["listener",	cFunction],
+		["listener",	cObject],
 		["useCapture",	cBoolean,	true]
 	]);
 
@@ -501,7 +573,7 @@ function fAMLNode_executeHandler(oNode, fHandler, oEvent) {
 	}
 	catch (oException) {
 		if (oException instanceof cAMLException) {
-			var	oErrorHandler	= oAMLConfiguration_values["error-handler"];
+			var oErrorHandler	= oAMLConfiguration_values["error-handler"];
 			if (oErrorHandler)
 				oErrorHandler.handleError(new cAMLError(oException.message, cAMLError.SEVERITY_ERROR, oException));
 		}
@@ -516,24 +588,30 @@ function fAMLNode_handleEvent(oNode, oEvent) {
 
 	// Notify listeners
     if (oNode.$listeners && oNode.$listeners[oEvent.type])
-    	for (var nIndex = 0, aListeners = oNode.$listeners[oEvent.type]; nIndex < aListeners.length && !oEvent._stoppedImmediately; nIndex++)
-    		if (oEvent.eventPhase == cAMLEvent.AT_TARGET || aListeners[nIndex][1] == (oEvent.eventPhase == cAMLEvent.CAPTURING_PHASE))
-    			fAMLNode_executeHandler(oNode, aListeners[nIndex][0], oEvent);
+    	for (var nIndex = 0, aListeners = oNode.$listeners[oEvent.type], fListener; nIndex < aListeners.length && !oEvent._stoppedImmediately; nIndex++)
+    		if (oEvent.eventPhase == cAMLEvent.AT_TARGET || aListeners[nIndex][1] == (oEvent.eventPhase == cAMLEvent.CAPTURING_PHASE)) {
+    			if (typeof(fListener = aListeners[nIndex][0]) == "function")
+    				fAMLNode_executeHandler(oNode, aListeners[nIndex][0], oEvent);
+    			else
+    			if (typeof fListener.handleEvent == "function")
+    				fAMLNode_executeHandler(fListener, fListener.handleEvent, oEvent);
+    			else
+    				throw new cAMLException(cAMLException.AML_MEMBER_MISSING_ERR, null, ["handleEvent"]);
+    		}
 
-	var oNamespace,
-		cElement,
+	var cElement,
 		cAttribute;
 
 	// Event default actions implementation
 	if (oEvent.eventPhase != cAMLEvent.CAPTURING_PHASE && !oEvent.defaultPrevented) {
 		if (oNode.nodeType == 1) {
-			if ((oNamespace = oAML_namespaces[oNode.namespaceURI]) && (cElement = oNamespace.elements[oNode.localName]))
+			if (cElement = oAMLImplementation_elements[oNode.namespaceURI + '#' + oNode.localName])
 				if (cElement.handlers && cElement.handlers[oEvent.type])
 					cElement.handlers[oEvent.type].call(oNode, oEvent);
 		}
 		else
 		if (oNode.nodeType == 2) {
-			if ((oNamespace = oAML_namespaces[oNode.namespaceURI]) && (cAttribute = oNamespace.attributes[oNode.localName]))
+			if (cAttribute = oAMLImplementation_attributes[oNode.namespaceURI + '#' + oNode.localName])
 				if (cAttribute.handlers && cAttribute.handlers[oEvent.type])
 					cAttribute.handlers[oEvent.type].call(oNode, oEvent);
 		}
@@ -645,7 +723,7 @@ function fAMLNode_dispatchEvent(oNode, oEvent)
 cAMLNode.prototype.dispatchEvent	= function(oEvent)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["event",	cAMLEvent]
 	]);
 
@@ -700,7 +778,7 @@ cAMLNode.prototype.selectNodes	= function(sXPath)
 		switch (oNode.nodeType)
 		{
 			case cAMLNode.ELEMENT_NODE:
-				aNodeList.$add(oAML_all[oNode.getAttribute('_')]);
+				aNodeList.$add(oAMLDocument_all[oNode.getAttribute('_')]);
 				break;
 
 			case cAMLNode.ATTRIBUTE_NODE:
@@ -752,7 +830,7 @@ function fAMLNode_toXML(oNode)
 			oAttributes	= oNode.attributes;
 			for (sName in oAttributes)
 				if (oAttributes.hasOwnProperty(sName))
-					aHtml.push(' ' + sName + '=' + '"' + fAML_encodeEntities(oAttributes[sName]) + '"');
+					aHtml.push(' ' + sName + '=' + '"' + fUtilities_encodeEntities(oAttributes[sName]) + '"');
 //			aHtml.push(' ' + '_' + '=' + '"' + oNode.uniqueID + '"');
 			if (oNode.hasChildNodes()) {
 				aHtml.push('>');

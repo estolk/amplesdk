@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<head>
 		<title>XUL Language - elements</title>
 		<script type="text/javascript" src="../../../ample/runtime.js"></script>
+		<script type="text/javascript" src="../../../ample/languages/xhtml/xhtml.js"></script>
 		<script type="text/javascript" src="../../../ample/languages/xul/xul.js"></script>
-		<link type="text/ample+css" href="../../../ample/languages/xul/themes/default/xul.css" rel="ample-stylesheet"/>
+		<link type="text/css" href="../../../ample/languages/xul/themes/default/style.css" rel="stylesheet"/>
 		<style type="text/aaa+css">
 			body, input, select, button {
 				font-size: 75%;
@@ -216,11 +217,6 @@
 		<xul:timepicker /><xul:timepicker /><xul:timepicker disabled="true"/>
 		<script>ample.close()</script>
 
-		<h3>Spinbuttons</h3>
-		<script>ample.open()</script>
-		<xul:spinbuttons /><xul:spinbuttons value="5"/><xul:spinbuttons disabled="true" value="2"/>
-		<script>ample.close()</script>
-
 		<h3>Textbox</h3>
 		<script>ample.open()</script>
 		<xul:textbox placeholder="Enter some text here"/><xul:textbox value="some text" /><xul:textbox value="some text" disabled="true"/>
@@ -231,20 +227,35 @@
 		<xul:textbox multiline="true" placeholder="Enter some text here"/><xul:textbox multiline="true" value="some text"/><xul:textbox multiline="true" value="some text" disabled="true"/>
 		<script>ample.close()</script>
 
+		<h3>Textbox type="number"</h3>
+		<script>ample.open()</script>
+		<xul:textbox type="number"/><xul:textbox type="number" value="0" /><xul:textbox type="number" value="0" disabled="true"/>
+		<script>ample.close()</script>
+
+		<h3>Textbox type="search"</h3>
+		<script>ample.open()</script>
+		<xul:textbox type="search" placeholder="Type to search"/><xul:textbox type="search" /><xul:textbox type="search" disabled="true"/>
+		<script>ample.close()</script>
+
 		<h3>Scale</h3>
 		<script>ample.open()</script>
-		<xul:scale /><xul:scale value="5"/><xul:scale disabled="true" value="9"/>
+		<xul:scale /><xul:scale value="0,100"/><xul:scale disabled="true" value="75"/><br />
+		<xul:scale orient="vertical"/><xul:scale value="0,100" orient="vertical"/><xul:scale orient="vertical" disabled="true" value="75"/>
 		<script>ample.close()</script>
 
 		<h3>Checkbox</h3>
 		<script>ample.open()</script>
-		<xul:checkbox label="label 0"/><xul:checkbox label="label 1" checked="true"/><xul:checkbox label="label 2" disabled="true"/>
+		<xul:checkbox label="label 0"/><xul:checkbox label="label 1" checked="true"/><xul:checkbox label="label 2" disabled="true"/><xul:checkbox label="label 3" checked="true" disabled="true"/>
 		<script>ample.close()</script>
 
 		<h3>Radio buttons</h3>
 		<script>ample.open()</script>
 		<xul:radiogroup orient="horizontal">
-		<xul:radio label="label 0" /><xul:radio label="label 1" selected="true"/><xul:radio label="label 2" disabled="true"/>
+		<xul:radio label="label 0" /><xul:radio label="label 1" selected="true"/><xul:radio label="label 2" disabled="true"/><xul:radio label="label 3" disabled="true"/>
+		</xul:radiogroup>
+		<xul:radiogroup orient="horizontal" disabled="true">
+		<xul:radio label="label 0" />
+		<xul:radio label="label 1" selected="true"/>
 		</xul:radiogroup>
 		<script>ample.close()</script>
 
@@ -509,8 +520,10 @@
 
 		<h3>Editor</h3>
 		<script>ample.open()</script>
-		<xul:editor><![CDATA[Text <i>in italic</i> and <b>in bold</b> put in CDATA]]></xul:editor>
+		<xul:editor id="editor"><![CDATA[Text <i>in italic</i> and <b>in bold</b> put in CDATA]]></xul:editor>
 		<xul:editor disabled="true"><![CDATA[Text <i>in italic</i> and <b>in bold</b> put in CDATA]]></xul:editor>
+		<br />
+		<xul:checkbox onchange="ample.getElementById('editor').setAttribute('disabled', this.getAttribute('checked'))" label="disable"/>
 		<script>ample.close()</script>
 
 		<h3>Groupbox + Grid</h3>

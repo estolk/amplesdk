@@ -8,11 +8,15 @@
  */
 
 var cXULElement_textbox	= function(){};
-cXULElement_textbox.prototype	= new cXULInputElement;
+cXULElement_textbox.prototype	= new cXULInputElement("textbox");
 
 // Attributes Defaults
-cXULElement_textbox.attributes	= {};
-cXULElement_textbox.attributes.value	= "";
+cXULElement_textbox.attributes	= {
+	"min":		"0",
+	"max":		"Infinity",
+	"increment":"1",
+	"value":	""
+};
 
 // Class Events Handlers
 cXULElement_textbox.handlers	= {
@@ -27,6 +31,12 @@ cXULElement_textbox.handlers	= {
 		if (!this.$getContainer("input").value)
 			this.$getContainer("placeholder").style.display	= "";
 	},
+	"keydown":	function(oEvent) {
+		if (this.attributes["type"] == "number") {
+			if (oEvent.keyIdentifier == "Up" || oEvent.keyIdentifier == "Down")
+				this.spinButtons.spin(oEvent.keyIdentifier == "Up");
+		}
+	},
 	"keyup":	function(oEvent) {
     	this.attributes["value"]	= this.$getContainer("input").value;
 	},
@@ -34,12 +44,15 @@ cXULElement_textbox.handlers	= {
 		if (oEvent.target == this) {
 			switch (oEvent.attrName) {
 				case "value":
+					this.$getContainer("placeholder").style.display	= oEvent.newValue ? "none" : '';
 					this.$getContainer("input").value    = oEvent.newValue || '';
 					break;
 
 				case "disabled":
 					this.$setPseudoClass("disabled", oEvent.newValue == "true");
 					this.$getContainer("input").disabled = oEvent.newValue == "true";
+					if (this.attributes["type"] == "number")
+						this.spinButtons.setAttribute("disabled", oEvent.newValue);
 					break;
 
 				case "readonly":
@@ -71,6 +84,27 @@ cXULElement_textbox.handlers	= {
 					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 			}
 		}
+	},
+	"DOMNodeInserted":	function(oEvent) {
+		if (oEvent.target == this) {
+			this.spinButtons	= this.ownerDocument.createElementNS(this.namespaceURI, "xul:spinbuttons");
+			this.spinButtons.setAttribute("disabled", this.$isAccessible() ? "false" : "true");
+			var that	= this;
+			this.spinButtons.addEventListener("spin", function(oEvent) {
+				var nValue	=(that.getAttribute("value") * 1 || 0) + (oEvent.detail ? 1 :-1);
+				if (nValue >= that.getAttribute("min") * 1 && nValue <= that.getAttribute("max") * 1) {
+					that.setAttribute("value", nValue);
+					cXULInputElement.dispatchChange(this);
+				}
+			}, false);
+			this.$appendChildAnonymous(this.spinButtons);
+		}
+	},
+	"DOMNodeRemoved":	function(oEvent) {
+		if (oEvent.target == this) {
+			this.$removeChildAnonymous(this.spinButtons);
+			this.spinButtons	= null;
+		}
 	}
 };
 
@@ -82,29 +116,30 @@ cXULElement_textbox.prototype._onChange  = function(oEvent) {
 // Element Render: open
 cXULElement_textbox.prototype.$getTagOpen	= function(oElement) {
 	var bMultiline	= this.attributes["multiline"] == "true";
-    return	'<div class="xul-textbox' + (bMultiline ? ' xul-textbox-multiline-true' : '') + (this.attributes["disabled"] == "true" ? " xul-textbox_disabled" : '')+ '" style="'+
+    return	'<div class="xul-textbox' + (bMultiline ? ' xul-textbox-multiline-true' : '') + " xul-textbox-type-" + (this.attributes["type"] || '') + (!this.$isAccessible() ? " xul-textbox_disabled" : '')+ '" style="'+
 				(this.attributes["height"] ? 'height:' + this.attributes["height"] + ';' : '')+
 				(this.attributes["width"] ? 'width:' + this.attributes["width"] + ';' : '')+
 				(this.attributes["style"] ? this.attributes["style"] : '')+'">\
 				<div class="xul-textbox--placeholder" style="position:absolute;' + (this.getAttribute("value") == '' ? '' : 'display:none')+ '" onmousedown="var o = ample.$instance(this); setTimeout(function(){o.$getContainer(\'input\').focus();o.$getContainer(\'input\').select()}, 0)">' + this.getAttribute("placeholder") + '</div>\
 				<div class="xul-textbox--field">\
+					' + (this.attributes["type"] == "number" ? this.spinButtons.$getTag() : this.attributes["type"] == "search" ? '<div class="xul-textbox--button" onmousedown="return false"></div>' : '')+ '\
 					<' +
 					(bMultiline
 						?("textarea" + (this.attributes["rows"] ? ' rows="' + this.attributes["rows"] + '"' : '')+(this.attributes["cols"] ? ' cols="' + this.attributes["cols"] + '"' : ''))
 						: this.attributes["type"] == "password"
 							? 'input type="password"'
 							: 'input type="text"')+
-						' class="xul-textbox--input" name="' + this.attributes["name"] + '" autocomplete="off" style="width:100%;' + (bMultiline ? 'height:100%;' : '') + 'margin:0;border:0px solid white;"'+
+						' class="xul-textbox--input" name="' + this.attributes["name"] + '" autocomplete="off" style="width:100%;' + (bMultiline ? 'height:100%;' : '') + 'border:0px solid white;"'+
 						' onblur="ample.$instance(this)._onChange(event)" onselectstart="event.cancelBubble=true;"'+
-						(this.attributes["disabled"] == "true" ? ' disabled="true"' : '')+
+						(!this.$isAccessible() ? ' disabled="true"' : '')+
 						(this.attributes["readonly"] == "true" ? ' readonly="true"' : '')+
 						(this.hasAttribute("maxlength") ? ' maxlength="' + this.getAttribute("maxlength") + '"' : '')+
 					(bMultiline
 						? '>' + this.attributes["value"] + '</textarea>'
-						: ' value="' + this.attributes["value"] + '" />')+
-				'</div>\
+						: ' value="' + this.attributes["value"] + '" />')+ '\
+				</div>\
 			</div>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("textbox", cXULElement_textbox);
+// Register Element
+ample.extend(cXULElement_textbox);

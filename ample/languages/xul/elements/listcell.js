@@ -8,7 +8,7 @@
  */
 
 var cXULElement_listcell	= function(){};
-cXULElement_listcell.prototype	= new cXULElement;
+cXULElement_listcell.prototype	= new cXULElement("listcell");
 
 // Public Methods
 
@@ -16,7 +16,18 @@ cXULElement_listcell.prototype	= new cXULElement;
 cXULElement_listcell.handlers	= {
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this) {
-			this.$mapAttribute(oEvent.attrName, oEvent.newValue);
+			switch (oEvent.attrName)  {
+				case "label":
+			        this.$getContainer("gateway").innerHTML  =(this.attributes["src"] ? '<img src="' + this.attributes["src"] + '" align="absmiddle" /> ' :'') + (oEvent.newValue || '');
+					break;
+
+				case "src":
+			        this.$getContainer("gateway").innerHTML  =(oEvent.newValue ? '<img src="' + oEvent.newValue + '" align="absmiddle" /> ' :'') + (this.attributes["label"] || '');
+					break;
+
+				default:
+					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
+			}
 		}
 	},
 	"DOMNodeInsertedIntoDocument":	function(oEvent) {
@@ -27,12 +38,13 @@ cXULElement_listcell.handlers	= {
 		if (this.parentNode instanceof cXULElement_listitem)
 			this.parentNode.cells.$remove(oEvent.target);
 	}
-}
+};
 
 // Element Render: open
 cXULElement_listcell.prototype.$getTagOpen	= function()
 {
-    var sHtml   = '<td class="xul-listcell"><div class="xul-listcell--gateway">';
+	var oHeader	= this.parentNode.parentNode.parentNode.firstChild.childNodes[this.parentNode.childNodes.$indexOf(this)];
+    var sHtml   = '<td class="xul-listcell"' + (oHeader && oHeader.attributes["hidden"] == "true" ? ' style="display:none;"' : '') + '><div class="xul-listcell--box" style="position:relative;width:100%;"><div class="xul-listcell--label xul-listcell--gateway" style="position:absolute;width:100%;overflow:hidden;">';
     if (this.attributes["image"])
         sHtml  += '<img src="' + this.attributes["image"] + '" align="absmiddle"/> ';
     if (this.attributes["label"])
@@ -44,8 +56,8 @@ cXULElement_listcell.prototype.$getTagOpen	= function()
 // Element Render: close
 cXULElement_listcell.prototype.$getTagClose	= function()
 {
-    return '</div></td>';
+    return '</div></div></td>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("listcell", cXULElement_listcell);
+// Register Element
+ample.extend(cXULElement_listcell);

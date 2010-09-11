@@ -11,7 +11,7 @@ var cXULElement_treecols	= function() {
     // Collections
     this.items  = new AMLNodeList;
 };
-cXULElement_treecols.prototype   = new cXULElement;
+cXULElement_treecols.prototype   = new cXULElement("treecols");
 
 // Public Methods
 cXULElement_treecols.$isAccessible	= function() {
@@ -45,7 +45,7 @@ cXULElement_treecols.prototype._onCommandClick   = function(oEvent) {
 // Class events handlers
 cXULElement_treecols.handlers	= {
 	"click":	function(oEvent) {
-		if (!this.$isAccessible())
+		if (!this.$isAccessible() || !this.parentNode.$isAccessible() || !this.parentNode.parentNode.$isAccessible())
 			return;
 
 		if (oEvent.button == 2 || (oEvent.button == 0 && oEvent.target == this && oEvent.$pseudoTarget == this.$getContainer("settings"))) {
@@ -89,14 +89,14 @@ cXULElement_treecols.handlers	= {
 // Element Render: open
 cXULElement_treecols.prototype.$getTagOpen	= function() {
     return '<tr' + (this.attributes["hidden"] == "true" ? ' style="display:none"' : '') + '>\
-				<td class="xul-treecols--container" valign="top" height="1">\
-					<div class="xul-treecol" style="float:right"><div class="xul-treecol--label"><div class="xul-treecols--settings"><br /></div></div></div>\
-					<div class="xul-treecols--area" style="height:18px;overflow:hidden;position:relative;">\
+				<td class="xul-treecols--container">\
+					<div class="xul-treecol" style="float:right;width:16px"><div class="xul-treecols--settings"><br /></div></div>\
+					<div class="xul-treecols--area" style="height:20px;overflow:hidden;position:relative;">\
 						<table cellpadding="0" cellspacing="0" border="0" width="100%" class="xul-treecols" style="position:absolute">\
-							<thead>\
-								<tr class="xul-treecols--gateway">' +
+							<tbody>\
+								<tr class="xul-treecols--gateway" style="height:1em;vertical-align:top">' +
     								(this.parentNode.attributes["type"] == "checkbox" || this.parentNode.attributes["type"] == "radio"
-    								? ('<td class="xul-treecol" width="20" align="center" style="width:20px;padding:0;">' +
+    								? ('<td class="xul-treecol" style="width:20px;padding:0;">' +
     										'<div>' +
 		    									(this.parentNode.attributes["type"] == "checkbox"
 		        								? '<input type="checkbox" name="' + this.parentNode.uniqueID + '_cmd" class="xul-treecol--command" onclick="return ample.$instance(this)._onCommandClick(event)" autocomplete="off" />'
@@ -111,13 +111,14 @@ cXULElement_treecols.prototype.$getTagOpen	= function() {
 
 // Element Render: close
 cXULElement_treecols.prototype.$getTagClose	= function() {
-	return 						'</tr>\
-							</thead>\
+	return 							'<td class="xul-treecol" width="100%"><br /></td>\
+								</tr>\
+							</tbody>\
 						</table>\
 					</div>\
 				</td>\
 			</tr>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("treecols", cXULElement_treecols);
+// Register Element
+ample.extend(cXULElement_treecols);

@@ -17,12 +17,13 @@ var cString		= window.String,
 	cDate		= window.Date,
 	cFunction	= window.Function,
 	cMath		= window.Math,
+	cArguments	= function(){},
 // Error Objects
 	cError		= window.Error,
 	cSyntaxError= window.SyntaxError,
 	cTypeError	= window.TypeError,
 //	Microsoft APIs
-	fActiveXObject	= window.ActiveXObject,
+	cActiveXObject	= window.ActiveXObject,
 //	XML APIs
 	cXMLHttpRequest	= window.XMLHttpRequest,
 	cDOMParser		= window.DOMParser,
@@ -43,7 +44,6 @@ var cString		= window.String,
 	fSetInterval	= window.setInterval,
 	fClearInterval	= window.clearInterval,
 //	misc
-	nNaN		= window.NaN,
 	fParseInt	= window.parseInt,
 	fParseFloat	= window.parseFloat,
 	fIsNaN		= window.isNaN,
@@ -53,5 +53,32 @@ var cString		= window.String,
 	oUALocation	= window.location,
 	oUADocument	= window.document,
 // constants
+	nNaN		= window.NaN,
 	nInfinity	= window.Infinity;
 
+// Browser detection code
+var bTrident	= false,
+	bGecko		= false,
+	bPresto		= false,
+	bWebKit		= false,
+/*	bKHTML		= false,*/
+	nVersion	= 0;
+
+if (!!oUADocument.namespaces) {
+	bTrident	= true;
+	nVersion	= oUANavigator.userAgent.match(/MSIE ([\d.]+)/)[1];
+}
+else
+if (!!window.controllers) {
+	bGecko		= true;
+//	nVersion	= fParseFloat(oUANavigator.userAgent.match(/rv:([\d.]+)/)[1]);
+}
+else
+if (!!window.opera) {
+	bPresto		= true;
+//	nVersion	= oUANavigator.userAgent.match(/Presto\/([\d.]+)/)[1];
+}
+else
+if (oUANavigator.userAgent.match(/AppleWebKit\/([\d.]+)/)[1]) {
+	bWebKit		= true;
+}

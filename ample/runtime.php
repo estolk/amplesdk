@@ -42,13 +42,16 @@
 	// Selectors API
 	$aFiles[]	= "runtime/classes/selectors/AMLNodeSelector.js";
 
-	// Extensions
 	// Animation
-	$aFiles[]	= "runtime/classes/animation/AMLElementAnimation.js";
+	$aFiles[]	= "runtime/classes/animation/AMLNodeAnimation.js";
+
+	// Range
+	$aFiles[]	= "runtime/classes/range/AMLRange.js";
 
 	// AML addons
-	$aFiles[]	= "runtime/classes/AMLNamespace.js";
+//	$aFiles[]	= "runtime/classes/AMLNamespace.js";
 //	$aFiles[]	= "runtime/classes/AMLSerializer.js";
+	$aFiles[]	= "runtime/classes/AMLQuery.js";
 
 	// XML APIs
 	$aFiles[]	= "runtime/classes/DOMParser.js";
@@ -61,67 +64,71 @@
 	$aFiles[]	= "runtime/classes/JSON.js";
 
 	// Runtime
+	$aFiles[]	= "runtime/utilities.js";
+	$aFiles[]	= "runtime/guard.js";
 	$aFiles[]	= "runtime/browser.js";
 	$aFiles[]	= "runtime/ample.js";
 
-	// Processors
-//	$aFiles[]	= "runtime/processors/rex10/rex10.js";
-	// SMIL 3.0
-	$aFiles[]	= "runtime/processors/smil30/smil30.js";
-	$aFiles[]	= "runtime/processors/smil30/smil30-timing.js";
-	$aFiles[]	= "runtime/processors/smil30/smil30-animation.js";
-//	$aFiles[]	= "runtime/processors/smil30/classes/cAMLTimeEvent.js";
-	// XBL 2.0
-//	$aFiles[]	= "runtime/processors/xbl20/xbl20.js";
-	// XInclude 1.0
-	$aFiles[]	= "runtime/processors/xinclude10/xinclude10.js";
 	// XML Events 1.0
-	$aFiles[]	= "runtime/processors/xmlevents10/xmlevents10.js";
-	// XML Schema 1.1
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSConstants.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSException.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSObject.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSModel.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSNamedMap.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSNamespaceItem.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSNamespaceItemList.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSObjectList.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/cAMLXSTypeDefinition.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/xmlschema11.js";
-	// XML Schema 1.1 (Data Types)
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/datatypes/cAMLXSFacet.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/datatypes/cAMLXSMultiValueFacet.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/datatypes/cAMLXSSimpleTypeDefinition.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/xmlschema11-datatypes.js";
-	// XML Schema 1.1 (Built-in Data Types)
-	$aFiles[]	= "runtime/processors/xmlschema11/builtin/xmlschema11-builtin.js";
-/*
-	// XML Schema 1.1 (structure)
-	$aFiles[]	= "runtime/processors/xmlschema11/xmlschema11-structures.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSTerm.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSAnnotation.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSAttributeDeclaration.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSAttributeGroupDefinition.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSAttributeUse.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSComplexTypeDefinition.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSElementDeclaration.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSModelGroup.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSModelGroupDefinition.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSNotationDeclaration.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSParticle.js";
-	$aFiles[]	= "runtime/processors/xmlschema11/classes/structures/cAMLXSWildcard.js";
-	// XML Schema 1.1 Instance
-	$aFiles[]	= "runtime/processors/xmlschema11-instance/xmlschema11-instance.js";
-*/
-	// Modules
+	$aFiles[]	= "runtime/processors/xmlevents/classes/XMLEventsElement.js";
+	$aFiles[]	= "runtime/processors/xmlevents/elements/listener.js";
+
+	// XLink
+	$aFiles[]	= "runtime/processors/xlink/classes/XLAttr.js";
+	$aFiles[]	= "runtime/processors/xlink/attributes/href.js";
+
+	// AML
+	$aFiles[]	= "runtime/processors/aml/classes/cAMLAttr.js";
+	$aFiles[]	= "runtime/processors/aml/classes/cAMLElement.js";
+	$aFiles[]	= "runtime/processors/aml/attributes/draggable.js";
+	$aFiles[]	= "runtime/processors/aml/attributes/droppable.js";
+	$aFiles[]	= "runtime/processors/aml/attributes/resizable.js";
+	$aFiles[]	= "runtime/processors/aml/attributes/selectable.js";
+	$aFiles[]	= "runtime/processors/aml/attributes/resize-edges.js";
+	$aFiles[]	= "runtime/processors/aml/elements/data.js";
+	$aFiles[]	= "runtime/processors/aml/elements/handler.js";
+	$aFiles[]	= "runtime/processors/aml/elements/repeater.js";
+	$aFiles[]	= "runtime/processors/aml/elements/timer.js";
+
+	// SMIL 3.0
+	$aFiles[]	= "runtime/processors/smil/classes/SMILElement.js";
+	$aFiles[]	= "runtime/processors/smil/classes/SMILTimeElement.js";
+	$aFiles[]	= "runtime/processors/smil/classes/SMILAnimationElement.js";
+	$aFiles[]	= "runtime/processors/smil/classes/SMILTimeEvent.js";
+	$aFiles[]	= "runtime/processors/smil/elements/animate.js";
+	$aFiles[]	= "runtime/processors/smil/elements/animateColor.js";
+	$aFiles[]	= "runtime/processors/smil/elements/animateMotion.js";
+	$aFiles[]	= "runtime/processors/smil/elements/animateTransform.js";
+	$aFiles[]	= "runtime/processors/smil/elements/excl.js";
+	$aFiles[]	= "runtime/processors/smil/elements/par.js";
+	$aFiles[]	= "runtime/processors/smil/elements/seq.js";
+	$aFiles[]	= "runtime/processors/smil/elements/set.js";
+
+	// REX 1.0
+//	$aFiles[]	= "runtime/processors/rex/rex.js";
+
+	// XBL 2.0
+//	$aFiles[]	= "runtime/processors/xbl/xbl.js";
+
+	// Managers
 	$aFiles[]	= "runtime/managers/mAMLFocus.js";
 	$aFiles[]	= "runtime/managers/mAMLResize.js";
 	$aFiles[]	= "runtime/managers/mAMLDragAndDrop.js";
 	$aFiles[]	= "runtime/managers/mAMLSelection.js";
-	$aFiles[]	= "runtime/managers/mAMLUI.js";
 	$aFiles[]	= "runtime/managers/mAMLCapture.js";
-	$aFiles[]	= "runtime/managers/mAMLHistory.js";
 	$aFiles[]	= "runtime/managers/mAMLTouch.js";
+
+	// Modules
+	$aFiles[]	= "runtime/modules/ajax.js";
+	$aFiles[]	= "runtime/modules/attributes.js";
+	$aFiles[]	= "runtime/modules/css.js";
+	$aFiles[]	= "runtime/modules/data.js";
+	$aFiles[]	= "runtime/modules/dimensions.js";
+	$aFiles[]	= "runtime/modules/effects.js";
+	$aFiles[]	= "runtime/modules/event.js";
+	$aFiles[]	= "runtime/modules/history.js";
+	$aFiles[]	= "runtime/modules/manipulation.js";
+	$aFiles[]	= "runtime/modules/offset.js";
 
 	//
 	$aFiles[]	= "runtime/export.js";

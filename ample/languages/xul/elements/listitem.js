@@ -11,7 +11,7 @@ var cXULElement_listitem	= function() {
     // Collections
     this.cells  = new AMLNodeList;
 };
-cXULElement_listitem.prototype   = new cXULElement;
+cXULElement_listitem.prototype   = new cXULElement("listitem");
 cXULElement_listitem.prototype.$hoverable	= true;
 
 // Class Events Handlers
@@ -87,9 +87,9 @@ cXULElement_listitem.prototype._onCommandClick   = function(oEvent) {
 // Element Render: open
 cXULElement_listitem.prototype.$getTagOpen	= function() {
 	var oListBox	= this.parentNode.parentNode;
-	return '<tr class="xul-listitem' + (this.attributes["class"] ? " xul-listitem_" + this.attributes["class"] : "") + '">' +
+	return '<tr class="xul-listitem' + (this.attributes["class"] ? " xul-listitem_" + this.attributes["class"] : "") + '" style="height:1em;vertical-align:top">' +
 				(this.attributes["label"] || (oListBox && (oListBox.attributes["type"] == "checkbox" || oListBox.attributes["type"] == "radio"))
-				? ('<td style="padding:0" align="center" onmousedown="event.cancelBubble=true;" class="xul-listcell">' +
+				? ('<td style="padding:0" onmousedown="event.cancelBubble=true;" class="xul-listcell">' +
 					(this.attributes["label"]
 					? '<div class="xul-listcell--gateway">' + this.attributes["label"] + '</div>'
 					: (this.parentNode.parentNode.attributes["type"] == "checkbox"
@@ -103,9 +103,10 @@ cXULElement_listitem.prototype.$getTagOpen	= function() {
 
 // Element Render: close
 cXULElement_listitem.prototype.$getTagClose	= function() {
-	return '</tr>';
+	return 		'<td class="xul-listcell" width="100%"></td>\
+			</tr>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("listitem", cXULElement_listitem);
+// Register Element
+ample.extend(cXULElement_listitem);
 

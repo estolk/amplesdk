@@ -7,7 +7,7 @@
  *
  */
 
-var sAMLExporter_space	= new cArray(4).join(' ');
+var sAMLExporter_space	= new cArray(5).join(' ');
 function fAMLExporter_toStringFunction(sName) {
 	return cFunction('return "' + "function" + ' ' + sName + '()' + ' ' + '{\\n' + sAMLExporter_space + '[' + "ample" + ' ' + "code" + ']\\n}"');
 };
@@ -84,7 +84,8 @@ fAMLExporter_export(cAMLTouch,				"AMLTouch");
 fAMLExporter_export(cAMLTouchList,			"AMLTouchList");
 
 // Ample objects
-fAMLExporter_export(cAMLNamespace,		"AMLNamespace");
+//fAMLExporter_export(cAMLNamespace,		"AMLNamespace");
+fAMLExporter_export(cAMLQuery,			"AMLQuery");
 //fAMLExporter_export(cAMLSerializer,	"AMLSerializer");
 //fAMLExporter_export(cAMLTreeWalker,	"AMLTreeWalker");
 //fAMLExporter_export(cAMLWindow,		"AMLWindow");
@@ -97,6 +98,10 @@ fAMLExporter_export(cAMLResizeEvent,	"AMLResizeEvent");
 fAMLExporter_export(cAMLHashChangeEvent,"AMLHashChangeEvent");
 // Selectors
 fAMLExporter_export(cAMLNodeSelector,	"AMLNodeSelector");
+//->Source
+//Range
+fAMLExporter_export(cAMLRange,			"AMLRange");
+//<-Source
 
 // XML Objects
 if (!window.DOMParser)
@@ -105,7 +110,7 @@ if (!window.XMLSerializer)
 	fAMLExporter_export(cXMLSerializer,	"XMLSerializer");
 if (!window.XSLTProcessor)
 	fAMLExporter_export(cXSLTProcessor,	"XSLTProcessor");
-if (!window.XMLHttpRequest)
+if (bTrident)
 	fAMLExporter_export(cXMLHttpRequest,"XMLHttpRequest");
 //fAMLExporter_export(cRPCClient,	"RPCClient");
 //
@@ -116,14 +121,15 @@ if (!window.XMLHttpRequest)
 if (!window.JSON)
 	fAMLExporter_export(oJSON,	"JSON");
 
-// Publish ample object here
-window.ample	= oAML_document;
-// Wrap 'Static Methods'
-fAMLExporter_wrapMember(oAML_document.close,		"close");
-fAMLExporter_wrapMember(oAML_document.open,			"open");
-fAMLExporter_wrapMember(oAML_document.$bookmark,	"$bookmark");
-fAMLExporter_wrapMember(oAML_document.$instance,	"$instance");
-fAMLExporter_wrapMember(oAML_document.$resolveUri,	"$resolveUri");
+// Special virtual type
+fAMLExporter_wrapMember(cArguments,	"Arguments");
+// Tweaks and tricks
+fAMLExporter_wrap(oAmple.prefixes,	"prefixes");
+fAMLExporter_wrap(fAmple_resolver,	"resolver");
+fAMLExporter_wrap(oAmple.documentElement.$getContainer,		"$getContainer");
+
+//
+fAMLExporter_export(oAmple,	"ample");
 
 // JavaScript 1.5
 if (!cArray.prototype.push)
@@ -144,7 +150,7 @@ if (!cArray.prototype.pop)
 if (!cArray.prototype.indexOf)
 	fAMLExporter_exportMember(cArray.prototype, function(oElement, nIndex) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["element",	cObject, false, true],
 			["index",	cNumber, true, false]
 		]);
@@ -161,7 +167,7 @@ if (!cArray.prototype.indexOf)
 		}
 		// search
 		for (var vValue; nIndex < nLength; nIndex++)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (vValue === oElement)
 					return nIndex;
 		return -1;
@@ -170,7 +176,7 @@ if (!cArray.prototype.indexOf)
 if (!cArray.prototype.lastIndexOf)
 	fAMLExporter_exportMember(cArray.prototype, function(oElement, nIndex) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["element",	cObject, false, true],
 			["index",	cNumber, true, false]
 		]);
@@ -190,7 +196,7 @@ if (!cArray.prototype.lastIndexOf)
 		}
 		// search
 		for (var vValue; nIndex >= 0; nIndex--)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (vValue === oElement)
 					return nIndex;
 		return -1;
@@ -200,13 +206,13 @@ if (!cArray.prototype.lastIndexOf)
 if (!cArray.prototype.filter)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
 
 		for (var nIndex = 0, nLength = this.length, aResult = [], vValue; nIndex < nLength; nIndex++)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (fCallback.call(oReceiver, vValue, nIndex, this))
 					aResult.push(vValue);
 		return aResult;
@@ -215,26 +221,26 @@ if (!cArray.prototype.filter)
 if (!cArray.prototype.forEach)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
 
 		for (var nIndex = 0, nLength = this.length, vValue; nIndex < nLength; nIndex++)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				fCallback.call(oReceiver, vValue, nIndex, this);
 	}, "forEach");
 
 if (!cArray.prototype.every)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
 
 		for (var nIndex = 0, nLength = this.length, vValue; nIndex < nLength; nIndex++)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (!fCallback.call(oReceiver, vValue, nIndex, this))
 					return false;
 		return true;
@@ -243,13 +249,13 @@ if (!cArray.prototype.every)
 if (!cArray.prototype.map)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
 
 		for (var nIndex = 0, nLength = this.length, aResult = new cArray(nLength), vValue; nIndex < nLength; nIndex++)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				aResult[nIndex] = fCallback.call(oReceiver, vValue, nIndex, this);
 		return aResult;
 	}, "map");
@@ -257,13 +263,13 @@ if (!cArray.prototype.map)
 if (!cArray.prototype.some)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
 
 		for (var nIndex = 0, nLength = this.length, vValue; nIndex < nLength; nIndex++)
-			if (!(typeof(vValue = this[nIndex]) === "undefined") || nIndex in this)
+			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (fCallback.call(oReceiver, vValue, nIndex, this))
 					return true;
 		return false;
@@ -277,7 +283,7 @@ if (!cArray.prototype.some)
 if (!cArray.prototype.reduce)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback/*, initial*/) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction]
 		]);
 
@@ -314,7 +320,7 @@ if (!cArray.prototype.reduce)
 if (!cArray.prototype.reduceRight)
 	fAMLExporter_exportMember(cArray.prototype, function(fCallback/*, initial*/) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["callback",	cFunction]
 		]);
 

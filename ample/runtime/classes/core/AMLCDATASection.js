@@ -11,10 +11,4 @@ var cAMLCDATASection	= function(){};
 
 cAMLCDATASection.prototype	= new cAMLText;
 cAMLCDATASection.prototype.nodeType	= cAMLNode.CDATA_SECTION_NODE;
-cAMLCDATASection.prototype.nodeName	= "#cdata";
-
-// nsIDOMCDATASection
-cAMLCDATASection.prototype.cloneNode	= function(bDeep)
-{
-	return fAMLDocument_createCDATASection(this.ownerDocument, this.data);
-};
+cAMLCDATASection.prototype.nodeName	= "#cdata-section";

@@ -11,7 +11,7 @@ var cXULElement_menulist	= function() {
 	// Collections
 	this.items	  	= new AMLNodeList;
 };
-cXULElement_menulist.prototype   = new cXULInputElement;
+cXULElement_menulist.prototype   = new cXULInputElement("menulist");
 
 // Default Attributes
 cXULElement_menulist.attributes	= {
@@ -26,15 +26,6 @@ cXULElement_menulist.prototype.menupopup	= null;
 cXULElement_menulist.prototype.selectedIndex	=-1;
 cXULElement_menulist.prototype.selectedText		= null;
 cXULElement_menulist.prototype.selectedItem		= null;	// TODO
-
-// Public Methods
-cXULElement_menulist.prototype.$getValue	= function() {
-	return this.$getContainer("input").value;
-};
-
-cXULElement_menulist.prototype.$setValue	= function(sValue) {
-	this.$getContainer("input").value	= sValue;
-};
 
 // Public Methods
 cXULElement_menulist.prototype.select	= function() {
@@ -114,6 +105,8 @@ cXULElement_menulist.handlers	= {
 		this.$setPseudoClass("hover", false, "button");
 	},
 	"keydown":	function(oEvent) {
+		if (!this.menupopup)
+			return;
 		switch (oEvent.keyIdentifier) {
 			case "Up":
 				if (this.menupopup.getAttribute("hidden") == "true")
@@ -224,18 +217,18 @@ cXULElement_menulist.handlers	= {
 		this.$getContainer("input").focus();
 	},
 	"blur":		function(oEvent) {
-		if (this.menupopup.getAttribute("hidden") != "true")
+		if (this.menupopup && this.menupopup.getAttribute("hidden") != "true")
 			this.toggle(false);
 		this.$getContainer("input").blur();
 	},
 	"DOMActivate":	function(oEvent) {
 		if (oEvent.target instanceof cXULElement_menuitem) {
-			var sValue	= this.$getValue();
+			var sValue	= this.$getContainer("input").value;
 			this.setAttribute("value", oEvent.target.getAttribute("label"));
 			this.selectedIndex	= this.items.$indexOf(oEvent.target);
 		    this.toggle(false);
 
-			if (sValue != this.$getValue()) {
+			if (sValue != this.$getContainer("input").value) {
 			    // Fire Event
 				cXULInputElement.dispatchChange(this);
 			}
@@ -245,7 +238,7 @@ cXULElement_menulist.handlers	= {
 		if (oEvent.target == this) {
 			switch (oEvent.attrName) {
 				case "value":
-					this.$setValue(oEvent.newValue);
+					this.$getContainer("input").value	= oEvent.newValue || '';
 					break;
 
 				case "disabled":
@@ -288,10 +281,10 @@ cXULElement_menulist.handlers	= {
 
 // Element Render: open
 cXULElement_menulist.prototype.$getTagOpen		= function() {
-	return	'<div class="xul-menulist' +(this.attributes["disabled"] == "true" ? " xul-menulist_disabled" : '') + (this.attributes["class"] ? ' ' + this.attributes["class"] : '') + '"' + (this.attributes["style"] ? ' style="' + this.attributes["style"] + '"' : '') +'>\
+	return	'<div class="xul-menulist' +(!this.$isAccessible() ? " xul-menulist_disabled" : '') + (this.attributes["class"] ? ' ' + this.attributes["class"] : '') + '"' + (this.attributes["style"] ? ' style="' + this.attributes["style"] + '"' : '') +'>\
 				<div class="xul-menulist--field">\
-					<div class="xul-menulist--button" onmouseout="ample.$instance(this).$setPseudoClass(\'active\', false, \'button\');" onmousedown="if (ample.$instance(this).attributes.disabled != \'true\') ample.$instance(this).$setPseudoClass(\'active\', true, \'button\');" onmouseup="if (ample.$instance(this).attributes.disabled != \'true\') ample.$instance(this).$setPseudoClass(\'active\', false, \'button\');" oncontextmenu="return false;"><br /></div>\
-					<input class="xul-menulist--input" type="text" autocomplete="off" style="border:0px solid white;width:100%;" onselectstart="event.cancelBubble=true;" onchange="ample.$instance(this)._onChange(event)" value="' + this.attributes["value"] + '"' + (this.attributes["disabled"] == "true" ? ' disabled="disabled"' : '') + (this.attributes["editable"] != "true" || this.attributes["readonly"] ? ' readonly="true"' : '') + (this.attributes["name"] ? ' name="' + this.attributes["name"] + '"' : '') + '/>\
+					<div class="xul-menulist--button" onmouseout="ample.$instance(this).$setPseudoClass(\'active\', false, \'button\');" onmousedown="if (ample.$instance(this).$isAccessible()) ample.$instance(this).$setPseudoClass(\'active\', true, \'button\');" onmouseup="if (ample.$instance(this).$isAccessible()) ample.$instance(this).$setPseudoClass(\'active\', false, \'button\');" oncontextmenu="return false;"><br /></div>\
+					<input class="xul-menulist--input" type="text" autocomplete="off" style="border:0px solid white;width:100%;" onselectstart="event.cancelBubble=true;" onchange="ample.$instance(this)._onChange(event)" value="' + this.attributes["value"] + '"' + (!this.$isAccessible() ? ' disabled="disabled"' : '') + (this.attributes["editable"] != "true" || this.attributes["readonly"] ? ' readonly="true"' : '') + (this.attributes["name"] ? ' name="' + this.attributes["name"] + '"' : '') + '/>\
 				</div>\
 				<div class="xul-menulist--gateway">';
 };
@@ -302,5 +295,5 @@ cXULElement_menulist.prototype.$getTagClose	= function() {
 			</div>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("menulist", cXULElement_menulist);
+// Register Element
+ample.extend(cXULElement_menulist);

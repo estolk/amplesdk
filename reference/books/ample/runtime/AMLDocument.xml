@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<object name="AMLDocument" extends="runtime:AMLNode">
+<class name="AMLDocument" extends="runtime:AMLNode">
 	<abstract>
 		<locale>
 			Represents the document in a given browser window.
@@ -11,9 +11,7 @@
 	</abstract>
 	<remarks />
 	<examples/>
-	<implements>
-		<interface name="runtime:mHistory" />
-	</implements>
+	<implements />
 	<members>
 		<methods>
 			<method name="createElement" type="AMLElement">
@@ -76,7 +74,7 @@
 						Creates an empty DocumentFragment object.
 					</locale>
 					<locale xml:lang="ru">
-						Создает объект <link type="object">DocumentFragment</link>.
+						Создает объект <link type="class">DocumentFragment</link>.
 					</locale>
 				</description>
 			</method>
@@ -95,7 +93,7 @@
 						Creates a Text node given the specified string.
 					</locale>
 					<locale xml:lang="ru">
-						Создает объект <link type="object">AMLText</link> по заданной строке.
+						Создает объект <link type="class">AMLText</link> по заданной строке.
 					</locale>
 				</description>
 			</method>
@@ -117,7 +115,7 @@
 						Creates a Comment node given the specified string.
 					</locale>
 					<locale xml:lang="ru">
-						Создает  узел <link type="object">AMLComment</link> по заданной строке.
+						Создает  узел <link type="class">AMLComment</link> по заданной строке.
 					</locale>
 				</description>
 			</method>
@@ -136,10 +134,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Creates a <link type="object">AMLCDATASection</link> node whose value is the specified string.
+						Creates a <link type="class">AMLCDATASection</link> node whose value is the specified string.
 					</locale>
 					<locale xml:lang="ru">
-						Создает узел <link type="object">AMLCDATASection</link>, значением которого будет заданная строка.
+						Создает узел <link type="class">AMLCDATASection</link>, значением которого будет заданная строка.
 					</locale>
 				</description>
 			</method>
@@ -171,7 +169,7 @@
 						Creates a ProcessingInstruction node given the specified name and data strings.
 					</locale>
 					<locale xml:lang="ru">
-						Создает объект <link type="object">AMLProcessingInstruction</link> по заданным имени и данным.
+						Создает объект <link type="class">AMLProcessingInstruction</link> по заданным имени и данным.
 					</locale>
 				</description>
 			</method>
@@ -193,7 +191,7 @@
 						Creates an Attr of the given name.
 					</locale>
 					<locale xml:lang="ru">
-						Создает объект <link type="object">AMLAttr</link> по заданному имени.
+						Создает объект <link type="class">AMLAttr</link> по заданному имени.
 					</locale>
 				</description>
 			</method>
@@ -225,7 +223,7 @@
 						Creates an attribute of the given qualified name and namespace URI.
 					</locale>
 					<locale xml:lang="ru">
-						Создает объект <link type="object">AMLAttr</link> по заданным имени и пространству имен.
+						Создает объект <link type="class">AMLAttr</link> по заданным имени и пространству имен.
 					</locale>
 				</description>
 			</method>
@@ -237,7 +235,7 @@
 								The name of the entity to reference.
 							</locale>
 							<locale xml:lang="ru">
-								Имя создаваемого <link type="object">AMLEntityReference</link>.
+								Имя создаваемого <link type="class">AMLEntityReference</link>.
 							</locale>
 						</description>
 					</argument>
@@ -247,7 +245,7 @@
 						Creates an EntityReference object.
 					</locale>
 					<locale xml:lang="ru">
-						Создает объект <link type="object">AMLEntityReference</link>.
+						Создает объект <link type="class">AMLEntityReference</link>.
 					</locale>
 				</description>
 			</method>
@@ -269,7 +267,7 @@
 						Returns the Element that has an ID attribute with the given value.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает ссылку на <link type="object">AMLElement</link>, у которого атрибут ID соответствует заданному.
+						Возвращает ссылку на <link type="class">AMLElement</link>, у которого атрибут ID соответствует заданному.
 					</locale>
 				</description>
 			</method>
@@ -288,10 +286,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns a <link type="object">AMLNodeList</link> of all the <link type="object">AMLElement</link>s in document order with a given tag name and are contained in the document.
+						Returns a <link type="class">AMLNodeList</link> of all the <link type="class">AMLElement</link>s in document order with a given tag name and are contained in the document.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает коллекцию <link type="object">AMLNodeList</link> из объектов <link type="object">AMLElement</link> по заданному имени в порядке, в котором элементы следуют в документе.
+						Возвращает коллекцию <link type="class">AMLNodeList</link> из объектов <link type="class">AMLElement</link> по заданному имени в порядке, в котором элементы следуют в документе.
 					</locale>
 				</description>
 			</method>
@@ -320,10 +318,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns a <link type="object">AMLNodeList</link> of all the <link type="object">AMLElement</link>s with a given local name and namespace URI in document order.
+						Returns a <link type="class">AMLNodeList</link> of all the <link type="class">AMLElement</link>s with a given local name and namespace URI in document order.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает коллекцию <link type="object">AMLNodeList</link> из всех объектов <link type="object">AMLElement</link> по заданным имени и пространству имен в порядке, в котором элементы следуют в документе.
+						Возвращает коллекцию <link type="class">AMLNodeList</link> из всех объектов <link type="class">AMLElement</link> по заданным имени и пространству имен в порядке, в котором элементы следуют в документе.
 					</locale>
 				</description>
 			</method>
@@ -375,10 +373,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Creates an instance of the <link type="object">AMLEvent</link>.
+						Creates an instance of the <link type="class">AMLEvent</link>.
 					</locale>
 					<locale xml:lang="ru">
-						Создает экземпляр объекта <link type="object">AMLEvent</link>.
+						Создает экземпляр объекта <link type="class">AMLEvent</link>.
 					</locale>
 				</description>
 			</method>
@@ -402,10 +400,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns <link type="object">AMLElement</link> that matches CSS query.
+						Returns <link type="class">AMLElement</link> that matches CSS query.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает объект <link type="object">AMLElement</link> по заданному CSS запросу.
+						Возвращает объект <link type="class">AMLElement</link> по заданному CSS запросу.
 					</locale>
 				</description>
 			</method>
@@ -428,39 +426,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns <link type="object">AMLNodeList</link> of <link type="object">AMLElement</link> that match CSS query.
+						Returns <link type="class">AMLNodeList</link> of <link type="class">AMLElement</link> that match CSS query.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает коллекцию <link type="object">AMLNodeList</link> из объектов <link type="object">AMLElement</link> по заданному запросу в порядке, в котором элементы следуют в документе.
-					</locale>
-				</description>
-			</method>
-			<!-- Ample Methods -->
-			<method name="open" type="Void">
-				<description>
-					<locale>
-						Opens Ample SDK fragment. This method can only be called while page is loading.
-					</locale>
-				</description>
-			</method>
-			<method name="close" type="Void">
-				<description>
-					<locale>
-						Closes Ample SDK fragment. This method can only be called while page is loading.
-					</locale>
-				</description>
-			</method>
-			<method name="$instance" type="AMLElement">
-				<arguments>
-					<argument name="oElement" type="HTMLElement">
-						<description>
-							DOM HTML element
-						</description>
-					</argument>
-				</arguments>
-				<description>
-					<locale>
-						Finds corresponding to the HTML DOM element in the Ample SDK DOM.
+						Возвращает коллекцию <link type="class">AMLNodeList</link> из объектов <link type="class">AMLElement</link> по заданному запросу в порядке, в котором элементы следуют в документе.
 					</locale>
 				</description>
 			</method>
@@ -482,17 +451,17 @@
 						The DOMImplementation object that handles this document.
 					</locale>
 					<locale xml:lang="ru">
-						Объект <link type="object">AMLImplementation</link> для документа.
+						Объект <link type="class">AMLImplementation</link> для документа.
 					</locale>
 				</description>
 			</property>
 			<property name="domConfig" type="AMLConfiguration" readonly="true">
 				<description>
 					<locale>
-						The <link type="object">AMLConfiguration</link> associated with this document.
+						The <link type="class">AMLConfiguration</link> associated with this document.
 					</locale>
 					<locale xml:lang="ru">
-						Объект <link type="object">AMLConfiguration</link> для документа.
+						Объект <link type="class">AMLConfiguration</link> для документа.
 					</locale>
 				</description>
 			</property>
@@ -506,43 +475,9 @@
 					</locale>
 				</description>
 			</property>
-			<!--  Ample properties -->
-			<property name="readyState" type="String" readonly="true">
-				<description>
-					<locale>
-						Retrieves a value that indicates the current state of the object. Possible values:
-						"uninitialized" - Object is not initialized with data,
-						"loading" - Object is loading its data,
-						"loaded" - Object has finished loading its data,
-						"interactive" - User can interact with the object even though it is not fully loaded,
-						"complete" - Object is completely initialized.
-					</locale>
-				</description>
-			</property>
-			<property name="activeElement" type="AMLElement" readonly="true">
-				<description>
-					<locale>
-						Retrieves a reference to an element in the document that currently has focus.
-					</locale>
-				</description>
-			</property>
-			<property name="$model" type="XSModel" readonly="true">
-				<description>
-					<locale>
-						Retrieves a reference to the XML Schema model.
-					</locale>
-				</description>
-			</property>
-			<property name="$time" type="SMILTimeContainer" readonly="true">
-				<description>
-					<locale>
-						Retrieves a reference to the SMIL document time container.
-					</locale>
-				</description>
-			</property>
 		</properties>
 		<events>
-			<event name="load" group="Event" cancelable="false" bubbles="false">
+			<event name="load" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires immediately after the engine loads the object.
@@ -552,7 +487,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="unload" group="Event" cancelable="false" bubbles="false">
+			<event name="unload" type="Event" cancelable="false" bubbles="false">
 				<description>
 					<locale>
 						Fires immediately before the object is unloaded.
@@ -562,7 +497,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="abort" group="Event" cancelable="false" bubbles="true">
+			<event name="abort" type="Event" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						The loading of the document, or a resource linked from it, is stopped before being entirely loaded.
@@ -572,7 +507,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="error" group="Event" cancelable="false" bubbles="true">
+			<event name="error" type="Event" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						A resource failed to load, or has been loaded but cannot be interpreted according to its semantics such as an invalid image, a script execution error, or non-well-formed XML.
@@ -582,7 +517,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="resize" group="UIEvent" cancelable="false" bubbles="true">
+			<event name="resize" type="UIEvent" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						A document view has been resized.
@@ -592,7 +527,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="scroll" group="UIEvent" cancelable="false" bubbles="true">
+			<event name="scroll" type="UIEvent" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						A document view has been scrolled.
@@ -602,13 +537,6 @@
 					</locale>
 				</description>
 			</event>
-			<event name="readystatechange" group="Event" cancelable="false" bubble="false">
-				<description>
-					<locale>
-						Fires when the state of the object has changed. You can use the <link type="property">readyState</link> property to query the current state of the element when the <link type="event">readystatechange</link> event fires.
-					</locale>
-				</description>
-			</event>
 		</events>
 	</members>
-</object>
+</class>

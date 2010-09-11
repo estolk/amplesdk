@@ -11,7 +11,7 @@ var cXULElement_menupopup	= function() {
     // Collections
     this.items  = new AMLNodeList;
 };
-cXULElement_menupopup.prototype	= new cXULPopupElement;
+cXULElement_menupopup.prototype	= new cXULPopupElement("menupopup");
 
 // Public Properties
 cXULElement_menupopup.prototype.selectedItem	= null;
@@ -41,7 +41,7 @@ cXULElement_menupopup.prototype.selectItem	= function(oItem) {
 
 	if (oItem) {
 	    // Show new element
-		if (oItem.menupopup && oItem.getAttribute("disabled") != "true") {
+		if (oItem.menupopup && oItem.$isAccessible()) {
 			var oMenuPopupNew	= oItem.menupopup;
 			this._timeOutShow	= setTimeout(function() {
 				oMenuPopupNew.showPopup(null, -1, -1, cXULPopupElement.POPUP_TYPE_POPUP);
@@ -86,7 +86,7 @@ cXULElement_menupopup.prototype._onKeyDown	= function(oEvent)
 			break;
 
 		case 39:	// right
-			if (this.selectedItem.menupopup && this.selectedItem.attributes["disabled"] != "true")
+			if (this.selectedItem.menupopup && this.selectedItem.$isAccessible())
 			{
 				this.selectedItem.menupopup.selectItem(this.selectedItem.menupopup.items[0]);
 				this.selectedItem.menupopup.$getContainer().focus();
@@ -143,7 +143,7 @@ cXULElement_menupopup.prototype.$getTagOpen	= function() {
 				<div class="xul-menupopup--shadow-right" style="position:absolute;"></div>\
 				<div class="xul-menupopup--shadow-bottom" style="position:absolute;font-size:1px;"></div>\
 				<table cellpadding="0" cellspacing="0" border="0" cols="4">\
-					<tbody class="ns-menupopup--gateway">';
+					<tbody class="xul-menupopup--gateway">';
 };
 
 // Element Render: close
@@ -153,5 +153,5 @@ cXULElement_menupopup.prototype.$getTagClose	= function() {
 			</div>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("menupopup", cXULElement_menupopup);
+// Register Element
+ample.extend(cXULElement_menupopup);

@@ -4,6 +4,7 @@ xul|tree {
 	border: 1px solid silver;
 	background-color: white;
 	margin: 1px;
+	height: 200px; /* default height */
 }
 
 xul|listbox:focus,
@@ -17,27 +18,21 @@ xul|tree:disabled {
 	background-color: rgb(235, 235, 228);
 }
 
-xul|listhead,
-xul|treecols {
-	line-height: 18px;
-}
-
 xul|listhead::settings,
 xul|treecols::settings {
 	width:	16px;
-	height:	18px;
+	height:	20px;
 	background: url(media/listhead_settings.gif) 0 0;
 }
 
 xul|listheader,
 xul|treecol {
-	font-weight: normal;
-	background: url(media/listheader.gif) repeat-x 0px -2px;
+	background: url(media/listheader.gif) repeat-x 0 0;
 }
 
 xul|listheader:hover,
 xul|treecol:hover {
-	background-position: 0px -22px;
+	background-position: 0px -20px;
 }
 
 xul|listheader:active,
@@ -49,26 +44,19 @@ xul|listheader::resizer,
 xul|treecol::resizer {
 	width: 5px;
 	height: 18px;
-	float: right;
+	margin-right:-2px;
 	background: url(media/listheader_splitter.gif) no-repeat 2px center;
 	cursor: col-resize;
 }
 
-xul|listheader::command,
-xul|listitem::command,
-xul|treecol::command,
-xul|treeitem::command {
-	width:	16px;
-	height:	16px;
-	margin:	0px;
-	padding:0px;
-	vertical-align:	middle;
-	margin-left: 2px;
+xul|listbox:disabled xul|listheader::resizer,
+xul|tree:disabled xul|treecol::resizer {
+	cursor: default;
 }
 
-xul|listitem,
-xul|treerow {
-	line-height:	18px;
+xul|listhead,
+xul|treecols {
+	line-height:	20px;
 }
 
 xul|listitem:hover,
@@ -88,22 +76,44 @@ xul|tree:focus xul|treeitem:selected {
 }
 
 xul|listcell,
-xul|treecell {
-	white-space:	nowrap;
-	vertical-align: middle;
+xul|listheader,
+xul|treecell,
+xul|treecol {
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
+xul|listcell::label,
+xul|treecell::label,
+xul|listheader::label,
+xul|treecol::label {
+	white-space:	nowrap;
+	text-overflow: ellipsis;
+	line-height: 1em;
+}
+
+xul|listcell::box,
+xul|treecell::box,
+xul|listheader::box,
+xul|treecol::box {
+/*	height: 1.15em;*/ /* works fine when font-size is given somewhere */
+}
+
+xul|listheader::command,
+xul|listitem::command,
+xul|treecol::command,
+xul|treeitem::command,
 xul|listcell::command,
 xul|treecell::command {
 	width:	16px;
 	height:	16px;
 	margin:	0px;
 	padding:0px;
-	vertical-align: middle;
+	vertical-align:	middle;
 }
 
-ns|listbox::resizer,
-ns|tree::resizer {
+xul|listbox::resizer,
+xul|tree::resizer {
 	background-color: #7F9DB9;
 	cursor:col-resize;
 	width: 3px;
@@ -113,7 +123,6 @@ ns|tree::resizer {
 /* Tree-specific */
 xul|treecell::toc,
 xul|treecell-line {
-	float: left;
 	width: 18px;
 	height: 18px;
 }

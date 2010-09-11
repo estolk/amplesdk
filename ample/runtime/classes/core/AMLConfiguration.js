@@ -14,53 +14,41 @@ cAMLConfiguration.prototype.parameterNames	= null;
 
 var oAMLConfiguration_values	= {};
 
+function fAMLConfiguration_setParameter(oConfiguration, sName, vValue) {
+	if (!oConfiguration.parameterNames.contains(sName))
+		oConfiguration.parameterNames.$add(sName);
+	oAMLConfiguration_values[sName]	= vValue;
+};
+
 cAMLConfiguration.prototype.setParameter	= function(sName, vValue) {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["name",	cString],
 		["value",	cObject,	false, true]
 	]);
 
-	if (!this.parameterNames.contains(sName))
-		this.parameterNames.$add(sName);
-	oAMLConfiguration_values[sName]	= vValue;
+	fAMLConfiguration_setParameter(this, sName, vValue);
+};
+
+function fAMLConfiguration_getParameter(oConfiguration, sName) {
+	return oAMLConfiguration_values.hasOwnProperty(sName) ? oAMLConfiguration_values[sName] : null;
 };
 
 cAMLConfiguration.prototype.getParameter	= function(sName) {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["name",	cString]
 	]);
 
-	return oAMLConfiguration_values.hasOwnProperty(sName) ? oAMLConfiguration_values[sName] : null;
+	return fAMLConfiguration_getParameter(this, sName);
 };
 
 cAMLConfiguration.prototype.canSetParameter	= function(sName, vValue) {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["name",	cString],
 		["value",	cObject,	false, true]
 	]);
 
 	return this.parameterNames.contains(sName);
-};
-
-cAMLConfiguration.prototype.setNamespace	= function(sNameSpaceURI, oNamespace) {
-	// Validate arguments
-	fAML_validate(arguments, [
-		["namespaceURI",	cString,	true, true],
-		["namespace",		cAMLNamespace]
-	]);
-
-	oAML_namespaces[sNameSpaceURI] = oNamespace;
-	oNamespace.namespaceURI	= sNameSpaceURI;
-};
-
-cAMLConfiguration.prototype.getNamespace	= function(sNameSpaceURI) {
-	// Validate arguments
-	fAML_validate(arguments, [
-		["namespaceURI",	cString,	true, true]
-	]);
-
-	return oAML_namespaces[sNameSpaceURI] || null;
 };

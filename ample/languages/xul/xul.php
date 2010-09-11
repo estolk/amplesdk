@@ -1,6 +1,5 @@
 <?
     $aFiles		= array();
-    $aFiles[]	= "xul.js";
     $aFiles[]	= "classes/cXULElement.js";
 	$aFiles[]	= "classes/cXULController.js";
 
@@ -15,6 +14,11 @@
     $aFiles[]	= "managers/oXULPopupManager.js";
     $aFiles[]	= "managers/oXULReflowManager.js";
     $aFiles[]	= "managers/oXULWindowManager.js";
+    $aFiles[]	= "managers/oXULLocaleManager.js";
+
+	// locales
+	$aFiles[]	= "locale/en-us.js";
+	$aFiles[]	= "locale/it-it.js";
 
     // elements
     // windowing

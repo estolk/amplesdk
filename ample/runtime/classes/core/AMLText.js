@@ -21,14 +21,14 @@ cAMLText.prototype.wholeText	= null;
 cAMLText.prototype.splitText	= function(nOffset)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["offset",	cNumber]
 	]);
 
 	if (nOffset <= this.length && nOffset >= 0)
 	{
 		var sData	= fAMLCharacterData_substringData(this, nOffset, this.length);
-		fAMLElement_insertBefore(this.parentNode, this.ownerDocument.createTextNode(sData), this);
+		fAMLElement_insertBefore(this.parentNode, fAMLDocument_createTextNode(this.ownerDocument, sData), this);
 
 		var sValueOld	= this.data;
 		this.data	= sData;
@@ -95,7 +95,7 @@ cAMLText.prototype.replaceData	= function(nOffset, nLength, sData)
 // Level 3
 cAMLText.prototype.replaceWholeText	= function(sContent) {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["content",	cString]
 	]);
 
@@ -110,12 +110,6 @@ cAMLText.prototype.replaceWholeText	= function(sContent) {
 	    oEvent.initMutationEvent("DOMCharacterDataModified", true, false, null, sValueOld, this.data, null, null);
 	    fAMLNode_dispatchEvent(this, oEvent);
 	}
-};
-
-
-cAMLText.prototype.cloneNode	= function(bDeep)
-{
-	return this.ownerDocument.createTextNode(this.data);
 };
 
 cAMLText.prototype.$getTag	= function()

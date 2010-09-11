@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<object name="AMLConfiguration">
+<class name="AMLConfiguration">
 	<abstract>
 		<locale>
 			Configuration object.
@@ -51,10 +51,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Checks if <link type="object">AMLConfiguration</link> parameter value can be set.
+						Checks if <link type="class">AMLConfiguration</link> parameter value can be set.
 					</locale>
 					<locale xml:lang="ru">
-						Проверяет, можно ли выставить указанное значение параметра объекта <link type="object">AMLConfiguration</link>.
+						Проверяет, можно ли выставить указанное значение параметра объекта <link type="class">AMLConfiguration</link>.
 					</locale>
 				</description>
 			</method>
@@ -83,10 +83,10 @@
 				</arguments>
 				<description>
 					<locale>
-						Sets <link type="object">AMLConfiguration</link> parameter value.
+						Sets <link type="class">AMLConfiguration</link> parameter value.
 					</locale>
 					<locale xml:lang="ru">
-						Устанавливает значение параметра объекта <link type="object">AMLConfiguration</link>.
+						Устанавливает значение параметра объекта <link type="class">AMLConfiguration</link>.
 					</locale>
 				</description>
 			</method>
@@ -105,15 +105,15 @@
 				</arguments>
 				<description>
 					<locale>
-						Returns <link type="object">AMLConfiguration</link> parameter value.
+						Returns <link type="class">AMLConfiguration</link> parameter value.
 					</locale>
 					<locale xml:lang="ru">
-						Возвращает значение параметра объекта <link type="object">AMLConfiguration</link>.
+						Возвращает значение параметра объекта <link type="class">AMLConfiguration</link>.
 					</locale>
 				</description>
 			</method>
 			<!-- Ample methods -->
-			<method name="setNamespace" type="Void">
+			<!--method name="setNamespace" type="Void">
 				<arguments>
 					<argument name="sNameSpaceURI" type="String" required="true">
 						<description>
@@ -166,7 +166,7 @@
             Возвращает реализацию Namespace.
           </locale>
 				</description>
-			</method>
+			</method-->
 		</methods>
 	</members>
 	<remarks>
@@ -176,7 +176,7 @@
 				<ul>
 					<li><b>error-handler</b> - if an error is encountered in the document, the implementation will call back the ErrorHandler registered using this parameter</li>
 					<li><b>ample-use-style-property</b> - enable/disable style property on elements</li>
-					<li><b>ample-module-history-fix</b> - fix initial value of the location.hash property in Internet Explorer (used in <link type="object">mHistory</link>)</li>
+					<li><b>ample-module-history-fix</b> - fix initial value of the location.hash property in Internet Explorer</li>
 					<li><b>ample-version</b> - Ample SDK version identifier</li>
 					<li><b>ample-user-agent</b> - Ample SDK user agent string</li>
 					<li><b>ample-user-locale</b> - User locale</li>
@@ -187,7 +187,7 @@
 				<ul>
 					<li><b>error-handler</b> - позволяет зарегистрировать обработчик ошибок, который будет вызываться в случае, если приозойдет ошибка</li>
 					<li><b>ample-use-style-property</b> - включить/отключить поддержку доступа к стилям через свойство style</li>
-					<li><b>ample-module-history-fix</b> - починить начальное значение свойства location.hash в Internet Explorer (модуль <link type="object">mHistory</link>)</li>
+					<li><b>ample-module-history-fix</b> - починить начальное значение свойства location.hash в Internet Explorer</li>
 					<li><b>ample-version</b> - версия Ample SDK</li>
 					<li><b>ample-user-agent</b> - Ample SDK user agent string</li>
 					<li><b>ample-user-locale</b> - User locale</li>
@@ -195,4 +195,4 @@
 			</locale>
 		</remark>
 	</remarks>
-</object>
+</class>

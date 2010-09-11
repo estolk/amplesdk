@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<object name="AMLEvent">
+<class name="AMLEvent">
 	<abstract>
 		<locale>
 			The Event interface is used to provide contextual information about an event to the handler processing the event
@@ -50,7 +50,7 @@
 						The initEvent method is used to initialize the value of an Event created through the DocumentEvent interface.
 					</locale>
 					<locale xml:lang="ru">
-						Этот метод используется для инициализации значения объекта <link type="object">AMLEvent</link>, созданного через интерфейс DocumentEvent.
+						Этот метод используется для инициализации значения объекта <link type="class">AMLEvent</link>, созданного через интерфейс DocumentEvent.
 					</locale>
 				</description>
 			</method>
@@ -225,23 +225,4 @@
       </ul>
 		</remark>
 	</remarks>
-	<examples>
-		<example>
-			<locale>
-				The code below illustrates usage of inline event handler.
-			</locale>
-			<locale xml:lang="ru">
-				Этот код иллюстрирует пример использования объекта AMLEvent.
-			</locale>
-			<code type="text/xml"><![CDATA[
-<div onclick="alert(event.currentTarget.tagName)">click me</div>
-			]]></code>
-			<locale>
-				When user clicks the div, he will be alerted with 'div' message.
-			</locale>
-			<locale xml:lang="ru">
-				По событию "click", выведется сообщение 'div'.
-			</locale>
-		</example>
-	</examples>
-</object>
+</class>

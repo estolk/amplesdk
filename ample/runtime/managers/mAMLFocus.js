@@ -18,12 +18,15 @@ function fAMLFocus_focus(oElement) {
 			fAMLFocus_blur(oAMLFocus_focusGroup);
 
 		// Focus element
-		if (oAML_all[oElement.uniqueID]) {
+		if (oAMLDocument_all[oElement.uniqueID]) {
 			// Set active element
 			oAMLFocus_focusGroup	= oElement;
 
 			// Set document active element
-			oElement.ownerDocument.activeElement	= oElement;
+			oAmple.activeElement	= oElement;
+
+			// Add :focus pseudo-class
+			fAMLElement_setPseudoClass(oElement, "focus", true);
 
 			var oEvent	= new cAMLUIEvent;
 			oEvent.initUIEvent("focus", false, false, window, null);
@@ -39,12 +42,15 @@ function fAMLFocus_focus(oElement) {
 function fAMLFocus_blur(oElement) {
 	if (oElement == oAMLFocus_focusGroup) {
 		// Blur element
-		if (oAML_all[oElement.uniqueID]) {
+		if (oAMLDocument_all[oElement.uniqueID]) {
 			// Unset active element
 			oAMLFocus_focusGroup	= null;
 
 			// Unset document active element
-			oElement.ownerDocument.activeElement	= oAML_modalNode || oAML_document.documentElement;
+			oAmple.activeElement	= oBrowser_modalNode || oAmple_document.documentElement;
+
+			// Remove :focus pseudo-class
+			fAMLElement_setPseudoClass(oElement, "focus", false);
 
 			// If element has not been removed from DOM
 			var oEvent	= new cAMLUIEvent;
@@ -60,24 +66,29 @@ function fAMLFocus_blur(oElement) {
 
 /* Focus Group */
 function fAMLFocus_getFocusGroupNext(oElement, nTabIndex) {
-	for (var oParent = oElement, oFocusGroup/*, aChildren*/; oParent; oParent = oParent.parentNode)
-		if (oParent == oElement && oParent.firstChild && (oFocusGroup = fAMLFocus_getFocusGroupNextChild(oParent.firstChild, nTabIndex)))
-			return oFocusGroup;
-		else
-//		if ((aChildren = oParent.$childNodesAnonymous) && aChildren.length &&(oFocusGroup = fAMLFocus_getFocusGroupNextChild(aChildren[0], nTabIndex, true)))
-//			return oFocusGroup;
-//		else
-		if (oParent == oAML_modalNode)
+	for (var oParent = oElement, oFocusGroup/*, aChildren*/; oParent; oParent = oParent.parentNode) {
+		if (oParent == oElement) {
+			if (oParent.firstChild && (oFocusGroup = fAMLFocus_getFocusGroupNextChild(oParent.firstChild, nTabIndex)))
+				return oFocusGroup;
+			if (oParent.contentFragment && (oFocusGroup = fAMLFocus_getFocusGroupNextChild(oParent.contentFragment.firstChild, nTabIndex)))
+				return oFocusGroup;
+//			if ((aChildren = oParent.$childNodesAnonymous) && aChildren.length &&(oFocusGroup = fAMLFocus_getFocusGroupNextChild(aChildren[0], nTabIndex, true)))
+//				return oFocusGroup;
+		}
+		if (oParent == oBrowser_modalNode)
 			break;
-		else
 		if (oParent.nextSibling && (oFocusGroup = fAMLFocus_getFocusGroupNextChild(oParent.nextSibling, nTabIndex)))
 			return oFocusGroup;
+	}
 };
 
 function fAMLFocus_getFocusGroupNextChild(oElement, nTabIndex, bDeep) {
 	for (var oSibling = oElement, oFocusGroup/*, aChildren*/; oSibling; oSibling = oSibling.nextSibling) {
 		if (fAMLFocus_isTabStop(oSibling, nTabIndex, bDeep))
 			return oSibling;
+		else
+		if (oSibling.contentFragment && (oFocusGroup = fAMLFocus_getFocusGroupNextChild(oSibling.contentFragment.firstChild, nTabIndex)))
+			return oFocusGroup;
 		else
 		if (oSibling.firstChild && (oFocusGroup = fAMLFocus_getFocusGroupNextChild(oSibling.firstChild, nTabIndex)))
 			return oFocusGroup;
@@ -89,18 +100,16 @@ function fAMLFocus_getFocusGroupNextChild(oElement, nTabIndex, bDeep) {
 };
 
 function fAMLFocus_getFocusGroupPrevious(oElement, nTabIndex) {
-	for (var oParent = oElement, oFocusGroup/*, aChildren*/; oParent; oParent = oParent.parentNode)
+	for (var oParent = oElement, oFocusGroup/*, aChildren*/; oParent; oParent = oParent.parentNode) {
 		if (oParent != oElement && fAMLFocus_isTabStop(oParent, nTabIndex))
 			return oParent;
-		else
 //		if ((aChildren = oParent.$childNodesAnonymous) && aChildren.length &&(oFocusGroup = fAMLFocus_getFocusGroupPreviousChild(aChildren[aChildren.length - 1], nTabIndex, true)))
 //			return oFocusGroup;
-//		else
-		if (oParent == oAML_modalNode)
+		if (oParent == oBrowser_modalNode)
 			break;
-		else
 		if (oParent.previousSibling && (oFocusGroup = fAMLFocus_getFocusGroupPreviousChild(oParent.previousSibling, nTabIndex)))
 			return oFocusGroup;
+	}
 };
 
 function fAMLFocus_getFocusGroupPreviousChild(oElement, nTabIndex, bDeep) {
@@ -109,6 +118,9 @@ function fAMLFocus_getFocusGroupPreviousChild(oElement, nTabIndex, bDeep) {
 //		if ((aChildren = oSibling.$childNodesAnonymous) && aChildren.length &&(oFocusGroup = fAMLFocus_getFocusGroupPreviousChild(aChildren[aChildren.length-1], nTabIndex, true)))
 //			return oFocusGroup;
 //		else
+		if (oSibling.contentFragment &&(oFocusGroup = fAMLFocus_getFocusGroupPreviousChild(oSibling.contentFragment.lastChild, nTabIndex)))
+			return oFocusGroup;
+		else
 		if (oSibling.lastChild && (oFocusGroup = fAMLFocus_getFocusGroupPreviousChild(oSibling.lastChild, nTabIndex)))
 			return oFocusGroup;
 		else
@@ -128,7 +140,7 @@ function fAMLFocus_isVisible(oElement) {
 
 	// Algorythm 1
 //	for (var oElementDOM = oElement.$getContainer(); oElementDOM.nodeType != cAMLNode.DOCUMENT_NODE; oElementDOM = oElementDOM.parentNode)
-//		if (fAML_getComputedStyle(oElementDOM).display == "none")
+//		if (fBrowser_getComputedStyle(oElementDOM).display == "none")
 //			return false;
 	return true;
 };
@@ -176,7 +188,7 @@ function fAMLFocus_onKeyDown(oEvent) {
 
 		// Otherwise
 		if (!oFocusGroup) {
-			var	oRoot	= oAML_modalNode || this.documentElement,
+			var oRoot	= oBrowser_modalNode || this.documentElement,
 				nTabIndexMax	=-nInfinity,
 				nTabIndexMin	= nInfinity,
 				nTabIndexNext	= nTabIndexMin,
@@ -211,7 +223,7 @@ function fAMLFocus_onKeyDown(oEvent) {
 		// Focus new element
 		if (oFocusGroup)
 			fAMLFocus_focus(oFocusGroup);
-/*	});	*/
+/*	}, 0);	*/
 		// Prevents browser-based focus manager
 		oEvent.preventDefault();
 	}
@@ -233,5 +245,5 @@ cAMLElement.prototype.$isAccessible	= function() {
 };
 
 // Registering Event Handlers
-fAMLEventTarget_addEventListener(oAML_document,	"mousedown",	fAMLFocus_onMouseDown,	false);
-fAMLEventTarget_addEventListener(oAML_document,	"keydown",		fAMLFocus_onKeyDown,	false);
+fAMLEventTarget_addEventListener(oAmple_document,	"mousedown",	fAMLFocus_onMouseDown,	false);
+fAMLEventTarget_addEventListener(oAmple_document,	"keydown",		fAMLFocus_onKeyDown,	false);

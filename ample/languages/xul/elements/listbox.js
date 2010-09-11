@@ -12,35 +12,13 @@ var cXULElement_listbox	= function() {
     this.items  = new AMLNodeList;
 	this.selectedItems	= new AMLNodeList;
 };
-cXULElement_listbox.prototype    = new cXULSelectElement;
+cXULElement_listbox.prototype    = new cXULSelectElement("listbox");
 
 //
 cXULElement_listbox.prototype.head	= null; // Reference to oXULElement_listhead
 cXULElement_listbox.prototype.body	= null; // Reference to oXULElement_listitems
 
 // Public Methods
-cXULElement_listbox.prototype.sort   = function(nCell, bDir) {
-    // correct for different types
-    if (this.attributes["type"] != "radio" && this.attributes["type"] != "checkbox")
-        nCell++;
-
-    if (this.items.length) {
-		var aElements	= [];
-		for (var nIndex = 0; nIndex < this.items.length; nIndex++)
-			aElements.push(this.items[nIndex]);
-		aElements.sort(function(oElement1, oElement2){return oElement1.cells[nCell-1].attributes["label"] > oElement2.cells[nCell-1].attributes["label"] ? bDir ? 1 :-1 : oElement1.cells[nCell-1].attributes["label"] == oElement2.cells[nCell-1].attributes["label"] ? 0 : bDir ?-1 : 1;});
-		this.items	= new AMLNodeList;
-		for (var nIndex = 0; nIndex < aElements.length; nIndex++)
-			this.items.$add(aElements[nIndex]);
-
-        var oElementDOM	= this.body.$getContainer("gateway");
-        for (var nIndex = 0; nIndex < this.items.length; nIndex++) {
-            oElementDOM.appendChild(this.items[nIndex].$getContainer());
-            if (this.items[nIndex].attributes["selected"] == "true")
-                this.items[nIndex].setAttribute("selected", "true");
-        }
-    }
-};
 
 // Class Events Handlers
 cXULElement_listbox.handlers	= {
@@ -97,7 +75,7 @@ cXULElement_listbox.handlers	= {
 		if (oEvent.target == this) {
 			switch (oEvent.attrName) {
 				case "disabled":
-					// TODO
+					this.$setPseudoClass("disabled", true);
 					break;
 
 				case "seltype":
@@ -115,12 +93,38 @@ cXULElement_listbox.handlers	= {
 	}
 };
 
+// Static Methods
+cXULElement_listbox.sort   = function(oInstance, nCell, bDir) {
+    // correct for different types
+    if (oInstance.attributes["type"] != "radio" && oInstance.attributes["type"] != "checkbox")
+        nCell++;
+
+    if (oInstance.items.length) {
+		var aElements	= [];
+		for (var nIndex = 0; nIndex < oInstance.items.length; nIndex++)
+			aElements.push(oInstance.items[nIndex]);
+		aElements.sort(function(oElement1, oElement2){return oElement1.cells[nCell-1].attributes["label"] > oElement2.cells[nCell-1].attributes["label"] ? bDir ? 1 :-1 : oElement1.cells[nCell-1].attributes["label"] == oElement2.cells[nCell-1].attributes["label"] ? 0 : bDir ?-1 : 1;});
+		oInstance.items	= new AMLNodeList;
+		for (var nIndex = 0; nIndex < aElements.length; nIndex++)
+			oInstance.items.$add(aElements[nIndex]);
+
+        var oElementDOM	= oInstance.body.$getContainer("gateway");
+        for (var nIndex = 0; nIndex < oInstance.items.length; nIndex++) {
+            oElementDOM.appendChild(oInstance.items[nIndex].$getContainer());
+            if (oInstance.items[nIndex].attributes["selected"] == "true")
+            	oInstance.items[nIndex].setAttribute("selected", "true");
+        }
+    }
+};
+
 // Element Render: open
 cXULElement_listbox.prototype.$getTagOpen	= function() {
-    return '<div class="xul-listbox' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + (this.attributes["disabled"] == "true" ? " xul-listbox_disabled" : "") + '"' + (this.attributes["style"] ? ' style="' + this.attributes["style"] + '"' : '') + '>\
+	var sHeight	= this.attributes["height"],
+		sWidth	= this.attributes["width"];
+    return '<div class="xul-listbox' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + (!this.$isAccessible() ? " xul-listbox_disabled" : "") + '" style="' + (sHeight ? 'height:' + (sHeight * 1 == sHeight ? sHeight + "px" : sHeight) + ';' : '') + (sWidth ? 'width:' + (sWidth * 1 == sWidth ? sWidth + "px" : sWidth) + ';' : '') + (this.attributes["style"] ? this.attributes["style"] + '' : '') + '">\
     			<div style="position:relative;height:100%;top:0;padding-bottom:inherit;">\
-    				<div class="ns-listbox--resizer" style="height:100%;position:absolute;top:0px;display:none;z-index:1"></div>\
-					<table cellpadding="0" cellspacing="0" border="0" height="' +(this.attributes["height"] ? this.attributes["height"] : '100%')+ '" width="' +(this.attributes["width"] ? this.attributes["width"] : '100%')+ '">\
+    				<div class="xul-listbox--resizer" style="height:100%;position:absolute;top:0px;display:none;z-index:1"></div>\
+    				<table cellpadding="0" cellspacing="0" border="0" height="' +(sHeight ? sHeight : '100%')+ '" width="' +(sWidth ? sWidth : '100%')+ '" style="position:absolute">\
 						<tbody class="xul-listbox--gateway">';
 };
 
@@ -128,9 +132,9 @@ cXULElement_listbox.prototype.$getTagOpen	= function() {
 cXULElement_listbox.prototype.$getTagClose	= function() {
     return 				'</tbody>\
     				</table>\
-    			</div>\
+   				</div>\
     		</div>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("listbox", cXULElement_listbox);
+// Register Element
+ample.extend(cXULElement_listbox);

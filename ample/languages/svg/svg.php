@@ -1,6 +1,5 @@
 <?
     $aFiles		= array();
-    $aFiles[]	= "svg.js";
     $aFiles[]	= "classes/cSVGElement.js";
 
     $aFiles[]	= "classes/cSVGRect.js";
@@ -63,6 +62,7 @@
     $aFiles[]	= "elements/script.js";
 	$aFiles[]	= "elements/title.js";
 	$aFiles[]	= "elements/desc.js";
+	$aFiles[]	= "elements/switch.js";
 	$aFiles[]	= "elements/use.js";
 	$aFiles[]	= "elements/marker.js";
 	$aFiles[]	= "elements/clipPath.js";
@@ -75,7 +75,10 @@
 
 	header("Content-type: application/javascript");
 
-	echo 	"(function(){" .
+	echo
+			"(function(){" .
 				$sOutput .
-			"})();";
+			"})();" .
+			""
+	;
 ?>

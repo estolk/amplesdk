@@ -13,12 +13,12 @@ if (!cDOMParser)
 	cDOMParser.prototype.baseURI = null;
 	cDOMParser.prototype.parseFromString = function(sXml, sMime) {
 		// Validate arguments
-		fAML_validate(arguments, [
+		fGuard(arguments, [
 			["string",		cString],
 			["contentType",	cString]
 		]);
 
-		var oDocument   = new fActiveXObject("Microsoft.XMLDOM");
+		var oDocument   = new cActiveXObject("Microsoft.XMLDOM");
 		oDocument.async				= false;
 		oDocument.validateOnParse	= false;
 //		oDocument.preserveWhiteSpace= false;

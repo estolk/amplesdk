@@ -9,6 +9,9 @@
 
 var cAMLImplementation	= function(){};
 
+var oAMLImplementation_elements		= {},
+	oAMLImplementation_attributes	= {};
+
 // nsIDOMImplementation Level 1
 cAMLImplementation.prototype.hasFeature		= function(sFeature, sVersion)
 {
@@ -25,9 +28,8 @@ function fAMLImplementation_createDocument(oImplementation, sNameSpaceURI, sQNam
 {
 	// Create docuemnt
 	var oDocument	= new cAMLDocument;
-	oDocument.namespaceURI	= sNameSpaceURI;
 	oDocument.implementation= oImplementation;
-	oDocument.domConfig		= oAML_configuration;
+	oDocument.domConfig		= new cAMLConfiguration;
 	oDocument.childNodes	= new cAMLNodeList;
 
 	// Add processing instruction <?xml version="1.0"?>
@@ -42,10 +44,10 @@ function fAMLImplementation_createDocument(oImplementation, sNameSpaceURI, sQNam
 	{
 		oDocument.documentElement	= fAMLDocument_createElementNS(oDocument, sNameSpaceURI, sQName);
 		if (sNameSpaceURI)
-			oDocument.documentElement.attributes["xmlns" + (sQName.match(/^([^:]):/) ? ':' + cRegExp.$1 : '')]	= sNameSpaceURI;
+			oDocument.documentElement.attributes["xmlns" + (sQName.match(/^([^:]+):/) ? ':' + cRegExp.$1 : '')]	= sNameSpaceURI;
 		fAMLNode_appendChild(oDocument, oDocument.documentElement);
 	    // Register
-		fAML_register(oDocument.documentElement);
+		fAMLDocument_register(oDocument, oDocument.documentElement);
 	}
 
 	return oDocument;
@@ -54,9 +56,9 @@ function fAMLImplementation_createDocument(oImplementation, sNameSpaceURI, sQNam
 cAMLImplementation.prototype.createDocument	= function(sNameSpaceURI, sQName, oDocType)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["namespaceURI",	cString, false, true],
-		["qualifiedName",	cString, false, true],
+		["name",			cString, false, true],
 		["doctype",			cObject, false, true]
 	]);
 

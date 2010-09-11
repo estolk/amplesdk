@@ -13,7 +13,7 @@ var cXULElement_colorpicker_pane  = function() {
     this.y  = 0;
     this.b  = 1;
 };
-cXULElement_colorpicker_pane.prototype	= new cXULPopupElement;
+cXULElement_colorpicker_pane.prototype	= new cXULPopupElement("colorpicker-pane");
 
 cXULElement_colorpicker_pane.attributes	= {};
 cXULElement_colorpicker_pane.attributes.value	= "#FF0000";
@@ -197,9 +197,9 @@ cXULElement_colorpicker_pane.prototype.$getTagOpen	= function() {
 									<tr><td><br /></td></tr>\
 									<tr><td><input autocomplete="no" type="text" value="#FF0000" maxlength="7" class="xul-colorpicker-pane--value" onchange="ample.$instance(this)._onInputChange(event, this.value)" onkeyup="ample.$instance(this)._onInputChange(event, this.value)" onselectstart="event.cancelBubble=true;" oncontextmenu="event.cancelBubble=true"/></td></tr>\
 									<tr><td><br /></td></tr>\
-									<tr><td><button type="button" onclick="ample.$instance(this).acceptDialog();" class="xul-colorpicker-pane--button-accept">OK</button></td></tr>\
+									<tr><td><button type="button" onclick="ample.$instance(this).acceptDialog();" class="xul-colorpicker-pane--button-accept">' + oXULLocaleManager.getText("dialog.button.accept") + '</button></td></tr>\
 									<tr><td height="3"></td></tr>\
-									<tr><td><button type="button" onclick="ample.$instance(this).cancelDialog()" class="xul-colorpicker-pane--button-cancel">Cancel</button></td></tr>\
+									<tr><td><button type="button" onclick="ample.$instance(this).cancelDialog()" class="xul-colorpicker-pane--button-cancel">' + oXULLocaleManager.getText("dialog.button.cancel") + '</button></td></tr>\
 								</tbody>\
 							</table>\
 						</td>\
@@ -285,5 +285,5 @@ cXULElement_colorpicker_pane._toHex    = function(nValue) {
         return sHexCharacters.charAt(Math.floor(nValue / 16)) + sHexCharacters.charAt(nValue % 16);
 };
 
-// Register Widget with language
-oXULNamespace.setElement("colorpicker-pane", cXULElement_colorpicker_pane);
+// Register Element
+ample.extend(cXULElement_colorpicker_pane);

@@ -8,7 +8,7 @@
  */
 
 var cSVGElement_textPath	= function(){};
-cSVGElement_textPath.prototype	= new cSVGElement;
+cSVGElement_textPath.prototype	= new cSVGElement("textPath");
 
 if (cSVGElement.useVML) {
 	// Implementation for IE
@@ -33,7 +33,7 @@ if (cSVGElement.useVML) {
 
 			// text
 			if (this.firstChild instanceof AMLCharacterData)
-				this.$getContainer().getElementsByTagName("textpath")[0].string	= this.firstChild.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+				this.$getContainer().getElementsByTagName("textpath")[0].string	= this.firstChild.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 
 			var sValue;
 
@@ -49,7 +49,7 @@ if (cSVGElement.useVML) {
 		},
 		'DOMCharacterDataModified':	function(oEvent) {
 			if (oEvent.target.parentNode == this)
-				this.$getContainer().getElementsByTagName("textpath")[0].string	= oEvent.target.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+				this.$getContainer().getElementsByTagName("textpath")[0].string	= oEvent.target.data.replace(/^\s+/, '').replace(/\s+$/, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 		}
 	};
 
@@ -83,5 +83,5 @@ if (cSVGElement.useVML) {
 	};
 };
 
-// Register Element with language
-oSVGNamespace.setElement("textPath", cSVGElement_textPath);
+// Register Element
+ample.extend(cSVGElement_textPath);

@@ -4,6 +4,7 @@ xul|datepicker-pane {
 	display:inline-block;
 	margin: 1px;
 }
+
 xul|datepicker-pane xul|menupopup::shadow-bottom,
 xul|datepicker-pane xul|menupopup::shadow-right {
 	display: none;
@@ -58,4 +59,15 @@ xul|datepicker-pane-week {
 	/*height:18px;*/
 	color: gray;
 	font-style: italic;
+}
+
+/* Subviews */
+xul|datepicker-pane xul|menulist {
+	width: 90px;
+}
+xul|datepicker-pane xul|textbox {
+	width: 60px;
+}
+xul|datepicker-pane xul|textbox::input {
+	text-align:left;
 }

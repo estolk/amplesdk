@@ -11,7 +11,7 @@ var cXULElement_treechildren	= function() {
     // Public Collections
     this.items  = new AMLNodeList;
 };
-cXULElement_treechildren.prototype	= new cXULElement;
+cXULElement_treechildren.prototype	= new cXULElement("treechildren");
 
 // Public Properties
 cXULElement_treechildren.prototype.tree	= null;
@@ -37,7 +37,7 @@ cXULElement_treechildren.prototype._refresh	= function(aStack, nPrimaryCol) {
     for (var nItem = 0, oItem, oElementDOM; nItem < nItems; nItem++) {
         // Path
         oItem		= oChildren.items[nItem];
-        oElementDOM	= oItem.row.cells[nPrimaryCol].$getContainer();
+        oElementDOM	= oItem.row.cells[nPrimaryCol].$getContainer("label");
 
         if (bTreeLines) {
 	        // Line
@@ -49,7 +49,7 @@ cXULElement_treechildren.prototype._refresh	= function(aStack, nPrimaryCol) {
         }
 
         // Toc
-        if (oItem.getAttribute("container") == "true") {
+        if (oItem.attributes["container"] == "true") {
             // Step In
             if (oItem.children)
 	            this._refresh(aStack.concat(oItem.children), nPrimaryCol);
@@ -68,7 +68,7 @@ cXULElement_treechildren.handlers	= {
 				case "hidden":
 					for (var nIndex = 0; nIndex < this.items.length; nIndex++) {
 						this.items[nIndex].setAttribute("hidden", oEvent.newValue);
-						if (this.items[nIndex].children && this.items[nIndex].getAttribute("open") != "false")
+						if (this.items[nIndex].children && this.items[nIndex].attributes["open"] != "false")
 							this.items[nIndex].children.setAttribute("hidden", oEvent.newValue);
 					}
 					break;
@@ -102,5 +102,5 @@ cXULElement_treechildren.prototype.$getContainer	= function(sName) {
 	return sName == "gateway" ? this.parentNode.$getContainer("gateway") : null;
 };
 
-// Register Element with language
-oXULNamespace.setElement("treechildren", cXULElement_treechildren);
+// Register Element
+ample.extend(cXULElement_treechildren);

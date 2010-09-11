@@ -11,7 +11,7 @@ var cXULElement_treerow	= function() {
     // Collections
     this.cells      = new AMLNodeList;
 };
-cXULElement_treerow.prototype	= new cXULElement;
+cXULElement_treerow.prototype	= new cXULElement("treerow");
 cXULElement_treerow.prototype.$hoverable	= true;
 
 // Public Methods
@@ -61,9 +61,9 @@ cXULElement_treerow.prototype.$getTagOpen	= function() {
     if (this.parentNode.parentNode.parentNode.attributes["open"] == "false")
         this.parentNode.parentNode.attributes["hidden"] = "true";
 
-	return '<tr class="xul-treerow' + (this.attributes["class"] ? " xul-treerow_" + this.attributes["class"] : '') + '"' + (this.parentNode.parentNode.parentNode.attributes["open"] == "false" ? ' style="display:none"' : '')+ '>' +
+	return '<tr class="xul-treerow' + (this.attributes["class"] ? " xul-treerow_" + this.attributes["class"] : '') + '" style="height:1em;vertical-align:top;' + (this.parentNode.parentNode.parentNode.attributes["open"] == "false" ? 'display:none' : '')+ '">' +
 	    	(this.parentNode.attributes["label"] || (oTree && (oTree.attributes["type"] == "checkbox" || oTree.attributes["type"] == "radio"))
-			? ('<td style="padding:0" align="center" onmousedown="event.cancelBubble=true" class="xul-treecell">' +
+			? ('<td style="padding:0" onmousedown="event.cancelBubble=true" class="xul-treecell">' +
 				(this.parentNode.attributes["label"]
 				? '<div class="xul-treecell--gateway">' + this.parentNode.attributes["label"] + '</div>'
 				: (oTree.attributes["type"] == "checkbox"
@@ -77,8 +77,9 @@ cXULElement_treerow.prototype.$getTagOpen	= function() {
 
 // Element Render: close
 cXULElement_treerow.prototype.$getTagClose	= function() {
-    return '</tr>';
+    return 		'<td class="xul-treecell" width="100%"></td>\
+    		</tr>';
 };
 
-// Register Element with language
-oXULNamespace.setElement("treerow", cXULElement_treerow);
+// Register Element
+ample.extend(cXULElement_treerow);

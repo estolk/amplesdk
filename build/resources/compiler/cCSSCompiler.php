@@ -43,7 +43,7 @@
 	        $sData	= str_replace("	",   		" ",   		$sData);
 
 	        // Strip ' : ' spaces around
-	        $sData	= preg_replace('/ *([=\+\:\|\^<>\{\};]) */', '$1', $sData);
+	        $sData	= preg_replace('/ *([=\+\:\|\^<>\{\};,]) */', '$1', $sData);
 
 	        // strip all more than one spaces
 	        $sData	= preg_replace("/\s\s+/",	"",			$sData);
@@ -74,15 +74,20 @@
 			// add vendor prefixed styles
 			$sBefore	= "$1$2$3$4-";
 			$sAfter		= "-$2$3$4";
+			// Opera
+			$sCSS	= preg_replace("/([\s;{])(text-overflow\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "o" . $sAfter, $sCSS);
 			// WebKit
+			$sCSS	= preg_replace("/([\s;{])(text-overflow\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "webkit" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(box-shadow\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "webkit" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(outline-radius\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "webkit" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(border-radius\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "webkit" . $sAfter, $sCSS);
-			// Gecko-specific
+			// Gecko
+			$sCSS	= preg_replace("/([\s;{])(text-overflow\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "moz" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(box-shadow\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "moz" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(outline-radius\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "moz" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(border-radius\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "moz" . $sAfter, $sCSS);
 			$sCSS	= preg_replace("/([\s;{])(box-sizing\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "moz" . $sAfter, $sCSS);
+			//
 			$sBefore	= $sBefore . 'moz-border-radius-';
 			$sAfter		= ':$3$4';
 			$sCSS	= preg_replace("/([\s;{])(border-top-left-radius\s*:\s*)([^\n;}]+)([\n;}])/", $sBefore . "topleft" . $sAfter, $sCSS);
@@ -100,8 +105,8 @@
 
 					$sCSSSelector	= $aRules[1][$nIndex];
 					$sCSSSelector	= preg_replace("/\|/", '-', $sCSSSelector);								// Namespace
-					$sCSSSelector	= preg_replace("/(^|[\s>+~,}]|not\()([\w])/", '$1.$2', $sCSSSelector);	// Element
-					$sCSSSelector	= preg_replace("/\[([\w]+)=?([\w]+)?\]/", '-$1-$2', $sCSSSelector);		// Attribute
+					$sCSSSelector	= preg_replace("/(^|[\s>+~,}]|not\()([\w-])/", '$1.$2', $sCSSSelector);	// Element
+					$sCSSSelector	= preg_replace("/\[([\w-]+)=?([\w-]+)?\]/", '-$1-$2', $sCSSSelector);	// Attribute
 					$sCSSSelector	= preg_replace("/::/", '--', $sCSSSelector);							// Pseudo-element
 					$sCSSSelector	= preg_replace("/:nth-child\((\d+)\)/", '_nth-child-$1', $sCSSSelector);// Pseudo-class nth-child
 					$sCSSSelector	= preg_replace("/:(?!last-child|first-child|not)/", '_', $sCSSSelector);// Pseudo-class

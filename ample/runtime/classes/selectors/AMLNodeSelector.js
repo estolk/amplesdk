@@ -13,52 +13,55 @@ var nAMLSelector_iterator	= 0,
 
 function fAMLSelector_query(aFrom, sQuery, fResolver, bMatchOne)
 {
-    var aMatch	= new cAMLNodeList,
-    	aBase	= aFrom;
-    // process comma separated selectors
-    var aSelectors = fAMLSelector_parseSelector(sQuery).split(rAMLSelector_comma), nSelector, aSelector;
-    for (nSelector = 0; nSelector < aSelectors.length; nSelector++) {
-        // convert the selector to a stream
-        aSelector = fAMLSelector_toStream(aSelectors[nSelector]);
-		aFrom = aBase;
+    var aMatch	= new cAMLNodeList;
+    if (sQuery = fAMLSelector_parseSelector(sQuery)) {
+	    // process comma separated selectors
+	    var aBase	= aFrom,
+	    	aSelectors = sQuery.split(rAMLSelector_comma),
+	    	nSelector,
+	    	aSelector;
+	    for (nSelector = 0; nSelector < aSelectors.length; nSelector++) {
+	        // convert the selector to a stream
+	        aSelector = fAMLSelector_toStream(aSelectors[nSelector]);
+			aFrom = aBase;
 
-        // process the stream
-        var nIndex = 0, sToken, sFilter, sArguments, bBracketRounded, bBracketSquare;
-        while (nIndex < aSelector.length) {
-            sToken = aSelector[nIndex++];
-            sFilter = aSelector[nIndex++];
-            // some pseudo-classes allow arguments to be passed
-            //  e.g. nth-child(even)
-            sArguments = '';
-            bBracketRounded	= aSelector[nIndex] == '(';
-            bBracketSquare	= aSelector[nIndex-1] == '[';
-            if (bBracketRounded || bBracketSquare) {
-            	if (bBracketSquare)
-            		nIndex--;
-                while (aSelector[nIndex++] != (bBracketRounded ? ')' : ']') && nIndex < aSelector.length)
-                    sArguments += aSelector[nIndex];
-                sArguments = sArguments.slice(0, -1);
-            }
-            // process a token/filter pair use cached results if possible
-            aFrom = fAMLSelector_select(aFrom, sToken, sFilter, sArguments, fResolver);
-        }
-        // Setting _cssIndex enables selection uniqueness
-        for (nIndex = 0; nIndex < aFrom.length; nIndex++) {
-        	if (aFrom[nIndex]._cssIndex != nAMLSelector_iterator) {
-        		aMatch[aMatch.length++]	= aFrom[nIndex];
-				if (bMatchOne)
-					return aMatch;
-				//
-        		aFrom[nIndex]._cssIndex	= nAMLSelector_iterator;
-        	}
-        }
+	        // process the stream
+	        var nIndex = 0, sToken, sFilter, sArguments, bBracketRounded, bBracketSquare;
+	        while (nIndex < aSelector.length) {
+	            sToken = aSelector[nIndex++];
+	            sFilter = aSelector[nIndex++];
+	            // some pseudo-classes allow arguments to be passed
+	            //  e.g. nth-child(even)
+	            sArguments = '';
+	            bBracketRounded	= aSelector[nIndex] == '(';
+	            bBracketSquare	= aSelector[nIndex-1] == '[';
+	            if (bBracketRounded || bBracketSquare) {
+	            	if (bBracketSquare)
+	            		nIndex--;
+	                while (aSelector[nIndex++] != (bBracketRounded ? ')' : ']') && nIndex < aSelector.length)
+	                    sArguments += aSelector[nIndex];
+	                sArguments = sArguments.slice(0, -1);
+	            }
+	            // process a token/filter pair use cached results if possible
+	            aFrom = fAMLSelector_select(aFrom, sToken, sFilter, sArguments, fResolver);
+	        }
+	        // Setting _cssIndex enables selection uniqueness
+	        for (nIndex = 0; nIndex < aFrom.length; nIndex++) {
+	        	if (aFrom[nIndex]._cssIndex != nAMLSelector_iterator) {
+	        		aMatch[aMatch.length++]	= aFrom[nIndex];
+					if (bMatchOne)
+						return aMatch;
+					//
+	        		aFrom[nIndex]._cssIndex	= nAMLSelector_iterator;
+	        	}
+	        }
+	    }
+
+		// Remove temporarily set _cssIndex
+		for (var nIndex = 0; nIndex < aMatch.length; nIndex++)
+			delete aMatch[nIndex]._cssIndex;
+		nAMLSelector_iterator++;
     }
-
-	// Remove temporarily set _cssIndex
-	for (var nIndex = 0; nIndex < aMatch.length; nIndex++)
-		delete aMatch[nIndex]._cssIndex;
-	nAMLSelector_iterator++;
-
     return aMatch;
 };
 
@@ -76,7 +79,11 @@ function fAMLSelector_select(aFrom, sToken, sFilter, sArguments, fResolver) {
     if (oAMLSelector_elementSelectors[sToken])
         oAMLSelector_elementSelectors[sToken](aReturn, aFrom, sFilter, sArguments, fResolver);
 	else
-		throw new cAMLException(cAMLException.AML_SELECTOR_ELEMENT_ERR, fAMLSelector_query.caller.caller, [sToken]);
+		throw new cAMLException(cAMLException.AML_SELECTOR_ELEMENT_ERR, fAMLSelector_query.caller.caller
+//->Debug
+				, [sToken]
+//<-Debug
+		);
     return aReturn;
 };
 
@@ -87,17 +94,6 @@ var rAMLSelector_quotes	= /^('[^']*')|("[^"]*")$/;
 
 function fAMLSelector_getText(sString) {
 	return rAMLSelector_quotes.test(sString) ? sString.slice(1, -1) : sString;
-};
-
-function fAMLSelector_getTextContent(oElement) {
-	var sText	= '', oNode;
-	for (var nIndex = 0, oNode; oNode = oElement.childNodes[nIndex]; nIndex++)
-		if (oNode.nodeType == cAMLNode.ELEMENT_NODE)
-			sText	+= fAMLSelector_getTextContent(oNode);
-		else
-		if (oNode.nodeType == cAMLNode.TEXT_NODE || oNode.nodeType == cAMLNode.CDATA_SECTION)
-			sText	+= oNode.data;
-	return sText;
 };
 
 function fAMLSelector_getNextSibling(oElement)
@@ -278,7 +274,11 @@ oAMLSelector_elementSelectors['@'] = function(aReturn, aFrom, sString, sArgument
 					aReturn.push(oElement);
 		}
 		else
-			throw new cAMLException(cAMLException.AML_SELECTOR_ATTRIBUTE_ERR, fAMLSelector_query.caller.caller, [sCompare]);
+			throw new cAMLException(cAMLException.AML_SELECTOR_ATTRIBUTE_ERR, fAMLSelector_query.caller.caller
+//->Debug
+					, [sCompare]
+//<-Debug
+			);
 	}
 };
 
@@ -292,9 +292,9 @@ oAMLSelector_pseudoClasses["first-child"] = function(oElement) {
 
 oAMLSelector_pseudoClasses["lang"] = function(oElement, sCode) {
     var rValue = new cRegExp('^' + sCode, 'i');
-    while (oElement && oElement.parentNode != oElement.ownerDocument && !fAMLElement_getAttribute(oElement, "lang"))
+    while (oElement && oElement.parentNode != oElement.ownerDocument && !fAMLElement_getAttribute(oElement, "xml:lang") && !fAMLElement_getAttribute(oElement, "lang"))
     	oElement = oElement.parentNode;
-    return oElement && rValue.test(fAMLElement_getAttribute(oElement, "lang"));
+    return oElement && rValue.test(fAMLElement_getAttribute(oElement, "xml:lang") || fAMLElement_getAttribute(oElement, "lang"));
 };
 
 // -----------------------------------------------------------------------
@@ -352,7 +352,7 @@ oAMLSelector_elementSelectors['~'] = function(aReturn, aFrom, sTagName, sArgumen
 // pseudo-classes
 // -----------------------------------------------------------------------
 oAMLSelector_pseudoClasses["contains"] = function(oElement, sText) {
-	return fAMLSelector_getText(sText).indexOf(fAMLSelector_getTextContent(oElement)) !=-1;
+	return fAMLSelector_getText(sText).indexOf(fAMLNode_getTextContent(oElement)) !=-1;
 };
 
 oAMLSelector_pseudoClasses["root"] = function(oElement) {
@@ -390,24 +390,33 @@ oAMLSelector_pseudoClasses["nth-last-child"] = function(oElement, sArguments) {
 };
 
 oAMLSelector_pseudoClasses["target"] = function(oElement) {
-	return oElement.id == oUALocation.hash.slice(1);
+	return fAMLElement_hazAttribute(oElement, 'id') && fAMLElement_getAttribute(oElement, 'id') == oUALocation.hash.slice(1);
 };
 
 // UI element states
 oAMLSelector_pseudoClasses["checked"] = function(oElement) {
-	return oElement.checked;
+	return fAMLElement_hazAttribute(oElement, "checked") && fAMLElement_getAttribute(oElement, "checked") == "true";
 };
 
 oAMLSelector_pseudoClasses["enabled"] = function(oElement) {
-	return oElement.disabled === false;
+	return !fAMLElement_hazAttribute(oElement, "disabled") || fAMLElement_getAttribute(oElement, "disabled") != "true";
 };
 
 oAMLSelector_pseudoClasses["disabled"] = function(oElement) {
-	return oElement.disabled;
+	return fAMLElement_hazAttribute(oElement, "disabled") && fAMLElement_getAttribute(oElement, "disabled") == "true";
 };
 
 oAMLSelector_pseudoClasses["indeterminate"] = function(oElement) {
 	return oElement.indeterminate;
+};
+
+// jQuery Visibility Filter
+oAMLSelector_pseudoClasses["hidden"] = function(oElement) {
+	return !fAMLFocus_isVisible(oElement);
+};
+
+oAMLSelector_pseudoClasses["visible"] = function(oElement) {
+	return fAMLFocus_isVisible(oElement);
 };
 
 // -----------------------------------------------------------------------
@@ -480,9 +489,9 @@ cAMLDocument.prototype.querySelector		=
 cAMLNodeSelector.prototype.querySelector	= function(sCSS, fResolver)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["query",		cString],
-		["NSResolver",	cFunction, true]
+		["resolver",	cFunction, true]
 	]);
 
 	var aNodeList	= fAMLSelector_query([this], sCSS, fResolver, true);
@@ -494,9 +503,9 @@ cAMLDocument.prototype.querySelectorAll		=
 cAMLNodeSelector.prototype.querySelectorAll	= function(sCSS, fResolver)
 {
 	// Validate arguments
-	fAML_validate(arguments, [
+	fGuard(arguments, [
 		["query",		cString],
-		["NSResolver",	cFunction, true]
+		["resolver",	cFunction, true]
 	]);
 
 	return fAMLSelector_query([this], sCSS, fResolver);

@@ -7,14 +7,30 @@
  *
  */
 
-var cSVGElement	= function(){};
+var cSVGElement	= function(sLocalName) {
+	this.localName	= sLocalName;
+};
 cSVGElement.prototype	= new AMLElement;
+cSVGElement.prototype.namespaceURI	= "http://www.w3.org/2000/svg";
+cSVGElement.prototype.localName		= "-element";
 
 cSVGElement.useVML	= navigator.userAgent.match(/MSIE ([\d.]+)/) && RegExp.$1 < 9;
 
 if (cSVGElement.useVML) {
 	// Add namespace
 	document.namespaces.add("svg2vml", "urn:schemas-microsoft-com:vml", "#default#VML");
+
+	cSVGElement.prototype.$getStyle	= function(sName) {
+		return cSVGElement.getStyleOwn(this, sName);
+	};
+
+	cSVGElement.prototype.$setStyle	= function(sName, sValue) {
+		cSVGElement.setStyle(this, sName, sValue);
+	};
+
+	cSVGElement.prototype.$getStyleComputed	= function(sName) {
+		return cSVGElement.getStyle(this, sName);
+	};
 
 	cSVGElement.prototype.getBBox	= function() {
 		var oBCRectRoot	= cSVGElement.getViewportElement(this).$getContainer().getBoundingClientRect(),
@@ -362,6 +378,9 @@ if (cSVGElement.useVML) {
 				break;
 			case "font-style":
 				oElementDOM.getElementsByTagName("textpath")[0].style.fontStyle		= sValue;
+				break;
+			case "visibility":
+				oElementDOM.style.visibility	= sValue;
 				break;
 		}
 	};
@@ -824,5 +843,28 @@ else {
 	};
 };
 
-// Register Element with language
-oSVGNamespace.setElement("#element", cSVGElement);
+// Map SMIL
+function copyElement(sTarget, sSource) {
+	var aTarget	= sTarget.split('#'),
+		fSource	= ample.$element(sSource),
+		oSource	= new fSource;
+	//
+	oSource.namespaceURI= aTarget[0];
+	oSource.localName	= aTarget[1];
+	var fTarget	= function() {
+		fSource.call(this);
+	};
+	fTarget.prototype	= oSource;
+	// Statics Object Members
+	fTarget.handlers	= fSource.handlers;
+	fTarget.attributes	= fSource.attributes;
+	//
+	ample.extend(fTarget);
+}
+copyElement("http://www.w3.org/2000/svg#set", "http://www.w3.org/2008/SMIL30/#set");
+copyElement("http://www.w3.org/2000/svg#animate", "http://www.w3.org/2008/SMIL30/#animate");
+copyElement("http://www.w3.org/2000/svg#animateColor", "http://www.w3.org/2008/SMIL30/#animateColor");
+copyElement("http://www.w3.org/2000/svg#animateMotion", "http://www.w3.org/2008/SMIL30/#animateMotion");
+copyElement("http://www.w3.org/2000/svg#animateTransform", "http://www.w3.org/2008/SMIL30/#animateTransform");
+// Register Element
+ample.extend(cSVGElement);

@@ -221,8 +221,8 @@ if (!oJSON) {
 	oJSON.parse = function(sText, fReviver) {
 
 		// Validate arguments
-		fAML_validate(arguments, [
-			["text",	cString]
+		fGuard(arguments, [
+			["string",	cString]
 		]);
 
 // The parse method takes a text and an optional reviver function, and returns

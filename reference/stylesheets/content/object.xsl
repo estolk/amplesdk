@@ -111,26 +111,28 @@
 			</xsl:if>
 		</xsl:param>
 
-		<xsl:choose>
-			<!-- EXSLT way -->
-			<xsl:when test="$implementation-node-set = 'exslt'">
-				<xsl:call-template name="members">
-					<xsl:with-param name="members" select="$members | exslt:node-set($members_inherited)/*[*]" />
-				</xsl:call-template>
-			</xsl:when>
-			<!-- MSXSL way -->
-			<xsl:when test="$implementation-node-set = 'msxsl'">
-				<xsl:call-template name="members">
-					<xsl:with-param name="members" select="$members | msxsl:node-set($members_inherited)/*[*]" />
-				</xsl:call-template>
-			</xsl:when>
-			<!-- OTHERWISE -->
-			<xsl:otherwise>
-				<xsl:call-template name="members">
-					<xsl:with-param name="members" select="$members" />
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:if test="$members | exslt:node-set($members_inherited)/*[*]">
+			<xsl:choose>
+				<!-- EXSLT way -->
+				<xsl:when test="$implementation-node-set = 'exslt'">
+					<xsl:call-template name="members">
+						<xsl:with-param name="members" select="$members | exslt:node-set($members_inherited)/*[*]" />
+					</xsl:call-template>
+				</xsl:when>
+				<!-- MSXSL way -->
+				<xsl:when test="$implementation-node-set = 'msxsl'">
+					<xsl:call-template name="members">
+						<xsl:with-param name="members" select="$members | msxsl:node-set($members_inherited)/*[*]" />
+					</xsl:call-template>
+				</xsl:when>
+				<!-- OTHERWISE -->
+				<xsl:otherwise>
+					<xsl:call-template name="members">
+						<xsl:with-param name="members" select="$members" />
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template name="members">
@@ -354,7 +356,7 @@
 	<xsl:template match="attribute">
 		<tr>
 			<!-- Set class if member is inherited -->
-			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 				<xsl:attribute name="class"><xsl:text>member-inherited</xsl:text></xsl:attribute>
 			</xsl:if>
 			<xsl:attribute name="id">attribute-<xsl:value-of select="@name" /></xsl:attribute>
@@ -371,7 +373,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- Flag if member is inherited -->
-				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 					<xsl:text> *</xsl:text>
 				</xsl:if>
 			</td>
@@ -444,7 +446,7 @@
 	<xsl:template match="property">
 		<tr>
 			<!-- Set class if member is inherited -->
-			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 				<xsl:attribute name="class"><xsl:text>member-inherited</xsl:text></xsl:attribute>
 			</xsl:if>
 			<xsl:attribute name="id">property-<xsl:value-of select="@name" /></xsl:attribute>
@@ -461,7 +463,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 				<!-- Flag if member is inherited -->
-				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 					<xsl:text> *</xsl:text>
 				</xsl:if>
 			</td>
@@ -573,7 +575,7 @@
 	<xsl:template match="method">
 		<tr>
 			<!-- Set class if member is inherited -->
-			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 				<xsl:attribute name="class"><xsl:text>member-inherited</xsl:text></xsl:attribute>
 			</xsl:if>
 			<xsl:attribute name="id">method-<xsl:value-of select="@name" /></xsl:attribute>
@@ -583,7 +585,7 @@
 					<xsl:value-of select="@name" />
 				</a>
 				<!-- Flag if member is inherited -->
-				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 					<xsl:text> *</xsl:text>
 				</xsl:if>
 			</td>
@@ -603,56 +605,70 @@
 			<xsl:attribute name="id">e_<xsl:value-of select="@name"/></xsl:attribute>
 			<td colspan="3">
 				<xsl:value-of select="$strings/methods_syntax" />
-				<p style="padding-left:10px;">
-					object.<b><xsl:value-of select="@name" />(</b>
-					<xsl:for-each select="arguments/argument">
-						<xsl:if test="(not(preceding-sibling::*[1]/@required) or preceding-sibling::*[1]/@required='true' or position()=1) and @required='false'">
-							<b>[</b>
-						</xsl:if>
-						<i><xsl:value-of select="@name"/></i>
-						<xsl:if test="position()!=last()"><b>, </b></xsl:if>
-						<xsl:if test="position()=last() and @required='false'"><b>]</b></xsl:if>
-					</xsl:for-each><b>)</b>
-				</p>
-				<xsl:if test="arguments/argument">
-					<xsl:value-of select="$strings/methods_args" />
-					<p style="padding-left:10px;padding-right:5px;">
-						<table cellPadding="0" cellSpacing="0" border="0" class="inner">
-						<thead>
-							<td><b><xsl:value-of select="$strings/methods_arg_name" /></b></td>
-							<td><b><xsl:value-of select="$strings/methods_arg_type" /></b></td>
-							<td title="{$strings/methods_arg_o_title}"><b><xsl:value-of select="$strings/methods_arg_o" /></b></td>
-							<td width="100%"><b><xsl:value-of select="$strings/methods_arg_descr" /></b></td>
-						</thead>
-						<xsl:for-each select="arguments/argument">
-						<tr>
-							<td nowrap="yes"><i><xsl:value-of select="@name"/></i></td>
-							<td nowrap="yes">
-								<xsl:choose>
-									<xsl:when test="starts-with(@type, 'AML')">
-										<a href="../runtime/{@type}.xml" class="object"><xsl:value-of select="@type" /></a>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="@type" />
-									</xsl:otherwise>
-								</xsl:choose>
-							</td>
-							<td nowrap="yes">
-								<xsl:choose>
-									<xsl:when test="@required='false'">
-										<font color="green"><xsl:value-of select="$strings/methods_arg_opt" /></font>
-									</xsl:when>
-									<xsl:otherwise>
-										<font color="#a40101"><xsl:value-of select="$strings/methods_arg_req" /></font>
-									</xsl:otherwise>
-								</xsl:choose>
-							</td>
-							<td><xsl:apply-templates select="description"/></td>
-						</tr>
+				<xsl:choose>
+					<xsl:when test="count(arguments) = 0">
+						<p style="padding-left:10px;">
+							object.<b><xsl:value-of select="@name" />()</b>
+						</p>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:for-each select="arguments">
+							<xsl:if test="count(preceding-sibling::arguments)">
+								<xsl:value-of select="$strings/methods_syntax" /> (<xsl:value-of select="count(preceding-sibling::arguments) + 1" />)
+							</xsl:if>
+							<p style="padding-left:10px;">
+								object.<b><xsl:value-of select="../@name" />(</b>
+								<xsl:for-each select="argument">
+									<xsl:if test="(not(preceding-sibling::*[1]/@required) or preceding-sibling::*[1]/@required='true' or position()=1) and @required='false'">
+										<b>[</b>
+									</xsl:if>
+									<i><xsl:value-of select="@name"/></i>
+									<xsl:if test="position()!=last()"><b>, </b></xsl:if>
+									<xsl:if test="position()=last() and @required='false'"><b>]</b></xsl:if>
+								</xsl:for-each><b>)</b>
+							</p>
+							<xsl:if test="argument">
+								<xsl:value-of select="$strings/methods_args" />
+								<p style="padding-left:10px;padding-right:5px;">
+									<table cellPadding="0" cellSpacing="0" border="0" class="inner">
+									<thead>
+										<td><b><xsl:value-of select="$strings/methods_arg_name" /></b></td>
+										<td><b><xsl:value-of select="$strings/methods_arg_type" /></b></td>
+										<td title="{$strings/methods_arg_o_title}"><b><xsl:value-of select="$strings/methods_arg_o" /></b></td>
+										<td width="100%"><b><xsl:value-of select="$strings/methods_arg_descr" /></b></td>
+									</thead>
+									<xsl:for-each select="argument">
+									<tr>
+										<td nowrap="yes"><i><xsl:value-of select="@name"/></i></td>
+										<td nowrap="yes">
+											<xsl:choose>
+												<xsl:when test="starts-with(@type, 'AML')">
+													<a href="../runtime/{@type}.xml" class="object"><xsl:value-of select="@type" /></a>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="@type" />
+												</xsl:otherwise>
+											</xsl:choose>
+										</td>
+										<td nowrap="yes">
+											<xsl:choose>
+												<xsl:when test="@required='false'">
+													<font color="green"><xsl:value-of select="$strings/methods_arg_opt" /></font>
+												</xsl:when>
+												<xsl:otherwise>
+													<font color="#a40101"><xsl:value-of select="$strings/methods_arg_req" /></font>
+												</xsl:otherwise>
+											</xsl:choose>
+										</td>
+										<td><xsl:apply-templates select="description"/></td>
+									</tr>
+									</xsl:for-each>
+									</table>
+								</p>
+							</xsl:if>
 						</xsl:for-each>
-						</table>
-					</p>
-				</xsl:if>
+					</xsl:otherwise>
+				</xsl:choose>
 			</td>
 		</tr>
 	</xsl:template>
@@ -683,14 +699,14 @@
 	<xsl:template match="event">
 		<tr>
 			<!-- Set class if member is inherited -->
-			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 				<xsl:attribute name="class"><xsl:text>member-inherited</xsl:text></xsl:attribute>
 			</xsl:if>
 			<xsl:attribute name="id">event-<xsl:value-of select="@name" /></xsl:attribute>
 			<td nowrap="yes">
 				<xsl:value-of select="@name" />
 				<!-- Flag if member is inherited -->
-				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 					<xsl:text> *</xsl:text>
 				</xsl:if>
 			</td>
@@ -707,7 +723,7 @@
 				</xsl:choose>
 			</td>
 			<td nowrap="yes">
-				<a href="../runtime/AML{@group}.xml"><xsl:value-of select="@group" /></a>
+				<a href="../runtime/AML{@type}.xml"><xsl:value-of select="@type" /></a>
 			</td>
 			<td><xsl:apply-templates select="description"/></td>
 		</tr>
@@ -736,14 +752,14 @@
 	<xsl:template match="pseudoclass">
 		<tr>
 			<!-- Set class if member is inherited -->
-			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+			<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 				<xsl:attribute name="class"><xsl:text>member-inherited</xsl:text></xsl:attribute>
 			</xsl:if>
 			<xsl:attribute name="id">pseudoclass-<xsl:value-of select="@name" /></xsl:attribute>
 			<td nowrap="yes">
 				<xsl:value-of select="@name" />
 				<!-- Flag if member is inherited -->
-				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'element')">
+				<xsl:if test="not(local-name(/*[1]) = 'object') and not(local-name(/*[1]) = 'class') and not(local-name(/*[1]) = 'element')">
 					<xsl:text> *</xsl:text>
 				</xsl:if>
 			</td>

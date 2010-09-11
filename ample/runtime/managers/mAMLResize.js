@@ -7,7 +7,7 @@
  *
  */
 
-var	nAMLResize_STATE_RELEASED	= 0,	// Constants
+var nAMLResize_STATE_RELEASED	= 0,	// Constants
 	nAMLResize_STATE_CAPTURED	= 1,
 	nAMLResize_STATE_RESIZED	= 2,
 
@@ -28,10 +28,10 @@ var	nAMLResize_STATE_RELEASED	= 0,	// Constants
 
 	nAMLResize_mouseX,
 	nAMLResize_mouseY,
-	nAMLResize_clientLeft,
-	nAMLResize_clientTop,
-	nAMLResize_clientHeight,
-	nAMLResize_clientWidth,
+	sAMLResize_clientLeft,
+	sAMLResize_clientTop,
+	sAMLResize_clientHeight,
+	sAMLResize_clientWidth,
 	nAMLResize_offsetLeft,
 	nAMLResize_offsetTop,
 	nAMLResize_offsetHeight,
@@ -76,7 +76,7 @@ function fAMLResize_onMouseDown(oEvent)
 	    // Simulate initial mousemove event
 		fSetTimeout(function() {
 			fAMLResize_onMouseMove.call(oEvent.currentTarget, oEvent);
-		});
+		}, 0);
 	}
 };
 
@@ -94,14 +94,14 @@ function fAMLResize_onMouseMove(oEvent)
 			if (oElement.$resizable)
 			{
 				var oElementDOM	= oElement.$getContainer(),
-					oPosition	= fAMLElement_getBoundingClientRect(oElement),
-					oComputedStyle	= fAML_getComputedStyle(oElementDOM),
+					oComputedStyle	= fBrowser_getComputedStyle(oElementDOM),
+					oRect	= fAMLElement_getBoundingClientRect(oElement),
 					nResize		= nAMLResize_EDGE_NONE,
 					nResizeEdges= oElement.$resizeEdges || 15,
 					sCursor		= '';
 
-				var nOffsetLeft	= nAMLResize_mouseX - oPosition.left/* + oPosition.scrollLeft*/,
-					nOffsetTop	= nAMLResize_mouseY - oPosition.top/* + oPosition.scrollTop*/;
+				var nOffsetLeft	= nAMLResize_mouseX - oRect.left/* + oRect.scrollLeft*/,
+					nOffsetTop	= nAMLResize_mouseY - oRect.top/* + oRect.scrollTop*/;
 
 				// Vertical
 				if (fAMLResize_inScope(nOffsetTop, fAMLResize_getStyleValueNumeric(oComputedStyle, "borderTopWidth")))
@@ -110,7 +110,7 @@ function fAMLResize_onMouseMove(oEvent)
 					sCursor+= 'n';
 				}
 				else
-				if (fAMLResize_inScope(nOffsetTop - oPosition.bottom + oPosition.top, fAMLResize_getStyleValueNumeric(oComputedStyle, "borderBottomWidth")))
+				if (fAMLResize_inScope(nOffsetTop - oRect.bottom + oRect.top, fAMLResize_getStyleValueNumeric(oComputedStyle, "borderBottomWidth")))
 				{
 					nResize|= nResizeEdges & nAMLResize_EDGE_BOTTOM;
 					sCursor+= 's';
@@ -123,7 +123,7 @@ function fAMLResize_onMouseMove(oEvent)
 					sCursor+= 'w';
 				}
 				else
-				if (fAMLResize_inScope(nOffsetLeft - oPosition.right + oPosition.left, fAMLResize_getStyleValueNumeric(oComputedStyle, "borderRightWidth")))
+				if (fAMLResize_inScope(nOffsetLeft - oRect.right + oRect.left, fAMLResize_getStyleValueNumeric(oComputedStyle, "borderRightWidth")))
 				{
 					nResize|= nResizeEdges & nAMLResize_EDGE_RIGHT;
 					sCursor+= 'e';
@@ -158,7 +158,7 @@ function fAMLResize_onMouseMove(oEvent)
    	oEvent.stopPropagation();
 
 	var oElementDOM	= oAMLResize_resizeNode.$getContainer(),
-		oPosition	= fAMLElement_getBoundingClientRect(oAMLResize_resizeNode),
+		oRect	= fAMLElement_getBoundingClientRect(oAMLResize_resizeNode),
 		oStyle		= oElementDOM.style;
 
 	// Turn mode to interactive
@@ -176,18 +176,21 @@ function fAMLResize_onMouseMove(oEvent)
 			return;
 		}
 
+		// Save current position
+		sAMLResize_clientWidth		= oStyle.width;
+		sAMLResize_clientHeight		= oStyle.height;
+		sAMLResize_clientLeft		= oStyle.left;
+		sAMLResize_clientTop		= oStyle.top;
+
+		// Add :resize pseudo-class
+		fAMLElement_setPseudoClass(oAMLResize_resizeNode, "resize", true);
+
 		// set capture and prevent selection
-		fAML_toggleSelect(false);
+		fBrowser_toggleSelect(false);
 		if (bTrident)
 			oAMLResize_resizeNode.$getContainer().setCapture();
 
-		// Save current position
-		nAMLResize_clientWidth		= oStyle.width;
-		nAMLResize_clientHeight		= oStyle.height;
-		nAMLResize_clientLeft		= oStyle.left;
-		nAMLResize_clientTop		= oStyle.top;
-
-		var oComputedStyle	= fAML_getComputedStyle(oElementDOM),
+		var oComputedStyle	= fBrowser_getComputedStyle(oElementDOM),
 			bBackCompat		= oUADocument.compatMode == "BackCompat";
 
 		// move resizable position to (0, 0)
@@ -195,27 +198,27 @@ function fAMLResize_onMouseMove(oEvent)
 		oStyle.top	= '0';
 
 		// get resizable position at (0, 0)
-		var oPositionP	= fAMLElement_getBoundingClientRect(oAMLResize_resizeNode);
+		var oRect0	= fAMLElement_getBoundingClientRect(oAMLResize_resizeNode);
 
 		// restore resizable position
-		oStyle.left	= nAMLResize_clientLeft;
-		oStyle.top	= nAMLResize_clientTop;
+		oStyle.left	= sAMLResize_clientLeft;
+		oStyle.top	= sAMLResize_clientTop;
 
 	    //
     	nAMLResize_resizeState	= nAMLResize_STATE_RESIZED;
 
-	    nAMLResize_offsetWidth		=(oPosition.right - oPosition.left)	-(bBackCompat ? 0 : (fAMLResize_getStyleValueNumeric(oComputedStyle, "borderLeftWidth") + fAMLResize_getStyleValueNumeric(oComputedStyle, "borderRightWidth")) + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingLeft") + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingRight"));
-	    nAMLResize_offsetHeight		=(oPosition.bottom - oPosition.top)	-(bBackCompat ? 0 : (fAMLResize_getStyleValueNumeric(oComputedStyle, "borderTopWidth") + fAMLResize_getStyleValueNumeric(oComputedStyle, "borderBottomWidth")) + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingTop") + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingBottom"));
-	    nAMLResize_offsetLeft		= oPosition.left	- oPositionP.left;
-	    nAMLResize_offsetTop		= oPosition.top		- oPositionP.top;
+	    nAMLResize_offsetWidth		=(oRect.right - oRect.left)	-(bBackCompat ? 0 : (fAMLResize_getStyleValueNumeric(oComputedStyle, "borderLeftWidth") + fAMLResize_getStyleValueNumeric(oComputedStyle, "borderRightWidth")) + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingLeft") + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingRight"));
+	    nAMLResize_offsetHeight		=(oRect.bottom - oRect.top)	-(bBackCompat ? 0 : (fAMLResize_getStyleValueNumeric(oComputedStyle, "borderTopWidth") + fAMLResize_getStyleValueNumeric(oComputedStyle, "borderBottomWidth")) + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingTop") + fAMLResize_getStyleValueNumeric(oComputedStyle, "paddingBottom"));
+	    nAMLResize_offsetLeft		= oRect.left	- oRect0.left;
+	    nAMLResize_offsetTop		= oRect.top		- oRect0.top;
 
 		// Retrieve min/max allowed height/width
-		nAMLResize_widthMin		= fParseInt(oComputedStyle[fAML_toCssPropertyName("min-width")] || oComputedStyle["min-width"]) || 0;
-		nAMLResize_widthMax		= fParseInt(oComputedStyle[fAML_toCssPropertyName("max-width")] || oComputedStyle["max-width"]) || nInfinity;
+		nAMLResize_widthMin		= fParseInt(oComputedStyle[fUtilities_toCssPropertyName("min-width")] || oComputedStyle["min-width"]) || 0;
+		nAMLResize_widthMax		= fParseInt(oComputedStyle[fUtilities_toCssPropertyName("max-width")] || oComputedStyle["max-width"]) || nInfinity;
 		if (nAMLResize_widthMax < 0)	// Opera 10.5 returns -1
 			nAMLResize_widthMax	= nInfinity;
-		nAMLResize_heightMin	= fParseInt(oComputedStyle[fAML_toCssPropertyName("min-height")]|| oComputedStyle["min-height"]) || 0;
-		nAMLResize_heightMax	= fParseInt(oComputedStyle[fAML_toCssPropertyName("max-height")]|| oComputedStyle["max-height"]) || nInfinity;
+		nAMLResize_heightMin	= fParseInt(oComputedStyle[fUtilities_toCssPropertyName("min-height")]|| oComputedStyle["min-height"]) || 0;
+		nAMLResize_heightMax	= fParseInt(oComputedStyle[fUtilities_toCssPropertyName("max-height")]|| oComputedStyle["max-height"]) || nInfinity;
 		if (nAMLResize_heightMax < 0)	// Opera 10.5 returns -1
 			nAMLResize_heightMax= nInfinity;
     }
@@ -274,6 +277,9 @@ function fAMLResize_onMouseUp(oEvent)
 
 	if (nAMLResize_resizeState == nAMLResize_STATE_RESIZED)
 	{
+		// Remove :resize pseudo-class
+		fAMLElement_setPseudoClass(oAMLResize_resizeNode, "resize", false);
+
 		// fire onresizeend event
 		var oEventResizeEnd	= new cAMLResizeEvent;
 	    oEventResizeEnd.initResizeEvent("resizeend", true, true, window, null, nAMLResize_resizeEdge);
@@ -282,17 +288,30 @@ function fAMLResize_onMouseUp(oEvent)
 
 		if (oEventResizeEnd.defaultPrevented || (oEvent.defaultPrevented || oEvent.button))
 		{
-			var oStyle		= oAMLResize_resizeNode.$getContainer().style;
+			var oStyle		= oAMLResize_resizeNode.$getContainer().style,
+				fRestore	= function() {
+				    oStyle.width	= sAMLResize_clientWidth;
+				    oStyle.height	= sAMLResize_clientHeight;
+					oStyle.left		= sAMLResize_clientLeft;
+					oStyle.top		= sAMLResize_clientTop;
+				};
 
 		    // Restore element position
-		    oStyle.width	= nAMLResize_clientWidth;
-		    oStyle.height	= nAMLResize_clientHeight;
-			oStyle.left		= nAMLResize_clientLeft;
-			oStyle.top		= nAMLResize_clientTop;
+			if (oAMLConfiguration_values["ample-enable-animations"]) {
+				var oProperties	= {};
+				oProperties["left"]		= sAMLResize_clientLeft || "auto";
+				oProperties["top"]		= sAMLResize_clientTop || "auto";
+				oProperties["width"]	= sAMLResize_clientWidth || "auto";
+				oProperties["height"]	= sAMLResize_clientHeight || "auto";
+				//
+				fAMLNodeAnimation_play(oAMLResize_resizeNode, oProperties, "normal", "ease", fRestore);
+			}
+			else
+				fRestore();
 		}
 
 		// End session
-		fAML_toggleSelect(true);
+		fBrowser_toggleSelect(true);
 		if (bTrident)
 			oAMLResize_resizeNode.$getContainer().releaseCapture();
 
@@ -348,7 +367,7 @@ cAMLElement.prototype.$resizable	= false;
 cAMLElement.prototype.$resizeEdges	= 0;
 
 // Registering Event Handlers
-fAMLEventTarget_addEventListener(oAML_document, "mousedown",	fAMLResize_onMouseDown,		false);
-fAMLEventTarget_addEventListener(oAML_document, "mousemove",	fAMLResize_onMouseMove,		false);
-fAMLEventTarget_addEventListener(oAML_document, "mouseup",		fAMLResize_onMouseUp,		false);
-fAMLEventTarget_addEventListener(oAML_document, "keydown",		fAMLResize_onKeyDown,		false);
+fAMLEventTarget_addEventListener(oAmple_document, "mousedown",	fAMLResize_onMouseDown,		false);
+fAMLEventTarget_addEventListener(oAmple_document, "mousemove",	fAMLResize_onMouseMove,		false);
+fAMLEventTarget_addEventListener(oAmple_document, "mouseup",		fAMLResize_onMouseUp,		false);
+fAMLEventTarget_addEventListener(oAmple_document, "keydown",		fAMLResize_onKeyDown,		false);
