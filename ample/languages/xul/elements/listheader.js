@@ -13,8 +13,7 @@ cXULElement_listheader.prototype.$hoverable	= true;
 
 // Default attribute values
 cXULElement_listheader.attributes	= {
-	"width":	"100",
-	"minwidth":	"10",
+	"minwidth":	"16",
 	"sortDirection":	"natural"
 };
 
@@ -88,7 +87,7 @@ cXULElement_listheader.handlers	= {
 
 // Element Render: open
 cXULElement_listheader.prototype.$getTagOpen	= function() {
-	return '<td class="xul-listheader' +(this.attributes["class"] ? " " + this.attributes["class"] : "")+ '"' +(this.attributes["hidden"] == "true" ? ' style="display:none"' : "")+ '>\
+	return '<td class="xul-listheader' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '"' +(this.attributes["hidden"] == "true" ? ' style="display:none"' : "")+ '>\
 				<div class="xul-listheader--box" style="position:relative;width:100%;">\
     				<div class="xul-listheader--label xul-listheader--gateway" style="position:absolute;width:100%;overflow:hidden;"> ' + (this.attributes["label"] || "");
 };

@@ -8,49 +8,89 @@
  */
 
 // Events
-cAMLQuery.prototype.trigger	= function(sType, oDetail) {
-	// Validate API call
+var aQuery_protectedEvents	= [
+	// UIEvent
+	,"focus", "blur"
+	,"DOMFocusIn", "DOMFocusOut", "DOMActivate"
+	,"capture", "losecapture"
+	,"modal"
+	//
+	,"resize", "scroll"
+	// KeyboardEvent
+	,"keydown", "keyup"
+	// MouseEvent
+	,"mousedown", "mouseup", "click"
+	,"mousewheel", "mousemove"
+	,"mouseover", "mouseout"
+	,"mouseenter", "mousewheel"
+	,"touchstart", "touchmove", "touchend", "touchcancel"
+	,"gesturestart", "gesturechange", "gestureend"
+	// TextEvent
+	,"textInput"
+	// Legacy events
+	,"contextmenu", "dblclick", "keypress"
+	// MutationEvent
+	,"DOMNodeInserted", "DOMNodeRemoved", "DOMNodeInsertedIntoDocument", "DOMNodeRemovedFromDocument"
+	,"DOMAttrModified"
+	,"DOMCharacterDataModified"
+	// DragAndDropEvent
+	,"drag", "drop", "dragstart", "dragend", "dragover", "dragenter", "dragleave"
+	// ResizeEvent
+	,"resizestart", "resize", "resizeend"
+	// EffectEvent
+	,"effectstart", "effectend"
+	// Other
+	,"hashchange"
+	,"readystatechange"
+	,"configchange"
+	,"localechange"
+];
+
+cQuery.prototype.trigger	= function(sType, oDetail) {
+//->Guard
 	fGuard(arguments, [
 		["type",	cString],
-		["detail",	oDetail, true, true]
+		["detail",	cObject, true, true]
 	]);
+//<-Guard
 
-	// Invoke implementation
+	// Check if event triggering allowed
+	if (aQuery_protectedEvents.indexOf(sType) !=-1)
+		throw new cDOMException(cDOMException.NOT_SUPPORTED_ERR, null, [sType]);
+
 	if (arguments.length < 2)
 		oDetail	= null;
-	fAMLQuery_each(this, function() {
-		var oEvent	= new cAMLCustomEvent;
-		oEvent.initCustomEvent(sType, true, true, oDetail);
-		fAMLNode_dispatchEvent(this, oEvent);
+	fQuery_each(this, function() {
+		fQuery_trigger(this, sType, oDetail);
 	});
 };
 
-cAMLQuery.prototype.bind	= function(sType, fHandler, bCapture) {
-	// Validate API call
+cQuery.prototype.bind	= function(sType, fHandler, bCapture) {
+//->Guard
 	fGuard(arguments, [
 		["type",	cString],
-		["handler",	cFunction],
+		["handler",	cObject],
 		["capture",	cBoolean,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	fAMLQuery_each(this, function() {
-		fAMLEventTarget_addEventListener(this, sType, fHandler, bCapture || false);
+	fQuery_each(this, function() {
+		fEventTarget_addEventListener(this, sType, fHandler, bCapture || false);
 	});
 	return this;
 };
 
-cAMLQuery.prototype.unbind	= function(sType, fHandler, bCaprure) {
-	// Validate API call
+cQuery.prototype.unbind	= function(sType, fHandler, bCaprure) {
+//->Guard
 	fGuard(arguments, [
 		["type",	cString],
-		["handler",	cFunction],
+		["handler",	cObject],
 		["capture",	cBoolean,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	fAMLQuery_each(this, function() {
-		fAMLEventTarget_removeEventListener(this, sType, fHandler, bCapture || false);
+	fQuery_each(this, function() {
+		fEventTarget_removeEventListener(this, sType, fHandler, bCapture || false);
 	});
 	return this;
 };
@@ -58,41 +98,49 @@ cAMLQuery.prototype.unbind	= function(sType, fHandler, bCaprure) {
 
 // Global Object
 oAmple.bind	= function(sType, fHandler, bCapture) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["type",	cString],
-		["handler",	cFunction],
+		["handler",	cObject],
 		["capture",	cBoolean,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	fAMLEventTarget_addEventListener(oAmple_document, sType, fHandler, bCapture || false);
+	fEventTarget_addEventListener(oAmple_document, sType, fHandler, bCapture || false);
 };
 
 oAmple.unbind	= function(sType, fHandler, bCapture) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["type",	cString],
-		["handler",	cFunction],
+		["handler",	cObject],
 		["capture",	cBoolean,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	fAMLEventTarget_removeEventListener(oAmple_document, sType, fHandler, bCapture || false);
+	fEventTarget_removeEventListener(oAmple_document, sType, fHandler, bCapture || false);
+};
+
+function fQuery_trigger(oNode, sType, oDetail) {
+	var oEvent	= new cCustomEvent;
+	oEvent.initCustomEvent(sType, true, true, oDetail);
+	fNode_dispatchEvent(oNode, oEvent);
 };
 
 oAmple.trigger	= function(sType, oDetail) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["type",	cString],
-		["detail",	oDetail, true, true]
+		["detail",	cObject, true, true]
 	]);
+//<-Guard
 
-	// Invoke implementation
+	// Check if event triggering allowed
+	if (aQuery_protectedEvents.indexOf(sType) !=-1)
+		throw new cDOMException(cDOMException.NOT_SUPPORTED_ERR, null, [sType]);
+
 	if (arguments.length < 2)
 		oDetail	= null;
 
-	var oEvent	= new cAMLCustomEvent;
-	oEvent.initCustomEvent(sType, true, true, oDetail);
-	fAMLNode_dispatchEvent(oAmple_document);
+	fQuery_trigger(oAmple_document, sType, oDetail);
 };

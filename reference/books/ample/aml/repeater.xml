@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<element extends="runtime:AMLElement" name="repeater">
+<element extends="runtime:Element" name="repeater">
 	<implements />
 	<abstract>
 		<locale>
@@ -32,7 +32,7 @@
 		<methods><!--
 			<method name="bind">
 				<arguments>
-					<argument name="sId">
+					<argument name="id">
 						<description>
 							<locale>
 
@@ -48,7 +48,7 @@
 			</method>
 			<method name="update">
 				<arguments>
-					<argument name="sSelect">
+					<argument name="query">
 						<description>
 							<locale>
 

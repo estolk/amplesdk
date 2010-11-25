@@ -18,17 +18,14 @@ var oXULPopupManager	= (function () {
 
 	// Attaching manager to document
 	ample.bind("mouseenter",	function(oEvent) {
-		for (var oElement = oEvent.target, oTooltip; oElement.nodeType != AMLNode.DOCUMENT_NODE; oElement = oElement.parentNode) {
+		for (var oElement = oEvent.target, oTooltip; oElement.nodeType != ample.classes.Node.DOCUMENT_NODE; oElement = oElement.parentNode) {
 			if (oElement.$isAccessible()) {
 			    if (oElement.attributes["tooltiptext"]) {
 			    	oTooltip	= oTooltipPane;
 			    	if (!oTooltip)	{
-			    		// Add as anonymous
-			    		oTooltip	= this.documentElement.$appendChildAnonymous(this.createElementNS(oElement.namespaceURI, "xul:tooltip-pane"));
+			    		//
+			    		oTooltip	= this.documentElement.appendChild(this.createElementNS(oElement.namespaceURI, "xul:tooltip-pane"));
 			    		oTooltipPane	= oTooltip;
-			    		// Render
-			    		var oTooltipNode	= this.documentElement.$getContainer("gateway").appendChild(document.createElement("div"));
-			    		oTooltipNode.innerHTML	= oTooltip.$getTag();
 			    	}
 					oTooltip.setText(oElement.attributes["tooltiptext"]);
 		        	oTooltip.showPopup(null, oEvent.clientX + document.documentElement.scrollLeft, oEvent.clientY + 18 + document.documentElement.scrollTop, cXULPopupElement.POPUP_TYPE_TOOLTIP);
@@ -54,7 +51,7 @@ var oXULPopupManager	= (function () {
 	}, true);
 
 	ample.bind("click",	function(oEvent) {
-		for (var oElement = oEvent.target, oPopup; oElement.nodeType != AMLNode.DOCUMENT_NODE; oElement = oElement.parentNode) {
+		for (var oElement = oEvent.target, oPopup; oElement.nodeType != ample.classes.Node.DOCUMENT_NODE; oElement = oElement.parentNode) {
 			if (oElement.$isAccessible()) {
 				if (oEvent.button == 2) {
 			        if (oElement.attributes["context"]) {
@@ -83,7 +80,7 @@ var oXULPopupManager	= (function () {
 
 	ample.bind("mousedown",	function(oEvent) {
 		// Hide popup node
-		if (this.popupNode && !(oEvent.target == this.popupNode ||(oEvent.target.compareDocumentPosition(this.popupNode) & AMLNode.DOCUMENT_POSITION_CONTAINS))) {
+		if (this.popupNode && !(oEvent.target == this.popupNode ||(oEvent.target.compareDocumentPosition(this.popupNode) & ample.classes.Node.DOCUMENT_POSITION_CONTAINS))) {
 			this.popupNode.hidePopup();
 			this.popupNode	= null;
 

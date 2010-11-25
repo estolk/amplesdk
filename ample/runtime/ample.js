@@ -7,27 +7,32 @@
  *
  */
 
+var hClasses	= {};
+
 // Create Ample SDK document object
-var oAmple_document		= fAMLImplementation_createDocument(new cAMLImplementation, "http://www.w3.org/1999/xhtml", "body", null);
-oAmple_document.documentElement.$getContainer	= function(sName) {return sName && sName != "gateway" ? null : oUADocument.body};
+var oAmple_document	= fDOMImplementation_createDocument(new cDOMImplementation, sNS_XHTML, "body", null),
+	oAmple_root		= oAmple_document.documentElement;
+oAmple_root.$getContainer	= function(sName) {return sName == "gateway" ? oBrowser_body : sName ? null : oBrowser_root};
 
 //
 function fQuery(vArgument1, vArgument2, vArgument3) {
-	// Validate API call
-	var oQuery	= new cAMLQuery;
+	var oQuery	= new cQuery;
 	if (arguments.length > 0) {
 		if (typeof vArgument1 == "string" || vArgument1 instanceof cString) {
 			if (vArgument1.substr(0,1) == '<') {
 				// XML string
-				var aNameSpaces	= [];
+				var aNameSpaces	= [],
+					sText;
 				for (var sKey in oAmple.prefixes)
 					if (oAmple.prefixes.hasOwnProperty(sKey) && sKey != "toString")
 						aNameSpaces.push("xmlns" + (sKey == '' ? '' : ':') + sKey + '="' + oAmple.prefixes[sKey] + '"');
 				//
-				var sNameSpaces	= ' ' + aNameSpaces.join(' '),
-					oDocument	= new cDOMParser().parseFromString(
-														'<!' + "DOCTYPE" + ' ' + "script" + '[' + aUtilities_entities + ']>' +
-														'<' + "script" + ' ' + "type" + '="' + "application/ample+xml" + '"' + sNameSpaces + '>' +
+				sText	=						//		"<?" + "xml" + ' ' + 'version="1.0"' + "?>" +
+														'<!' + "DOCTYPE" + ' ' + "div" + '[' + aUtilities_entities + ']>' +
+//->Debug
+														'\n' +
+//<-Debug
+														'<' + "div" + ' ' + "type" + '="' + "application/ample+xml" + '"' + ' ' + aNameSpaces.join(' ') + '>' +
 //->Debug
 														'\n' +
 //<-Debug
@@ -35,47 +40,55 @@ function fQuery(vArgument1, vArgument2, vArgument3) {
 //->Debug
 														'\n' +
 //<-Debug
-														'</' + "script" + '>', "text/xml");
+														'</' + "div" + '>';
+				// Bugfix FF4 (remote XUL)
+				if (bGecko)
+					sText	= sText.replace(new cRegExp(sNS_XUL, 'g'), sNS_XUL + '#');
+				//
+				var oDocument	= fBrowser_parseXML(sText);
 				if (!oDocument || ((bTrident && oDocument.parseError != 0) || !oDocument.documentElement || oDocument.getElementsByTagName("parsererror").length))
-					throw new cAMLException(cAMLException.SYNTAX_ERR, fQuery.caller);
+					throw new cDOMException(cDOMException.SYNTAX_ERR, fQuery.caller);
 				else
 					for (var nIndex = 0, aElements = oDocument.documentElement.childNodes; nIndex < aElements.length; nIndex++)
-						if (aElements[nIndex].nodeType == cAMLNode.ELEMENT_NODE)
-							oQuery[oQuery.length++]	= fAMLDocument_importNode(oAmple_document, aElements[nIndex], true);
+						if (aElements[nIndex].nodeType == 1)	// cNode.ELEMENT_NODE
+							oQuery[oQuery.length++]	= fDocument_importNode(oAmple_document, aElements[nIndex], true);
 			}
 			else {
 				// Validate API call (custom)
 				// Context
 				if (arguments.length > 1) {
-					if (!(vArgument2 instanceof cAMLNode))
-						throw new cAMLException(cAMLException.AML_ARGUMENT_WRONG_TYPE_ERR, fQuery.caller
-//->Debug
-							, ['2' + oGuard_endings[1], "context", "query", "AMLNode"]
-//<-Debug
+//->Guard
+					if (!(vArgument2 instanceof cNode))
+						throw new cDOMException(cDOMException.GUARD_ARGUMENT_WRONG_TYPE_ERR, fQuery.caller
+	//->Debug
+							, ['2' + oGuard_endings[1], "context", "query", "Node"]
+	//<-Debug
 						);
+//<-Guard
 				}
 				else
 					vArgument2	= oAmple_document;
 				// Resolver
 				if (arguments.length > 2 && vArgument3 !== null) {
+//->Guard
 					if (!(vArgument3 instanceof cFunction))
-						throw new cAMLException(cAMLException.AML_ARGUMENT_WRONG_TYPE_ERR, fQuery.caller
-//->Debug
+						throw new cDOMException(cDOMException.GUARD_ARGUMENT_WRONG_TYPE_ERR, fQuery.caller
+	//->Debug
 							, ['3' + oGuard_endings[2], "resolver", "query", "Function"]
-//<-Debug
+	//<-Debug
 						);
+//<-Guard
 				}
-				else
-					vArgument3	= fAmple_resolver;
+
 				//
 				oQuery.length	= 0;
 				oQuery.selector	= vArgument1;
 				oQuery.context	= vArgument2;
-				oQuery.resolver	= vArgument3;
+				oQuery.resolver	= vArgument3 || null;
 				// Invoke implementation
 				var aResult;
 				try {
-					aResult	= fAMLSelector_query([oQuery.context], vArgument1, vArgument3);
+					aResult	= fNodeSelector_query([oQuery.context], vArgument1, vArgument3);
 				}
 				catch (oException) {
 					// Re-point caller property and re-throw error
@@ -87,136 +100,163 @@ function fQuery(vArgument1, vArgument2, vArgument3) {
 			}
 		}
 		else
-		if (vArgument1 instanceof cAMLElement)
+		if (vArgument1 instanceof cElement)
 			oQuery[oQuery.length++]	= vArgument1;
 		else
-		if (vArgument1 instanceof cAMLQuery)
-			fAMLQuery_each(vArgument1, function() {
+		if (vArgument1 instanceof cQuery)
+			fQuery_each(vArgument1, function() {
 				oQuery[oQuery.length++]	= this;
 			});
+//->Guard
 		else
-			throw new cAMLException(cAMLException.AML_ARGUMENT_WRONG_TYPE_ERR, fQuery.caller
-//->Debug
-				, ['1' + oGuard_endings[0], "query", "query", "String" + '", "' + "AMLQuery" + '" or "' + "AMLElement"]
-//<-Debug
+			throw new cDOMException(cDOMException.GUARD_ARGUMENT_WRONG_TYPE_ERR, fQuery.caller
+	//->Debug
+				, ['1' + oGuard_endings[0], "query", "query", "String" + '", "' + "Query" + '" or "' + "Element"]
+	//<-Debug
 			);
+//<-Guard
 	}
 
-	// Invoke implementation
 	return oQuery;
 };
-// Magic
-fQuery.prototype	= cAMLQuery.prototype;
 
 // Create Ample object
 var oAmple	= oAmple_document;
 oAmple.query	= fQuery;
 oAmple.prefixes	= {};
+oAmple.classes	= hClasses;
 oAmple.activeElement= null;
 oAmple.readyState	= "loading";
 
 function fAmple_extend(oSource, oTarget) {
 	if (oSource instanceof cFunction) {
 		var oPrototype	= oSource.prototype;
-		if (oPrototype instanceof cAMLElement)
-			oAMLImplementation_elements[oPrototype.namespaceURI + '#' + oPrototype.localName]	= oSource;
+		if (oPrototype instanceof cElement)
+			hClasses[oPrototype.namespaceURI + '#' + oPrototype.localName]	= oSource;
 		else
-		if (oPrototype instanceof cAMLAttr)
-			oAMLImplementation_attributes[oPrototype.namespaceURI + '#' + oPrototype.localName]	= oSource;
+		if (oPrototype instanceof cAttr)
+			hClasses[oPrototype.namespaceURI + '#' + '@' + oPrototype.localName]	= oSource;
+//->Guard
 		else
-			throw new cAMLException(cAMLException.AML_ARGUMENT_WRONG_TYPE_ERR, null
-//->Debug
-				, ['1' + oGuard_endings[0], "source", "extend", "AMLAttr" + '" or "' + "AMLElement"]
-//<-Debug
+			throw new cDOMException(cDOMException.GUARD_ARGUMENT_WRONG_TYPE_ERR, null
+	//->Debug
+				, ['1' + oGuard_endings[0], "source", "extend", "Attr" + '" or "' + "Element"]
+	//<-Debug
 			);
+//<-Guard
 	}
 	else {
 		if (!oTarget)
 			oTarget	= oAmple;
-		for (var sName in oSource) {
+
+		//
+		for (var sName in oSource)
+			if (sName != "toString") {
 //->Debug
-			if (oTarget.hasOwnProperty(sName))
-				fUtilities_warn(sAML_REWRITING_MEMBER_WRN, [sName]);
+				if (oTarget.hasOwnProperty(sName))
+					fUtilities_warn(sGUARD_REWRITING_MEMBER_WRN, [sName]);
 //<-Debug
-			if (oSource.hasOwnProperty(sName))
-				oTarget[sName]	= oSource[sName];
-		}
+				if (oSource.hasOwnProperty(sName))
+					oTarget[sName]	= oSource[sName];
+			}
 	}
 };
 
 // Extension Mechanism
 oAmple.extend	= function(oSource, oTarget) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["source",	cObject],
 		["target",	cObject, true]
 	]);
+//<-Guard
 
-	// Invoke implementation
+	// Sign
+	fExporter_signMembers(oSource, "plugin");
+	// Extend
 	fAmple_extend(oSource, oTarget);
 };
 
 // Ready event
 oAmple.ready	= function(fHandler) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["handler",	cFunction]
 	]);
+//<-Guard
 
-	// Invoke implementation
 	oAmple_document.addEventListener("load", fHandler, false);
 };
 
 oAmple.guard	= function(aArguments, aParameters) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["arguments",	cArguments],
 		["parameters",	cArray]
 	]);
+//<-Guard
 
-	// Invoke implementation
+//->Guard
 	fGuard(aArguments, aParameters);
+//<-Guard
+};
+
+oAmple.publish	= function(oSource, sName, oTarget) {
+//->Guard
+	fGuard(arguments, [
+		["source",	cObject],
+		["name",	cString],
+		["target",	cObject,	true]
+	]);
+//<-Guard
+
+	fExporter_export(oSource, sName, oTarget, "plugin");
 };
 
 oAmple.config	= function(sName, oValue) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["name",	cString],
-		["value",	cObject, true]
+		["value",	cObject, true,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	var sPrefix	= "ample" + '-';
+	var sParameter	= "ample" + '-' + sName,
+		oOldValue	= fDOMConfiguration_getParameter(oAmple_document.domConfig, sParameter);
 	if (arguments.length > 1) {
-		if (sName != "version")
-			fAMLConfiguration_setParameter(oAmple_document.domConfig, sPrefix + sName, oValue);
+		if (sName != "version") {
+			fDOMConfiguration_setParameter(oAmple_document.domConfig, sParameter, oValue);
+			// Dispatch change event
+			if (oOldValue != oValue) {
+				var oEvent	= new cCustomEvent;
+				oEvent.initCustomEvent("configchange", false, false, sName);
+				fNode_dispatchEvent(oAmple_document, oEvent);
+			}
+		}
 //->Debug
 		else
-			fUtilities_warn(sAML_CONFIGURATION_READONLY_WRN, [sName]);
+			fUtilities_warn(sGUARD_CONFIGURATION_READONLY_WRN, [sName]);
 //<-Debug
 	}
 	else
-		return fAMLConfiguration_getParameter(oAmple_document.domConfig, sPrefix + sName);
+		return oOldValue;
 };
 
-var sAmple_include	= document.location.href;
+var sAmple_include	= oUALocation.href;
 oAmple.include	= function(sSrc) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
 		["src",	cString]
 	]);
+//<-Guard
 
-	// Invoke implementation
 	var sValue	= sAmple_include;
 	// Save current location
 	sAmple_include	= fUtilities_resolveUri(sSrc, sValue);
-	var oXMLHttpRequest	= new cXMLHttpRequest;
-	oXMLHttpRequest.open("GET", sAmple_include, false);
-	oXMLHttpRequest.send();
-	var oScript	= oUADocument.getElementsByTagName("head")[0].appendChild(oUADocument.createElement("script"));
-	oScript.type= "text/javascript";
-	oScript.text= oXMLHttpRequest.responseText;
-	oScript.parentNode.removeChild(oScript);
+	//
+	var oRequest	= fBrowser_load(sAmple_include, "text/javascript");
+	// Evaluate result
+	fBrowser_eval(oRequest.responseText);
 	// Restore base location
 	sAmple_include	= sValue;
 };
@@ -227,25 +267,29 @@ if (bTrident)
 	for (var nIndex = 0, aAttributes = oUADocument.namespaces, oAttribute, nLength = aAttributes.length; nIndex < nLength; nIndex++)
 		oPrefixes[(oAttribute = aAttributes[nIndex]).name]	= oAttribute.urn;
 else
-	for (var nIndex = 0, aAttributes = oUADocument.documentElement.attributes, oAttribute; oAttribute = aAttributes[nIndex]; nIndex++)
+	for (var nIndex = 0, aAttributes = oBrowser_root.attributes, oAttribute; oAttribute = aAttributes[nIndex]; nIndex++)
 		if (oAttribute.nodeName.match(/^xmlns($|:)(.*)/))
 			oPrefixes[cRegExp.$2]	= oAttribute.nodeValue;
 if (!oPrefixes[''])
-	oPrefixes['']	= "http://www.w3.org/1999/xhtml";
+	oPrefixes['']		= sNS_XHTML;
 if (!oPrefixes["aml"])
-	oPrefixes["aml"]	= "http://www.amplesdk.com/ns/aml";
+	oPrefixes["aml"]	= sNS_AML;
 if (!oPrefixes["ev"])
-	oPrefixes["ev"]	= "http://www.w3.org/2001/xml-events";
+	oPrefixes["ev"]		= sNS_XEVENTS;
 if (!oPrefixes["xi"])
-	oPrefixes["xi"]	= "http://www.w3.org/2001/XInclude";
+	oPrefixes["xi"]		= sNS_XINCLUDE;
 if (!oPrefixes["smil"])
-	oPrefixes["smil"]	= "http://www.w3.org/2008/SMIL30/";
+	oPrefixes["smil"]	= sNS_SMIL;
 if (!oPrefixes["xlink"])
-	oPrefixes["xlink"]= "http://www.w3.org/1999/xlink";
-//
-function fAmple_resolver(sPrefix) {
-	return oAmple.prefixes[sPrefix] || null;
-};
+	oPrefixes["xlink"]	= sNS_XLINK;
+
+// Add known prefixes to ample.documentElement
+for (var sKey in oPrefixes)
+	if (oPrefixes.hasOwnProperty(sKey) && sKey != '')
+		oAmple_root.attributes["xmlns" + ':' + sKey]	= oPrefixes[sKey];
+
+// Set xml:base
+oAmple_root.attributes["xml:base"]	= fUtilities_resolveUri('.', sAmple_include);
 
 //
 oAmple.open	= function() {
@@ -257,7 +301,7 @@ oAmple.open	= function() {
 	}
 //->Debug
 	else
-		fUtilities_warn(sAML_DOCUMENT_INVALID_STATE_WRN);
+		fUtilities_warn(sGUARD_DOCUMENT_INVALID_STATE_WRN);
 //<-Debug
 };
 
@@ -266,82 +310,56 @@ oAmple.close	= function() {
 		oUADocument.write('</' + "script" + '>');
 //->Debug
 	else
-		fUtilities_warn(sAML_DOCUMENT_INVALID_STATE_WRN);
+		fUtilities_warn(sGUARD_DOCUMENT_INVALID_STATE_WRN);
 //<-Debug
 };
 
 //
-oAmple.$instance	= function(oNode) {
+function fAmple_instance(oDocument, oNode) {
     for (var oElement, sId; oNode; oNode = oNode.parentNode)
-        if ((sId = oNode.id) && (oElement = (oAMLDocument_ids[sId] || oAMLDocument_all[sId])))
+        if ((sId = oNode.id) && (oElement = (oDocument_ids[sId] || oDocument_all[sId])))
             return oElement;
     return null;
 };
 
-//
-oAmple.$element		= function(sUri) {
-	// Validate API call
-	fGuard(arguments, [
-		["uri",	cString]
-	]);
-
-	// Invoke implementation
-	return oAMLImplementation_elements[sUri] || null;
+oAmple.$instance	= function(oNode) {
+	return fAmple_instance(oAmple_document, oNode);
 };
 
-oAmple.$attribute	= function(sUri) {
-	// Validate API call
-	fGuard(arguments, [
-		["uri",	cString]
-	]);
-
-	// Invoke implementation
-	return oAMLImplementation_attributes[sUri] || null;
-};
 /*
 oAmple.$class	= function(oNode) {
-	var oElement	= oAmple.$instance(oNode);
-	return oElement ? oAMLImplementation_elements[oElement.namespaceURI + '#' + oElement.localName] || cAMLElement : null;
+	var oElement	= fAmple_instance(oAmple_document, oNode);
+	return oElement ? hClasses[oElement.namespaceURI + '#' + oElement.localName] || cElement : null;
 };
 */
-//
-oAmple.param	= function(vValue) {
-	// Validate API call
-	fGuard(arguments, [
-		["value",	cObject]
-	]);
-
-	// Invoke implementation
-	throw new cAMLException(cAMLException.NOT_SUPPORTED_ERR);
-};
 
 //
 oAmple.resolveUri	= function(sUri, sBaseUri) {
 	return fUtilities_resolveUri(sUri, sBaseUri);
 };
 
-
 // set standard parameters
 var oConfiguration	= oAmple_document.domConfig;
-fAMLConfiguration_setParameter(oConfiguration, "error-handler", null);
-fAMLConfiguration_setParameter(oConfiguration, "element-content-whitespace", false);	// in DOM-Core spec the default value is true
-fAMLConfiguration_setParameter(oConfiguration, "entities", false);	// in DOM-Core spec the default value is true
-fAMLConfiguration_setParameter(oConfiguration, "comments", false); 	// in DOM-Core spec the default value is true
+fDOMConfiguration_setParameter(oConfiguration, "error-handler", null);
+fDOMConfiguration_setParameter(oConfiguration, "element-content-whitespace", false);	// in DOM-Core spec the default value is true
+fDOMConfiguration_setParameter(oConfiguration, "entities", false);	// in DOM-Core spec the default value is true
+fDOMConfiguration_setParameter(oConfiguration, "comments", false); 	// in DOM-Core spec the default value is true
 //set ample parameters
-fAMLConfiguration_setParameter(oConfiguration, "ample-use-style-property", true);	// -> ample-core-style
-fAMLConfiguration_setParameter(oConfiguration, "ample-module-history-fix", false);	// -> ample-history
-fAMLConfiguration_setParameter(oConfiguration, "ample-version", '@project.version@');
-fAMLConfiguration_setParameter(oConfiguration, "ample-user-locale", oUANavigator.language || oUANavigator.userLanguage || 'en-US');
-fAMLConfiguration_setParameter(oConfiguration, "ample-user-agent", '@project.userAgent@');
-fAMLConfiguration_setParameter(oConfiguration, "ample-enable-animations", true);
-fAMLConfiguration_setParameter(oConfiguration, "ample-enable-transitions", true);
+fDOMConfiguration_setParameter(oConfiguration, "ample-module-history-fix", false);	// -> ample-history
+fDOMConfiguration_setParameter(oConfiguration, "ample-version", '@project.version@');
+fDOMConfiguration_setParameter(oConfiguration, "ample-locale", "en");
+fDOMConfiguration_setParameter(oConfiguration, "ample-user-locale", oUANavigator.language || oUANavigator.userLanguage || 'en-US');
+fDOMConfiguration_setParameter(oConfiguration, "ample-user-agent", '@project.userAgent@');
+fDOMConfiguration_setParameter(oConfiguration, "ample-enable-style", true);
+fDOMConfiguration_setParameter(oConfiguration, "ample-enable-guard", true);
+fDOMConfiguration_setParameter(oConfiguration, "ample-enable-transitions", true);
 
 //->Debug
 // Enable debugging
-var oAML_errorHandler	= {};
-oAML_errorHandler.handleError	= function(oError) {
+var oAmple_errorHandler	= {};
+oAmple_errorHandler.handleError	= function(oError) {
 	var oConsole	= window.console;
-	if (oError.severity == cAMLError.SEVERITY_WARNING) {
+	if (oError.severity == cDOMError.SEVERITY_WARNING) {
 		// Warning in console
 		if (oConsole)
 			oConsole.warn(oError.message);
@@ -352,5 +370,5 @@ oAML_errorHandler.handleError	= function(oError) {
 		oConsole.error(oError.message + '\n' + oError.relatedException.caller);
 	return false;
 };
-fAMLConfiguration_setParameter(oConfiguration, "error-handler", oAML_errorHandler);
+fDOMConfiguration_setParameter(oConfiguration, "error-handler", oAmple_errorHandler);
 //<-Debug

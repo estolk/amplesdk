@@ -8,55 +8,79 @@
  */
 
 //
-cAMLQuery.prototype.animate	= function(oProperties, vDuration, sEasing, fCallback) {
-	// Validate API call
+cQuery.prototype.animate	= function(oProperties, vDuration, sEasing, fCallback) {
+//->Guard
 	fGuard(arguments, [
-		["properties",	cObject, true],
+		["properties",	cObject],
 		["duration",	cObject, true],
-		["easing",		cString, true],
+		["easing",		cObject, true],
 		["callback",	cFunction, true]
 	]);
+//<-Guard
 
 	var sPseudo	= arguments[4];
-	fAMLQuery_each(this, function() {
-		fAMLNodeAnimation_play(this, oProperties, vDuration, sEasing, fCallback, sPseudo);
+	fQuery_each(this, function() {
+		fNodeAnimation_play(this, oProperties, vDuration, sEasing, fCallback, sPseudo);
 	});
 
+	return this;
+};
+
+cQuery.prototype.stop	= function() {
 	// Invoke implementation
-	return this;
-};
-
-cAMLQuery.prototype.stop	= function() {
-	// TODO
+	fQuery_each(this, function() {
+		fNodeAnimation_stop(this);
+	});
 
 	return this;
 };
+
+cQuery.prototype.delay	= function(vDuration) {
+//->Guard
+	fGuard(arguments, [
+		["duration",	cObject]
+	]);
+//<-Guard
+
+	fQuery_each(this, function() {
+		fNodeAnimation_delay(this, vDuration);
+	});
+
+	return this;
+};
+
 
 // Pre-defined animations
-cAMLQuery.prototype.fadeIn	= function(vDuration, fCallback) {
+cQuery.prototype.fadeIn	= function(vDuration, fCallback) {
+//->Guard
 	fGuard(arguments, [
 		["duration",	cObject, true],
 		["callback",	cFunction, true]
 	]);
+//<-Guard
+
 	var oProperties	= {};
 	oProperties.opacity	= 1;
-	fAMLQuery_each(this, function() {
+	fQuery_each(this, function() {
 		fBrowser_setStyle(this.$getContainer(), "display", "");
-		fAMLNodeAnimation_play(this, oProperties, vDuration, "ease", fCallback);
+		fNodeAnimation_play(this, oProperties, vDuration, "ease", fCallback);
 	});
 
 	return this;
 };
 
-cAMLQuery.prototype.fadeOut	= function(vDuration, fCallback) {
+cQuery.prototype.fadeOut	= function(vDuration, fCallback) {
+//->Guard
 	fGuard(arguments, [
 		["duration",	cObject, true],
 		["callback",	cFunction, true]
 	]);
+//<-Guard
+
 	var oProperties	= {};
 	oProperties.opacity	= 0;
-	fAMLQuery_each(this, function() {
-		fAMLNodeAnimation_play(this, oProperties, vDuration, "ease", function() {
+	fQuery_each(this, function() {
+		fNodeAnimation_play(this, oProperties, vDuration, "ease", function() {
 			this.$getContainer().style.display	= "none";
 			if (fCallback)
 				fCallback.call(this);
@@ -66,28 +90,33 @@ cAMLQuery.prototype.fadeOut	= function(vDuration, fCallback) {
 	return this;
 };
 
-cAMLQuery.prototype.fadeTo	= function(vDuration, nOpacity, fCallback) {
+cQuery.prototype.fadeTo	= function(vDuration, nOpacity, fCallback) {
+//->Guard
 	fGuard(arguments, [
 		["duration",	cObject],
 		["opacity",		cNumber],
 		["callback",	cFunction, true]
 	]);
+//<-Guard
+
 	var oProperties	= {};
 	oProperties.opacity	= nOpacity;
-	fAMLQuery_each(this, function() {
-		fAMLNodeAnimation_play(this, oProperties, vDuration, "ease", fCallback);
+	fQuery_each(this, function() {
+		fNodeAnimation_play(this, oProperties, vDuration, "ease", fCallback);
 	});
 
 	return this;
 };
 
-cAMLQuery.prototype.show	= function(vDuration, fCallback) {
+cQuery.prototype.show	= function(vDuration, fCallback) {
+//->Guard
 	fGuard(arguments, [
    		["duration",	cObject, true],
    		["callback",	cFunction, true]
    	]);
+//<-Guard
 
-	fAMLQuery_each(this, function() {
+	fQuery_each(this, function() {
 		var oElementDOM	= this.$getContainer(),
 			oStyle	= oElementDOM.style;
 		if (oStyle.display == "none") {
@@ -99,11 +128,11 @@ cAMLQuery.prototype.show	= function(vDuration, fCallback) {
 				oProperties.height	= fBrowser_adjustStyleValue(oElementDOM, "height", fBrowser_getStyle(oElementDOM, "height", oComputedStyle));
 				oProperties.opacity	= '1';
 				//
-				oStyle.width	= '0px';
-				oStyle.height	= '0px';
+				oStyle.width	= 0;
+				oStyle.height	= 0;
 				oStyle.overflow	= "hidden";
 				fBrowser_setStyle(oElementDOM, "opacity", '0');
-				fAMLNodeAnimation_play(this, oProperties, vDuration, "ease", function() {
+				fNodeAnimation_play(this, oProperties, vDuration, "ease", function() {
 					// Restore values
 					oStyle.width	= '';
 					oStyle.height	= '';
@@ -120,13 +149,15 @@ cAMLQuery.prototype.show	= function(vDuration, fCallback) {
 	return this;
 };
 
-cAMLQuery.prototype.hide	= function(vDuration, fCallback) {
+cQuery.prototype.hide	= function(vDuration, fCallback) {
+//->Guard
 	fGuard(arguments, [
    		["duration",	cObject, true],
    		["callback",	cFunction, true]
    	]);
+//<-Guard
 
-	fAMLQuery_each(this, function() {
+	fQuery_each(this, function() {
 		var oElementDOM	= this.$getContainer(),
 			oStyle	= oElementDOM.style;
 		if (oStyle.display != "none") {
@@ -138,7 +169,7 @@ cAMLQuery.prototype.hide	= function(vDuration, fCallback) {
 				//
 				oStyle.overflow	= "hidden";
 				fBrowser_setStyle(oElementDOM, "opacity", '1');
-				fAMLNodeAnimation_play(this, oProperties, vDuration, "ease", function() {
+				fNodeAnimation_play(this, oProperties, vDuration, "ease", function() {
 					oStyle.display	= "none";
 					// Restore values
 					oStyle.width	= '';
@@ -158,12 +189,15 @@ cAMLQuery.prototype.hide	= function(vDuration, fCallback) {
 	return this;
 };
 
-cAMLQuery.prototype.slideDown	= function(vDuration, fCallback) {
+cQuery.prototype.slideDown	= function(vDuration, fCallback) {
+//->Guard
 	fGuard(arguments, [
 		["duration",	cObject, true],
 		["callback",	cFunction, true]
 	]);
-	fAMLQuery_each(this, function() {
+//<-Guard
+
+	fQuery_each(this, function() {
 		var oElementDOM	= this.$getContainer(),
 			oStyle	= oElementDOM.style;
 		if (oStyle.display == "none") {
@@ -173,10 +207,10 @@ cAMLQuery.prototype.slideDown	= function(vDuration, fCallback) {
 			oProperties.height	= fBrowser_adjustStyleValue(oElementDOM, "height", fBrowser_getStyle(oElementDOM, "height", oComputedStyle));
 			oProperties.opacity	= '1';
 			//
-			oStyle.height	= '0px';
+			oStyle.height	= 0;
 			oStyle.overflow	= "hidden";
 			fBrowser_setStyle(oElementDOM, "opacity", '0');
-			fAMLNodeAnimation_play(this, oProperties, vDuration || "normal", "ease", function() {
+			fNodeAnimation_play(this, oProperties, vDuration || "normal", "ease", function() {
 				// Restore values
 				oStyle.height	= '';
 				oStyle.overflow	= '';
@@ -191,13 +225,15 @@ cAMLQuery.prototype.slideDown	= function(vDuration, fCallback) {
 	return this;
 };
 
-cAMLQuery.prototype.slideUp		= function(vDuration, fCallback) {
+cQuery.prototype.slideUp		= function(vDuration, fCallback) {
+//->Guard
 	fGuard(arguments, [
 		["duration",	cObject, true],
 		["callback",	cFunction, true]
 	]);
+//<-Guard
 
-	fAMLQuery_each(this, function() {
+	fQuery_each(this, function() {
 		var oElementDOM	= this.$getContainer(),
 			oStyle	= oElementDOM.style;
 		if (oStyle.display != "none") {
@@ -207,7 +243,7 @@ cAMLQuery.prototype.slideUp		= function(vDuration, fCallback) {
 			//
 			oStyle.overflow	= "hidden";
 			fBrowser_setStyle(oElementDOM, "opacity", '1');
-			fAMLNodeAnimation_play(this, oProperties, vDuration || "normal", "ease", function() {
+			fNodeAnimation_play(this, oProperties, vDuration || "normal", "ease", function() {
 				oStyle.display	= "none";
 				// Restore values
 				oStyle.height	= '';
@@ -222,3 +258,6 @@ cAMLQuery.prototype.slideUp		= function(vDuration, fCallback) {
 
 	return this;
 };
+
+// Extend ample object
+oAmple.easing	= oNodeAnimation_easing;

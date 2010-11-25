@@ -26,12 +26,13 @@ if (bTrident) {
 
 	// Public Methods
 	cXMLHttpRequest.prototype.open	= function(sMethod, sUrl, bAsync, sUser, sPassword) {
-		// Validate arguments
+//->Guard
 		fGuard(arguments, [
 			["method",	cString],
 			["url",		cString],
 			["async",	cBoolean, false]
 		]);
+//<-Guard
 
 		// Delete headers, required when object is reused
 		delete this._headers;
@@ -193,10 +194,10 @@ if (bTrident) {
 	};
 
 	function fSynchronizeValues(oRequest) {
-		try {	oRequest.responseText	= oRequest._object.responseText;	} catch (e) {}
-		try {	oRequest.responseXML	= fBrowser_getResponseDocument(oRequest._object);	} catch (e) {}
-		try {	oRequest.status			= oRequest._object.status;			} catch (e) {}
-		try {	oRequest.statusText		= oRequest._object.statusText;		} catch (e) {}
+		try {	oRequest.responseText	= oRequest._object.responseText;	} catch (oException) {}
+		try {	oRequest.responseXML	= fBrowser_getResponseDocument(oRequest._object);	} catch (oException) {}
+		try {	oRequest.status			= oRequest._object.status;			} catch (oException) {}
+		try {	oRequest.statusText		= oRequest._object.statusText;		} catch (oException) {}
 	};
 
 	function fCleanTransport(oRequest) {

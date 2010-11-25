@@ -1,5 +1,6 @@
-<?
+<?php
 	$aFiles		= array();
+	$aFiles[]	= "debug.css";
     $aFiles[]	= "markup.css";
     $aFiles[]	= "input.css";
     $aFiles[]	= "interaction.css";
@@ -24,13 +25,13 @@
 
 	//
 	include("../../../../../build/resources/compiler/cCSSCompiler.php");
-
+/*
 	$oCSSCompiler	= new cCSSCompiler;
 	$oCSSCompiler->readFromString($sOutput);
 	$oCSSCompiler->stripComments();
 	$oCSSCompiler->stripSpaces();
 	$oCSSCompiler->obfuscate();
 	$sOutput	= $oCSSCompiler->getOutput();
-
+*/
 	echo $sOutput;
 ?>

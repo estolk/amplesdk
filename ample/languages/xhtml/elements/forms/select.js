@@ -8,18 +8,19 @@
  */
 
 var cXHTMLElement_select	= function() {
-    this.options	= new AMLNodeList;
+   	this.validity	= new cXHTMLValidityState;
+	//
+    this.options	= new ample.classes.NodeList;
 
     var oSelf	= this;
     this.options.add	= function (oElement, nIndex) {oSelf.add(oElement, nIndex)};
     this.options.remove	= function (nIndex) {oSelf.remove(nIndex)};
 };
-cXHTMLElement_select.prototype	= new cXHTMLElement("select");
-cXHTMLElement_select.prototype.tabIndex		= 0;
+cXHTMLElement_select.prototype	= new cXHTMLInputElement("select");
 
 // Public Properties
-cXHTMLElement_select.prototype.form		= null;
 cXHTMLElement_select.prototype.options	= null;
+cXHTMLElement_select.prototype.selectedIndex	=-1;
 
 // Public Methods
 cXHTMLElement_select.prototype.add		= function(oElement, nIndex) {
@@ -36,15 +37,77 @@ cXHTMLElement_select.handlers	= {
 		this.$getContainer("value").focus();
 	},
 	"blur":		function(oEvent) {
+		// Hide popup if open
+		if (!this.attributes.multiple)
+			cXHTMLElement_select.toggle(this, false);
 		this.$getContainer("value").blur();
 	},
-	"DOMNodeInserted":	function(oEvent) {
-		if (oEvent.target instanceof cXHTMLElement_option)
-			this.options.$add(oEvent.target);
+	"mousedown":function(oEvent) {
+		if (oEvent.target == this && oEvent.$pseudoTarget == this.$getContainer("button"))
+			cXHTMLElement_select.toggle(this);
 	},
-	"DOMNodeRemoved":	function(oEvent) {
-		if (oEvent.target instanceof cXHTMLElement_option)
-			this.options.$remove(oEvent.target);
+	"keydown":	function(oEvent) {
+		if (oEvent.keyIdentifier == "Up") {
+			// Deselect previously selected item
+			if (this.selectedIndex !=-1)
+				this.options[this.selectedIndex].removeAttribute("selected");
+			// Find new item
+			if (this.selectedIndex > 0)
+				this.selectedIndex--;
+			else
+			if (this.options.length)
+				this.selectedIndex	= this.options.length - 1;
+			// Select new item
+			if (this.selectedIndex >-1) {
+				this.options[this.selectedIndex].setAttribute("selected", "true");
+				cXHTMLElement_option.ensureRowIsVisible(this.options[this.selectedIndex]);
+			}
+			// Prevent scrolling
+			oEvent.preventDefault();
+		}
+		else
+		if (oEvent.keyIdentifier == "Down") {
+			// Deselect previously selected item
+			if (this.selectedIndex !=-1)
+				this.options[this.selectedIndex].removeAttribute("selected");
+			// Find new item
+			if (this.selectedIndex < this.options.length - 1)
+				this.selectedIndex++;
+			else
+			if (this.options.length)
+				this.selectedIndex	= 0;
+			// Select new item
+			if (this.selectedIndex >-1) {
+				this.options[this.selectedIndex].setAttribute("selected", "true");
+				cXHTMLElement_option.ensureRowIsVisible(this.options[this.selectedIndex]);
+			}
+			// Prevent scrolling
+			oEvent.preventDefault();
+		}
+	},
+	"click":	function(oEvent) {
+		if (oEvent.target == this) {
+			if (oEvent.$pseudoTarget == this.$getContainer("button"))
+				cXHTMLElement_select.toggle(this);
+		}
+	},
+	"mousedown":	function(oEvent) {
+		if (oEvent.target instanceof cXHTMLElement_option) {
+			if (this.options[this.selectedIndex] != oEvent.target) {
+				if (this.selectedIndex >-1)
+					this.options[this.selectedIndex].removeAttribute("selected");
+				this.options[this.selectedIndex = this.options.$indexOf(oEvent.target)].setAttribute("selected", "true");
+				cXHTMLElement_option.ensureRowIsVisible(this.options[this.selectedIndex]);
+			}
+		}
+	},
+	"DOMNodeInsertedIntoDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.register(this);
+	},
+	"DOMNodeRemovedFromDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.unregister(this);
 	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this)
@@ -52,22 +115,35 @@ cXHTMLElement_select.handlers	= {
 	}
 };
 
+// Static Members
+cXHTMLElement_select.toggle	= function(oInstance, bForce) {
+	var oPopup	= oInstance.$getContainer("popup");
+	if ((arguments.length > 1 && bForce == true) || !(arguments.length > 1 || oPopup.style.display != "none")) {
+		oInstance.$setPseudoClass("active", true);
+		oPopup.style.display	= "";
+	}
+	else {
+		oInstance.$setPseudoClass("active", false);
+		oPopup.style.display	= "none";
+	}
+};
+
 // Renderers
 cXHTMLElement_select.prototype.$getTagOpen	= function() {
     var sClassName	= (this.prefix ? this.prefix + '-' : '') + this.localName,
-    	bMultiple	= !!this.attributes.multiple,
-    	sClassNameMultiple	= bMultiple ? sClassName + '-multiple-' : '';
-    return '<span class="' + sClassName + ' ' + sClassNameMultiple +
+    	bMultiple	= "multiple" in this.attributes || this.attributes.multiple == "true",
+    	bPopupMode	= bMultiple;
+    return '<span class="' + sClassName + ' ' + (bMultiple ? sClassName + '-multiple-' : '') +
 					("class" in this.attributes ? ' ' + this.attributes["class"] : '')+
 					(this.attributes["required"] ? ' ' + sClassName + '_required' : '')+
 					(this.attributes["disabled"] ? ' ' + sClassName + '_disabled' : '')+
     		'">\
 				<div style="position:absolute;margin-top:-2px;white-space:nowrap" class="' + sClassName + '--placeholder">' +(this.getAttribute("placeholder") || '')+ '</div>\
-   				<div class="' + sClassName + '--field ' + sClassNameMultiple + '--field" style="position:relative">\
+   				<div class="' + sClassName + '--field" style="position:relative;' + (bPopupMode ? 'display:none' : '') + '">\
     				<span class="' + sClassName + '--button" style="right:0;"></span>\
     				<input class="' + sClassName + '--value" type="text" />\
    				</div>\
-   				<div class="' + sClassName + '--popup" style="' +(bMultiple ? '' : 'position:absolute;display:none;')+ '">\
+   				<div class="' + sClassName + '--popup' + (bMultiple ? ' ' + sClassName + '-multiple---popup' : '') +'" style="' +(bPopupMode ? '' : 'position:absolute;display:none;')+ '">\
     				<div class="' + sClassName + '--gateway">';
 };
 

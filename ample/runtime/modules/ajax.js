@@ -7,154 +7,200 @@
  *
  */
 
-oAmple.ajax	= function(oSettings) {
-	// Validate API call
-	fGuard(arguments, [
-		["settings",	cObject]
-	]);
-
-	var oRequest	= new cXMLHttpRequest;
-	oRequest.open(oSettings.type || "GET", oSettings.url || '', "async" in oSettings ? oSettings.async : true);
+function fQuery_ajax(oSettings) {
+	var oRequest	= new cXMLHttpRequest,
+		oHeaders	= oSettings.headers || {},
+		sRequestContentType	= oHeaders["Content-Type"] || '',
+		sExpectedDataType	= oSettings.dataType,
+		sUrl	= oSettings.url || '.',
+		sType	= "type" in oSettings ? cString(oSettings.type).toUpperCase() : "GET",
+		bAsync	= "async" in oSettings ? oSettings.async : true,
+		vData	= "data" in oSettings ? oSettings.data : null,
+		nRequestTimeout;
+	//
+	if (vData != null) {
+		if (typeof vData == "object" && !("ownerDocument" in vData))
+			vData	= fQuery_param(vData);
+		//
+		if (sType == "POST") {
+			if (!sRequestContentType && typeof vData == "string")
+				oHeaders["Content-Type"]	= "application/x-www-form-urlencoded";
+		}
+		else {
+			sUrl	+=(sUrl.indexOf('?') ==-1 ? '?' : '&')+ vData;
+			vData	= null;
+		}
+	}
+	// Open connection
+	oRequest.open(sType, sUrl, bAsync);
+	// Set headers
 	oRequest.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-	oRequest.setRequestHeader("X-User-Agent", oAMLConfiguration_values["ample-user-agent"]);
-	var oHeaders	= oSettings.headers;
-	if (oHeaders)
-		for (var sKey in oHeaders)
+	oRequest.setRequestHeader("X-User-Agent", oDOMConfiguration_values["ample-user-agent"]);
+	for (var sKey in oHeaders)
+		if (oHeaders.hasOwnProperty(sKey))
 			oRequest.setRequestHeader(sKey, oHeaders[sKey]);
+	// Register readystatechange handler
 	oRequest.onreadystatechange	= function() {
 		if (oRequest.readyState == 4) {
+			// Clear timeout
+			if (nRequestTimeout)
+				fClearTimeout(nRequestTimeout);
+			//
+			var nStatus	= oRequest.status,
+				sStatus	= "success";
+			if (nStatus >= 200 && nStatus <= 300 || nStatus == 304 || nStatus == 1223) {
+				var oResponse		= oRequest.responseText,
+					sResponseContentType= oRequest.getResponseHeader("Content-Type") || '',
+					sResponseDataType	= sResponseContentType.match(/(\w+)\/([-\w]+\+)?(?:x\-)?([-\w]+)?;?(.+)?/) ? cRegExp.$3 : '';
+				if (sExpectedDataType != "text") {
+					if (sExpectedDataType == "xml" || sResponseDataType == "xml") {
+						oResponse	= fBrowser_getResponseDocument(oRequest);
+						if (!oResponse)
+							sStatus	= "parsererror";
+					}
+					else
+					if (sExpectedDataType == "json" || sResponseDataType == "json") {
+						try {
+							oResponse	= oJSON.parse(oResponse);
+						}
+						catch (oException) {
+							sStatus	= "parsererror";
+						}
+					}
+					else
+					if (sExpectedDataType == "script" || sResponseDataType == "javascript" || sResponseDataType == "ecmascript") {
+						try {
+							fBrowser_eval(oResponse);
+						}
+						catch (oException) {
+							sStatus	= "error";
+						}
+					}
+				}
+			}
+			else {
+				sStatus	= "error";
+			}
+
+			// Call handlers
+			if (sStatus == "success") {
+				if (oSettings.success)
+					oSettings.success(oResponse, sStatus, oRequest);
+			}
+			else
+			if (oSettings.error)
+				oSettings.error(oRequest, sStatus);
+
+			// Complete
 			if (oSettings.complete)
-				oSettings.complete(oRequest, oRequest.textStatus);
+				oSettings.complete(oRequest, sStatus);
 		}
 	};
-	oRequest.send("data" in oSettings ? oSettings.data : null);
+	// Set timeout
+	if (bAsync && !fIsNaN(oSettings.timeout))
+		nRequestTimeout	= fSetTimeout(function() {
+			// remove handler
+			oRequest.onreadystatechange	= new cFunction;
+			oRequest.abort();
+			// Error
+			if (oSettings.error)
+				oSettings.error(oRequest, "timeout");
+			// Complete
+			if (oSettings.complete)
+				oSettings.complete(oRequest, "timeout");
+		}, oSettings.timeout);
+	// Send data
+	oRequest.send(vData);
 
-	// Invoke implementation
 	return oRequest;
 };
 
-oAmple.get	= function(sUrl, /*data*/vArgument2, /*success*/vArgument3, /*type*/vArgument4) {
-	// Validate API call
-	fGuard(arguments, [
-		["url",	cString]
-	]);
+function fQuery_param(vValue) {
+	throw new cDOMException(cDOMException.NOT_SUPPORTED_ERR);
+};
 
-	// Invoke implementation
+// ample extensions
+oAmple.ajax	= function(oSettings) {
+//->Guard
+	fGuard(arguments, [
+		["settings",	cObject]
+	]);
+//<-Guard
+
+	return fQuery_ajax(oSettings);
+};
+
+oAmple.param	= function(vValue) {
+//->Guard
+	fGuard(arguments, [
+		["value",	cObject]
+	]);
+//<-Guard
+
+	return fQuery_param(vValue);
+};
+
+oAmple.get	= function(sUrl, vData, fCallback, sType) {
+//->Guard
+	fGuard(arguments, [
+		["url",		cString],
+		["data",	cObject,	true,	true],
+		["success",	cFunction,	true],
+		["dataType",cString,	true]
+	]);
+//<-Guard
+
 	var oSettings	= {};
 	oSettings.url	= sUrl;
 	oSettings.type	= "GET";
-	oSettings.data		= vArgument2;
-	oSettings.success	= vArgument3;
-	oSettings.dataType	= vArgument4;
+	oSettings.data		= vData;
+	oSettings.success	= fCallback;
+	oSettings.dataType	= sType;
 
-	return oAmple.ajax(oSettings);
+	return fQuery_ajax(oSettings);
 };
 
-oAmple.post	= function(sUrl, /*data*/vArgument2, /*success*/vArgument3, /*type*/vArgument4) {
-	// Validate API call
+oAmple.post	= function(sUrl, vData, fCallback, sType) {
+//->Guard
 	fGuard(arguments, [
-		["url",	cString]
+   		["url",		cString],
+		["data",	cObject,	true,	true],
+		["success",	cFunction,	true],
+		["dataType",cString,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
 	var oSettings	= {};
 	oSettings.url	= sUrl;
 	oSettings.type	= "POST";
-	oSettings.data		= vArgument2;
-	oSettings.success	= vArgument3;
-	oSettings.dataType	= vArgument4;
+	oSettings.data		= vData;
+	oSettings.success	= fCallback;
+	oSettings.dataType	= sType;
 
-	return oAmple.ajax(oSettings);
+	return fQuery_ajax(oSettings);
 };
 
-// Content Loader
-function fAMLQuery_load_clear(oElement)
-{
-	if (oElement._request)
-	    delete oElement._request;
-	if (oElement._timeout) {
-		fClearTimeout(oElement._timeout);
-		delete oElement._timeout;
-	}
-};
-
-function fAMLQuery_load_abort(oElement)
-{
-	if (oElement._timeout || oElement._request) {
-		if (oElement._request)
-			oElement._request	= oElement._request.abort();
-		fAMLQuery_load_clear(oElement);
-
-		// Dispatch abort event
-		var oEvent	= new cAMLEvent;
-		oEvent.initEvent("abort", false, false);
-		fAMLNode_dispatchEvent(oElement, oEvent);
-	}
-};
-
-cAMLQuery.prototype.load	= function(sUrl, /*data*/vArgument2, /*success*/vArgument3) {
-	// Validate API call
+// Query extensions
+cQuery.prototype.load	= function(sUrl, vData, fCallback) {
+//->Guard
 	fGuard(arguments, [
-		["url",	cString]
+		["url",		cString],
+		["data",	cObject,	true,	true],
+		["success",	cFunction,	true]
 	]);
+//<-Guard
 
-	// Invoke Implementation
-	if (this.length) {
-		var oElement	= this[0];
-		// If there is an operation running, abort it
-		fAMLQuery_load_abort(oElement);
-
-		// Dispatch unload event
-		var oEvent	= new cAMLEvent;
-		oEvent.initEvent("unload", false, false);
-		fAMLNode_dispatchEvent(oElement, oEvent);
-
-		// Remove nodes
-		while (oElement.lastChild)
-			fAMLElement_removeChild(oElement, oElement.lastChild);
-
-		// Do timeout before loading
-		oElement._request	= null;
-		oElement._timeout	= fSetTimeout(function() {
-			// Create request
-			var oSettings	= {};
-			oSettings.type	= "GET";
-			oSettings.url	= sUrl;
-			oSettings.data	= vArgument2 || null;
-			oSettings.complete	= function(oRequest) {
-				// Clear
-				fAMLQuery_load_clear(oElement);
-
-			    var oDocument	= fBrowser_getResponseDocument(oRequest),
-					oEvent		= new cAMLEvent;
-			    if (oDocument) {
-					// Render Content
-			    	fAMLElement_appendChild(oElement, fAMLDocument_importNode(oElement.ownerDocument, oDocument.documentElement, true));
-					// Initialize event
-					oEvent.initEvent("load", false, false);
-			    }
-			    else {
-//->Debug
-					fUtilities_warn(sAML_NOT_WELLFORMED_WRN);
-//<-Debug
-					// Initialize event
-					oEvent.initEvent("error", false, false);
-			    }
-				// Dispatch event
-				fAMLNode_dispatchEvent(oElement, oEvent);
-			};
-
-			// Save in order to be able to cancel
-			oElement._request	= oAmple.ajax(oSettings);
-			oElement._timeout	= null;
-		}, 1);
-	}
+	fQuery_each(this, function() {
+		fNodeLoader_load(this, sUrl, vData, fCallback);
+	});
 
 	return this;
 };
 
-cAMLQuery.prototype.abort	= function() {
-	if (this.length)
-		fAMLQuery_load_abort(this[0]);
+cQuery.prototype.abort	= function() {
+	fQuery_each(this, function() {
+		fNodeLoader_abort(this);
+	});
+
 	return this;
 };

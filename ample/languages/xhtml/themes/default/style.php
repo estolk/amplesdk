@@ -1,6 +1,9 @@
-<?
+<?php
 	$aFiles		= array();
     $aFiles[]	= "forms.css";
+    //
+    $aFiles[]	= "colorpicker.css";
+    $aFiles[]	= "datepicker.css";
 
 	$sOutput	= "";
     for ($nIndex = 0; $nIndex < count($aFiles); $nIndex++)
@@ -10,13 +13,13 @@
 
 	//
 	include("../../../../../build/resources/compiler/cCSSCompiler.php");
-
+/*
 	$oCSSCompiler	= new cCSSCompiler;
 	$oCSSCompiler->readFromString($sOutput);
 	$oCSSCompiler->stripComments();
 	$oCSSCompiler->stripSpaces();
 	$oCSSCompiler->obfuscate();
 	$sOutput	= $oCSSCompiler->getOutput();
-
+*/
 	echo $sOutput;
 ?>

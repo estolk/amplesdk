@@ -16,10 +16,15 @@ cXULElement_checkbox.prototype.$hoverable	= true;
 
 // Class Events handlers
 cXULElement_checkbox.handlers	= {
+	"keydown":	function(oEvent) {
+		if (oEvent.keyIdentifier == "U+0020") {
+			this.$activate();
+			cXULInputElement.dispatchChange(this);
+		}
+	},
 	"click":	function(oEvent) {
 		if (oEvent.button == 0) {
-			this.setAttribute("checked", this.getAttribute("checked") == "true" ? "false" : "true");
-		    // Fire Event
+			this.$activate();
 			cXULInputElement.dispatchChange(this);
 		}
 	},
@@ -47,6 +52,9 @@ cXULElement_checkbox.handlers	= {
 					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 			}
 		}
+	},
+	"DOMActivate":	function(oEvent) {
+		this.setAttribute("checked", this.getAttribute("checked") == "true" ? "false" : "true");
 	}
 };
 
@@ -54,8 +62,8 @@ cXULElement_checkbox.handlers	= {
 cXULElement_checkbox.prototype.$getTagOpen		= function() {
 	var bChecked	= this.attributes["checked"] == "true",
 		bDisabled	= !this.$isAccessible();
-	return '<div class="xul-checkbox' + (bDisabled ? " xul-checkbox_disabled" : "") + (bChecked ? " xul-checkbox_checked" : "") + (bChecked && bDisabled ? " xul-checkbox_checked_disabled xul-checkbox_disabled_checked" : "") + '">\
-				<div class="xul-checkbox--input"></div>\
+	return '<div class="xul-checkbox' + (this.hasAttribute("class") ? ' ' + this.getAttribute("class") : '') + (bDisabled ? " xul-checkbox_disabled" : "") + (bChecked ? " xul-checkbox_checked" : "") + (bChecked && bDisabled ? " xul-checkbox_checked_disabled xul-checkbox_disabled_checked" : "") + '">\
+				<div class="xul-checkbox--input"><br /></div>\
 				<div class="xul-checkbox--label">' +(this.attributes["label"] || '')+ '</div>';
 };
 

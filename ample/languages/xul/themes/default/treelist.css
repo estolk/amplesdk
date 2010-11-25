@@ -3,18 +3,20 @@ xul|tree {
 	cursor: default !important;
 	border: 1px solid silver;
 	background-color: white;
-	margin: 1px;
+	margin: 0px;
 	height: 200px; /* default height */
 }
 
 xul|listbox:focus,
 xul|tree:focus {
 	border-color: #7F9DB9;
+	border-width: 1px;
+/*	margin: 0;*/
 }
 
 xul|listbox:disabled,
 xul|tree:disabled {
-	color: GrayText;/*#aca899;*/
+	color: #808080;
 	background-color: rgb(235, 235, 228);
 }
 
@@ -25,6 +27,8 @@ xul|treecols::settings {
 	background: url(media/listhead_settings.gif) 0 0;
 }
 
+xul|listhead::area,
+xul|treecols::area,
 xul|listheader,
 xul|treecol {
 	background: url(media/listheader.gif) repeat-x 0 0;
@@ -56,7 +60,7 @@ xul|tree:disabled xul|treecol::resizer {
 
 xul|listhead,
 xul|treecols {
-	line-height:	20px;
+	height:	20px;
 }
 
 xul|listitem:hover,
@@ -79,6 +83,7 @@ xul|listcell,
 xul|listheader,
 xul|treecell,
 xul|treecol {
+	line-height:1.2em;
 	padding-left: 1px;
 	padding-right: 1px;
 }
@@ -89,7 +94,6 @@ xul|listheader::label,
 xul|treecol::label {
 	white-space:	nowrap;
 	text-overflow: ellipsis;
-	line-height: 1em;
 }
 
 xul|listcell::box,
@@ -124,7 +128,7 @@ xul|tree::resizer {
 xul|treecell::toc,
 xul|treecell-line {
 	width: 18px;
-	height: 18px;
+/*	height: 1.2em;*/
 }
 
 xul|treecell::toc {

@@ -6,7 +6,7 @@ xul|datepicker,
 xul|timepicker {
 	border: 1px solid silver;
 	margin:	1px;
-	background-color: Window;
+	background-color: #ffffff;
 	display: inline-block;
 }
 
@@ -230,6 +230,7 @@ xul|checkbox::input {
 	height:	16px;
 	width:	16px;
 	vertical-align:	baseline;
+	line-height: 16px;
 	margin: 2px;
 	background-image: url(media/controls.gif);
 	background-repeat: no-repeat;
@@ -370,5 +371,5 @@ xul|checkbox:disabled,
 xul|radiogroup:disabled xul|radio,
 xul|radio:disabled {
 	cursor: default;
-	color: GrayText;/*#aca899;*/
+	color: #808080;
 }

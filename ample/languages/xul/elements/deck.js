@@ -18,6 +18,7 @@ cXULElement_deck.prototype.selectedPanel	= null;
 // Attributes Defaults
 cXULElement_deck.attributes	= {};
 cXULElement_deck.attributes.selectedIndex	= "-1";
+//cXULElement_deck.attributes.orient	= "vertical";
 
 // Class event handlers
 cXULElement_deck.handlers	= {
@@ -36,9 +37,12 @@ cXULElement_deck.handlers	= {
 			            for (var nIndex = 0; nIndex < this.childNodes.length; nIndex++)
 			                this.childNodes[nIndex].setAttribute("hidden", this.selectedIndex == nIndex ? "false" : "true");
 
+			            //
+			            oXULReflowManager.schedule(this.selectedPanel);
+
 			            // send event
 			            var oEvent  = this.ownerDocument.createEvent("Events");
-			            oEvent.initEvent("select", false, true);
+			            oEvent.initEvent("select", true, true);
 			            this.dispatchEvent(oEvent);
 			        }
 			        break;
@@ -47,20 +51,19 @@ cXULElement_deck.handlers	= {
 			        this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 			}
 		}
-	},
-	"DOMNodeInsertedIntoDocument":	function(oEvent) {
-		oXULReflowManager.schedule(this);
 	}
 };
 
 cXULElement_deck.prototype.reflow	= function() {
 	if (!isNaN(this.attributes["selectedIndex"]))
 		this.setAttribute("selectedIndex", this.attributes["selectedIndex"] == "-1" ? "0" : this.attributes["selectedIndex"]);
+	//
+	cXULElement.prototype.reflow.call(this);
 };
 
 // Element Render: open
 cXULElement_deck.prototype.$getTagOpen	= function() {
-    return '<div class="xul-deck">';
+    return '<div class="xul-deck' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '">';
 };
 
 // Element Render: close

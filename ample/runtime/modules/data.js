@@ -7,14 +7,14 @@
  *
  */
 
-var oAMLQuery_cache	= {};
+var oQuery_cache	= {};
 
-function fAMLQuery_data(oQuery, sName, oValue) {
+function fQuery_data(oQuery, sName, oValue) {
 	if (typeof oValue != "undefined") {
-		fAMLQuery_each(oQuery, function() {
-			var oCache	= oAMLQuery_cache[this.uniqueID];
+		fQuery_each(oQuery, function() {
+			var oCache	= oQuery_cache[this.uniqueID];
 			if (!oCache)
-				oCache	= oAMLQuery_cache[this.uniqueID] = {};
+				oCache	= oQuery_cache[this.uniqueID] = {};
 			if (oValue == null)
 				delete oCache[sName];
 			else
@@ -25,9 +25,9 @@ function fAMLQuery_data(oQuery, sName, oValue) {
 	else
 	if (oQuery.length) {
 		var oElement= oQuery[0],
-			oCache	= oAMLQuery_cache[oElement.uniqueID];
+			oCache	= oQuery_cache[oElement.uniqueID];
 		if (!oCache)
-			oCache	= oAMLQuery_cache[oElement.uniqueID] = {};
+			oCache	= oQuery_cache[oElement.uniqueID] = {};
 		if (typeof sName != "undefined")
 			return oCache[sName];
 		else
@@ -35,27 +35,27 @@ function fAMLQuery_data(oQuery, sName, oValue) {
 	}
 };
 
-cAMLQuery.prototype.data	= function(sName, oValue) {
-	// Validate API call
+cQuery.prototype.data	= function(sName, oValue) {
+//->Guard
 	fGuard(arguments, [
 		["name",	cString, true],
 		["value",	cObject, true, true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	return fAMLQuery_data(this, sName, oValue);
+	return fQuery_data(this, sName, oValue);
 };
 
 oAmple.data	= function(oElement, sName, oValue) {
-	// Validate API call
+//->Guard
 	fGuard(arguments, [
-		["element",	cAMLElement],
+		["element",	cElement],
 		["name",	cString, true],
 		["value",	cObject, true, true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	var oQuery	= new cAMLQuery;
+	var oQuery	= new cQuery;
 	oQuery[oQuery.length++]	= oElement;
-	return fAMLQuery_data(oQuery, sName, oValue);
+	return fQuery_data(oQuery, sName, oValue);
 };

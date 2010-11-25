@@ -8,21 +8,52 @@
  */
 
 var cXULElement_wizard	= function() {
-    // Private Collections
-    this.buttons	= {};   // Buttons
-
     // Collections
-    this.wizardPages= new AMLNodeList;
+    this.buttons	= {};
+    this.wizardPages= new ample.classes.NodeList;
+    //
+    var that	= this;
+    this.contentFragment	= ample.createDocumentFragment();
+	// Back
+    this.buttons.back	= this.contentFragment.appendChild(ample.createElementNS(this.namespaceURI, "xul:button"));
+    this.buttons.back.addEventListener("DOMActivate", function(oEvent) {
+		that.rewind();
+	}, false);
+    this.buttons.back.setAttribute("label", ample.locale.localize("dialog.button.previous"));
+    this.buttons.back.setAttribute("class", "back");
+	// Next
+	this.buttons.next	= this.contentFragment.appendChild(ample.createElementNS(this.namespaceURI, "xul:button"));
+	this.buttons.next.addEventListener("DOMActivate", function(oEvent) {
+		that.advance();
+	}, false);
+	this.buttons.next.setAttribute("label", ample.locale.localize("dialog.button.next"));
+	this.buttons.next.setAttribute("class", "next");
+	// Finish
+	this.buttons.finish	= this.contentFragment.appendChild(ample.createElementNS(this.namespaceURI, "xul:button"));
+	this.buttons.finish.addEventListener("DOMActivate", function(oEvent) {
+        that.finish();
+	}, false);
+	this.buttons.finish.setAttribute("label", ample.locale.localize("dialog.button.finish"));
+	this.buttons.finish.setAttribute("class", "finish");
+	// Cancel
+	this.buttons.cancel	= this.contentFragment.appendChild(ample.createElementNS(this.namespaceURI, "xul:button"));
+	this.buttons.cancel.addEventListener("DOMActivate", function(oEvent) {
+		that.cancel();
+	}, false);
+	this.buttons.cancel.setAttribute("label", ample.locale.localize("dialog.button.cancel"));
+	this.buttons.cancel.setAttribute("class", "cancel");
 };
 cXULElement_wizard.prototype = new cXULWindowElement("wizard");
 
 // Public Properties
 cXULElement_wizard.prototype.currentPage	= null;
+cXULElement_wizard.prototype.wizardPages	= null;
+cXULElement_wizard.prototype.buttons		= null;
 
 // Attributes Defaults
 cXULElement_wizard.attributes	= {};
-cXULElement_wizard.attributes.width		= "100%";
-cXULElement_wizard.attributes.height	= "100%";
+cXULElement_wizard.attributes.width		= "400";
+cXULElement_wizard.attributes.height	= "300";
 
 // Public Methods
 cXULElement_wizard.prototype.advance = function(sId) {
@@ -71,16 +102,12 @@ cXULElement_wizard.prototype.rewind  = function() {
 
 cXULElement_wizard.prototype.cancel  = function() {
     if (cXULElement_wizard.dispatchEvent_onWizard(this, "cancel"))
-        this.setAttribute("hidden", "true");
-
-//	close();
+    	this.hide();
 };
 
 cXULElement_wizard.prototype.finish  = function() {
     if (cXULElement_wizard.dispatchEvent_onWizard(this, "finish"))
-        this.setAttribute("hidden", "true");
-
-//	close();
+    	this.hide();
 };
 
 cXULElement_wizard.prototype.goTo    = function(sId) {
@@ -101,9 +128,16 @@ cXULElement_wizard.prototype.getButton   = function(sName) {
     return this.buttons[sName];
 };
 
+// Redefine cXULElement.prototype.reflow behavior
+cXULElement_wizard.prototype.reflow	= function() {
+	if (this.currentPage)
+		this.currentPage.reflow();
+};
+
+// Static methods
 cXULElement_wizard.dispatchEvent_onWizard  = function(oElement, sName) {
     var oEvent  = oElement.ownerDocument.createEvent("Events");
-    oEvent.initEvent("wizard" + sName, false, true);
+    oEvent.initEvent("wizard" + sName, true, true);
 
     return oElement.dispatchEvent(oEvent);
 };
@@ -122,74 +156,22 @@ cXULElement_wizard.handlers	= {
 						cXULElement_wizard.goTo(this, this.wizardPages[oEvent.newValue]);
 					break;
 
+				case "canAdvance":
+				case "canRewind":
+					if (this.currentPage)
+						cXULElement_wizard.goTo(this, this.currentPage);
+					break;
+
 				default:
 					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 			}
 		}
 	},
-	"DOMNodeInserted":	function(oEvent) {
-		if (oEvent.target == this) {
-			var oElement,
-				that	= this;
-			// Back
-			oElement	= this.$appendChildAnonymous(this.ownerDocument.createElementNS(this.namespaceURI, "xul:button"));
-			oElement.addEventListener("DOMActivate", function(oEvent) {
-				that.rewind();
-			}, false);
-			oElement.setAttribute("label", oXULLocaleManager.getText("dialog.button.previous"));
-			oElement.setAttribute("class", "back");
-			this.buttons["back"]	= oElement;
-			// Next
-			oElement	= this.$appendChildAnonymous(this.ownerDocument.createElementNS(this.namespaceURI, "xul:button"));
-			oElement.addEventListener("DOMActivate", function(oEvent) {
-				that.advance();
-			}, false);
-			oElement.setAttribute("label", oXULLocaleManager.getText("dialog.button.next"));
-			oElement.setAttribute("class", "next");
-			this.buttons["next"]	= oElement;
-			// Finish
-			oElement	= this.$appendChildAnonymous(this.ownerDocument.createElementNS(this.namespaceURI, "xul:button"));
-			oElement.addEventListener("DOMActivate", function(oEvent) {
-		        that.finish();
-			}, false);
-			oElement.setAttribute("label", oXULLocaleManager.getText("dialog.button.finish"));
-			oElement.setAttribute("class", "finish");
-			this.buttons["finish"]	= oElement;
-			// Cancel
-			oElement	= this.$appendChildAnonymous(this.ownerDocument.createElementNS(this.namespaceURI, "xul:button"));
-			oElement.addEventListener("DOMActivate", function(oEvent) {
-				that.cancel();
-			}, false);
-			oElement.setAttribute("label", oXULLocaleManager.getText("dialog.button.cancel"));
-			oElement.setAttribute("class", "cancel");
-			this.buttons["cancel"]	= oElement;
-		}
-	},
-	"DOMNodeRemoved":	function(oEvent) {
-		if (oEvent.target == this) {
-			this.$removeChildAnonymous(this.buttons["back"]);
-			this.buttons["back"]	= null;
-			this.$removeChildAnonymous(this.buttons["next"]);
-			this.buttons["next"]	= null;
-			this.$removeChildAnonymous(this.buttons["finish"]);
-			this.buttons["finish"]	= null;
-			this.$removeChildAnonymous(this.buttons["cancel"]);
-			this.buttons["cancel"]	= null;
-		}
-	},
 	"dragstart":	function(oEvent) {
 		if (oEvent.target == this && oEvent.$pseudoTarget != this.$getContainer("title"))
 			oEvent.preventDefault();
-//		this.$getContainer("body").style.visibility	= "hidden";
-//		this.$getContainer("foot").style.visibility	= "hidden";
-	}/*,
-	"dragend":		function(oEvent) {
-		this.$getContainer("body").style.visibility	= "";
-		this.$getContainer("foot").style.visibility	= "";
-	}*/
+	}
 };
-//cXULElement_wizard.handlers.resizestart		= cXULElement_wizard.handlers.dragstart;
-//cXULElement_wizard.handlers.resizedragend	= cXULElement_wizard.handlers.dragend;
 
 // Static methods
 cXULElement_wizard.goTo	= function(oElement, oPage) {
@@ -208,7 +190,8 @@ cXULElement_wizard.goTo	= function(oElement, oPage) {
 	// Set buttons state
 	var bNext	= cXULElement_wizard.getNextPage(oElement, oPage) != null,	// Is there next page?
 		bPrev	= cXULElement_wizard.getPrevPage(oElement, oPage) != null;	// Is there prev page?
-	oElement.buttons["back"].setAttribute("disabled", !bPrev);
+	oElement.buttons["back"].setAttribute("disabled", String(!bPrev || oElement.getAttribute("canRewind") == "false"));
+	oElement.buttons["next"].setAttribute("disabled", String(oElement.getAttribute("canAdvance") == "false"));
 	oElement.buttons["next"].setAttribute("hidden", bNext ? "false" : "true");
 	oElement.buttons["finish"].setAttribute("hidden", bNext ? "true" : "false");
 
@@ -254,8 +237,8 @@ cXULElement_wizard.prototype.$getTagOpen    = function() {
 						</tbody>\
 					</table>\
 				</div>\
+				<div class="xul-wizardheader xul-wizard--header"><div class="xul-wizardheader--title xul-wizard--label"></div><div class="xul-wizardheader--description xul-wizard--description"></div></div>\
 				<div class="xul-wizard--body" style="height:100%">\
-					<div class="xul-wizardheader xul-wizard--header"><div class="xul-wizardheader--title xul-wizard--label"></div><div class="xul-wizardheader--description xul-wizard--description"></div></div>\
 					<div class="xul-wizard--gateway" style="height:100%">';
 };
 

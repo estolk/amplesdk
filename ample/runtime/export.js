@@ -7,154 +7,141 @@
  *
  */
 
-var sAMLExporter_space	= new cArray(5).join(' ');
-function fAMLExporter_toStringFunction(sName) {
-	return cFunction('return "' + "function" + ' ' + sName + '()' + ' ' + '{\\n' + sAMLExporter_space + '[' + "ample" + ' ' + "code" + ']\\n}"');
+function fExporter_toStringFunction(sName, sOrigin) {
+	return cFunction('return "' + "function" + ' ' + sName + '()' + ' ' + '{' + ' ' + '[' + (sOrigin || "ample") + ' ' + "code" + ']' + ' ' + '}"');
 };
-function fAMLExporter_toStringObject(sName) {
+function fExporter_toStringObject(sName) {
 	return cFunction('return "[' + "object" + ' ' + sName + ']"');
 };
-var fAMLExporter_toString	= fAMLExporter_toStringFunction("toString");
-fAMLExporter_toString.toString	= fAMLExporter_toString;
-function fAMLExporter_toStringMember(vObject, fToString) {
+var fExporter_toString	= fExporter_toStringFunction("toString");
+fExporter_toString.toString	= fExporter_toString;
+function fExporter_toStringMember(vObject, fToString) {
 	if (!vObject.hasOwnProperty("toString")) {
 		vObject.toString	= fToString;
-		vObject.toString.toString	= fAMLExporter_toString;
+		vObject.toString.toString	= fExporter_toString;
 	}
 };
-function fAMLExporter_wrap(vObject, sName) {
-	fAMLExporter_toStringMember(vObject, (vObject instanceof cFunction ? fAMLExporter_toStringFunction : fAMLExporter_toStringObject)(sName));
-	for (sName in vObject)
-		if (vObject.hasOwnProperty(sName) && vObject[sName] instanceof cFunction)
-			fAMLExporter_wrapMember(vObject[sName], sName);
+function fExporter_sign(vObject, sName, sOrigin) {
+	fExporter_toStringMember(vObject, (vObject instanceof cFunction ? fExporter_toStringFunction : fExporter_toStringObject)(sName, sOrigin));
+	fExporter_signMembers(vObject, sOrigin);
+	if (vObject.prototype)
+		fExporter_sign(vObject.prototype, sName, sOrigin);
 };
-function fAMLExporter_wrapMember(fFunction, sName) {
-	fAMLExporter_toStringMember(fFunction, fAMLExporter_toStringFunction(sName));
+function fExporter_signMembers(oObject, sOrigin) {
+	// Sign only own members
+	for (var sName in oObject)
+		if (oObject.hasOwnProperty(sName) && oObject[sName] instanceof cFunction)
+			fExporter_toStringMember(oObject[sName], fExporter_toStringFunction(sName, sOrigin));
 };
-function fAMLExporter_exportMember(oObject, fFunction, sName) {
-	fAMLExporter_wrapMember(fFunction, sName);
 
-	// publish to object
-	oObject[sName]	= fFunction;
-};
-function fAMLExporter_export(cObject, sName) {
+function fExporter_export(cObject, sName, oObject, sOrigin) {
 	// Class
-	fAMLExporter_wrap(cObject, sName);
-	if (cObject.prototype)	// Required in IE
-		fAMLExporter_wrap(cObject.prototype, sName);
+	fExporter_sign(cObject, sName, sOrigin);
 
-	// Publish to window
-	window[sName]	= cObject;
+	// Publish
+	(oObject || hClasses)[sName]	= cObject;
 };
 
 // publish classes to window
 // DOM-Events
-fAMLExporter_export(cAMLEvent,				"AMLEvent");
-fAMLExporter_export(cAMLCustomEvent,		"AMLCustomEvent");
-fAMLExporter_export(cAMLUIEvent,			"AMLUIEvent");
-fAMLExporter_export(cAMLTextEvent,			"AMLTextEvent");
-fAMLExporter_export(cAMLKeyboardEvent,		"AMLKeyboardEvent");
-fAMLExporter_export(cAMLMouseEvent,			"AMLMouseEvent");
-fAMLExporter_export(cAMLMouseWheelEvent,	"AMLMouseWheelEvent");
-fAMLExporter_export(cAMLMutationEvent,		"AMLMutationEvent");
+fExporter_export(cEvent,			"Event");
+fExporter_export(cCustomEvent,		"CustomEvent");
+fExporter_export(cUIEvent,			"UIEvent");
+fExporter_export(cTextEvent,		"TextEvent");
+fExporter_export(cKeyboardEvent,	"KeyboardEvent");
+fExporter_export(cMouseEvent,		"MouseEvent");
+fExporter_export(cMouseWheelEvent,	"MouseWheelEvent");
+fExporter_export(cMutationEvent,	"MutationEvent");
 // Touch/Gesture
-fAMLExporter_export(cAMLGestureEvent,		"AMLGestureEvent");
-fAMLExporter_export(cAMLTouchEvent,			"AMLTouchEvent");
+fExporter_export(cGestureEvent,		"GestureEvent");
+fExporter_export(cTouchEvent,		"TouchEvent");
 
 // DOM-Core
-fAMLExporter_export(cAMLStringList,			"AMLStringList");
-fAMLExporter_export(cAMLNode,				"AMLNode");
-fAMLExporter_export(cAMLAttr,				"AMLAttr");
-fAMLExporter_export(cAMLCDATASection,		"AMLCDATASection");
-fAMLExporter_export(cAMLCharacterData,		"AMLCharacterData");
-fAMLExporter_export(cAMLComment,			"AMLComment");
-fAMLExporter_export(cAMLConfiguration,		"AMLConfiguration");
-fAMLExporter_export(cAMLDocument,			"AMLDocument");
-fAMLExporter_export(cAMLDocumentFragment,	"AMLDocumentFragment");
-fAMLExporter_export(cAMLElement, 			"AMLElement");
-fAMLExporter_export(cAMLEntityReference,	"AMLEntityReference");
-fAMLExporter_export(cAMLException,			"AMLException");
-fAMLExporter_export(cAMLError, 				"AMLError");
-fAMLExporter_export(cAMLImplementation,		"AMLImplementation");
-fAMLExporter_export(cAMLNodeList,			"AMLNodeList");
-fAMLExporter_export(cAMLProcessingInstruction,	"AMLProcessingInstruction");
-fAMLExporter_export(cAMLText,				"AMLText");
+fExporter_export(cDOMStringList,	"DOMStringList");
+fExporter_export(cNode,				"Node");
+fExporter_export(cAttr,				"Attr");
+fExporter_export(cCDATASection,		"CDATASection");
+fExporter_export(cCharacterData,	"CharacterData");
+fExporter_export(cComment,			"Comment");
+fExporter_export(cDOMConfiguration,	"DOMConfiguration");
+fExporter_export(cDocument,			"Document");
+fExporter_export(cDocumentFragment,	"DocumentFragment");
+fExporter_export(cElement, 			"Element");
+fExporter_export(cEntityReference,	"EntityReference");
+fExporter_export(cDOMException,		"DOMException");
+fExporter_export(cDOMError, 		"DOMError");
+fExporter_export(cDOMImplementation,"DOMImplementation");
+fExporter_export(cNodeList,			"NodeList");
+fExporter_export(cProcessingInstruction,	"ProcessingInstruction");
+fExporter_export(cText,				"Text");
 // Touch/Gesture
-fAMLExporter_export(cAMLTouch,				"AMLTouch");
-fAMLExporter_export(cAMLTouchList,			"AMLTouchList");
-
-// Ample objects
-//fAMLExporter_export(cAMLNamespace,		"AMLNamespace");
-fAMLExporter_export(cAMLQuery,			"AMLQuery");
-//fAMLExporter_export(cAMLSerializer,	"AMLSerializer");
-//fAMLExporter_export(cAMLTreeWalker,	"AMLTreeWalker");
-//fAMLExporter_export(cAMLWindow,		"AMLWindow");
+fExporter_export(cTouch,			"Touch");
+fExporter_export(cTouchList,		"TouchList");
 // Drag&Drop
-fAMLExporter_export(cAMLDataTransfer,	"AMLDataTransfer");
-fAMLExporter_export(cAMLDragEvent,		"AMLDragEvent");
+fExporter_export(cDataTransfer,		"DataTransfer");
+fExporter_export(cDragEvent,		"DragEvent");
 // Resize
-fAMLExporter_export(cAMLResizeEvent,	"AMLResizeEvent");
+fExporter_export(cResizeEvent,		"ResizeEvent");
 // History
-fAMLExporter_export(cAMLHashChangeEvent,"AMLHashChangeEvent");
+fExporter_export(cHashChangeEvent,	"HashChangeEvent");
 // Selectors
-fAMLExporter_export(cAMLNodeSelector,	"AMLNodeSelector");
+fExporter_export(cNodeSelector,		"NodeSelector");
+// Ample SDK objects
+fExporter_export(cQuery,			"Query");
+
 //->Source
 //Range
-fAMLExporter_export(cAMLRange,			"AMLRange");
+fExporter_export(cRange,			"Range");
 //<-Source
 
 // XML Objects
 if (!window.DOMParser)
-	fAMLExporter_export(cDOMParser,		"DOMParser");
+	fExporter_export(cDOMParser,		"DOMParser",		window);
 if (!window.XMLSerializer)
-	fAMLExporter_export(cXMLSerializer,	"XMLSerializer");
+	fExporter_export(cXMLSerializer,	"XMLSerializer",	window);
 if (!window.XSLTProcessor)
-	fAMLExporter_export(cXSLTProcessor,	"XSLTProcessor");
+	fExporter_export(cXSLTProcessor,	"XSLTProcessor",	window);
 if (bTrident)
-	fAMLExporter_export(cXMLHttpRequest,"XMLHttpRequest");
-//fAMLExporter_export(cRPCClient,	"RPCClient");
-//
-//if (!window.JSONRequest)
-//	fAMLExporter_export(cJSONRequest,	"JSONRequest");
-//if (!window.SoapRequest)
-//	fAMLExporter_export(cSoapRequest,	"SoapRequest");
+	fExporter_export(cXMLHttpRequest,	"XMLHttpRequest",	window);
 if (!window.JSON)
-	fAMLExporter_export(oJSON,	"JSON");
+	fExporter_export(oJSON,	"JSON",	window);
 
 // Special virtual type
-fAMLExporter_wrapMember(cArguments,	"Arguments");
+fExporter_sign(cArguments,	"Arguments");
 // Tweaks and tricks
-fAMLExporter_wrap(oAmple.prefixes,	"prefixes");
-fAMLExporter_wrap(fAmple_resolver,	"resolver");
-fAMLExporter_wrap(oAmple.documentElement.$getContainer,		"$getContainer");
-
+fExporter_sign(oAmple.prefixes,	"prefixes");
+fExporter_sign(oAmple.classes,	"classes");
+fExporter_sign(oAmple.easing,	"easing");
+fExporter_sign(oAmple.locale,	"locale");
+fExporter_sign(cNodeSelector.pseudoClass,	"pseudoClass");
+fExporter_sign(oAmple_root.$getContainer,	"$getContainer");
 //
-fAMLExporter_export(oAmple,	"ample");
+fExporter_export(oAmple,	"ample", window);
 
 // JavaScript 1.5
 if (!cArray.prototype.push)
-	fAMLExporter_exportMember(cArray.prototype, function(vValue) {
+	fExporter_export(function(vValue) {
 		this[this.length]   = vValue;
 		return this.length;
-	}, "push");
+	}, "push", cArray.prototype);
 
 if (!cArray.prototype.pop)
-	fAMLExporter_exportMember(cArray.prototype, function() {
+	fExporter_export(function() {
 		var vValue  = this[this.length-1];
 		this.length--;
 		return vValue;
-	}, "pop");
+	}, "pop", cArray.prototype);
 
 // JavaScript 1.6
 //
 if (!cArray.prototype.indexOf)
-	fAMLExporter_exportMember(cArray.prototype, function(oElement, nIndex) {
-		// Validate arguments
+	fExporter_export(function(oElement, nIndex) {
+//->Guard
 		fGuard(arguments, [
 			["element",	cObject, false, true],
 			["index",	cNumber, true, false]
 		]);
-
+//<-Guard
 		// adjust nIndex
 		var nLength = this.length;
 		if (nIndex == null) {
@@ -171,16 +158,16 @@ if (!cArray.prototype.indexOf)
 				if (vValue === oElement)
 					return nIndex;
 		return -1;
-	}, "indexOf");
+	}, "indexOf", cArray.prototype);
 
 if (!cArray.prototype.lastIndexOf)
-	fAMLExporter_exportMember(cArray.prototype, function(oElement, nIndex) {
-		// Validate arguments
+	fExporter_export(function(oElement, nIndex) {
+//->Guard
 		fGuard(arguments, [
 			["element",	cObject, false, true],
 			["index",	cNumber, true, false]
 		]);
-
+//<-Guard
 		// adjust nIndex
 		var nLength = this.length;
 		if (nIndex == null) {
@@ -200,80 +187,85 @@ if (!cArray.prototype.lastIndexOf)
 				if (vValue === oElement)
 					return nIndex;
 		return -1;
-	}, "lastIndexOf");
+	}, "lastIndexOf", cArray.prototype);
 
 //
 if (!cArray.prototype.filter)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
-		// Validate arguments
+	fExporter_export(function(fCallback, oReceiver) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
+//<-Guard
 
 		for (var nIndex = 0, nLength = this.length, aResult = [], vValue; nIndex < nLength; nIndex++)
 			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (fCallback.call(oReceiver, vValue, nIndex, this))
 					aResult.push(vValue);
 		return aResult;
-	}, "filter");
+	}, "filter", cArray.prototype);
 
 if (!cArray.prototype.forEach)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
-		// Validate arguments
+	fExporter_export(function(fCallback, oReceiver) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
+//<-Guard
 
 		for (var nIndex = 0, nLength = this.length, vValue; nIndex < nLength; nIndex++)
 			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				fCallback.call(oReceiver, vValue, nIndex, this);
-	}, "forEach");
+	}, "forEach", cArray.prototype);
 
 if (!cArray.prototype.every)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
-		// Validate arguments
+	fExporter_export(function(fCallback, oReceiver) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
+//<-Guard
 
 		for (var nIndex = 0, nLength = this.length, vValue; nIndex < nLength; nIndex++)
 			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (!fCallback.call(oReceiver, vValue, nIndex, this))
 					return false;
 		return true;
-	}, "every");
+	}, "every", cArray.prototype);
 
 if (!cArray.prototype.map)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
-		// Validate arguments
+	fExporter_export(function(fCallback, oReceiver) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
+//<-Guard
 
 		for (var nIndex = 0, nLength = this.length, aResult = new cArray(nLength), vValue; nIndex < nLength; nIndex++)
 			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				aResult[nIndex] = fCallback.call(oReceiver, vValue, nIndex, this);
 		return aResult;
-	}, "map");
+	}, "map", cArray.prototype);
 
 if (!cArray.prototype.some)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback, oReceiver) {
-		// Validate arguments
+	fExporter_export(function(fCallback, oReceiver) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction],
 			["receiver",	cObject, true, true]
 		]);
+//<-Guard
 
 		for (var nIndex = 0, nLength = this.length, vValue; nIndex < nLength; nIndex++)
 			if (!(typeof(vValue = this[nIndex]) == "undefined") || nIndex in this)
 				if (fCallback.call(oReceiver, vValue, nIndex, this))
 					return true;
 		return false;
-	}, "some");
+	}, "some", cArray.prototype);
 
 // JavaScript 1.7
 // generators, iterators, array comprehensions, let expressions, and destructuring assignment
@@ -281,11 +273,12 @@ if (!cArray.prototype.some)
 // JavaScript 1.8
 // Expression closures, Generator expressions
 if (!cArray.prototype.reduce)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback/*, initial*/) {
-		// Validate arguments
+	fExporter_export(function(fCallback/*, initial*/) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction]
 		]);
+//<-Guard
 
 		var nLength = this.length >>> 0,
 			nIndex	= 0,
@@ -315,14 +308,15 @@ if (!cArray.prototype.reduce)
 				aValue = fCallback.call(null, aValue, this[nIndex], nIndex, this);
 
 		return aValue;
-	}, "reduce");
+	}, "reduce", cArray.prototype);
 
 if (!cArray.prototype.reduceRight)
-	fAMLExporter_exportMember(cArray.prototype, function(fCallback/*, initial*/) {
-		// Validate arguments
+	fExporter_export(function(fCallback/*, initial*/) {
+//->Guard
 		fGuard(arguments, [
 			["callback",	cFunction]
 		]);
+//<-Guard
 
 		var nLength = this.length >>> 0,
 			nIndex	= nLength - 1,
@@ -351,24 +345,24 @@ if (!cArray.prototype.reduceRight)
 				aValue = fCallback.call(null, aValue, this[nIndex], nIndex, this);
 
 		return aValue;
-	}, "reduceRight");
+	}, "reduceRight", cArray.prototype);
 
 // JavaScript 1.8.1
 // Object.getPrototypeOf(), Native JSON, String methods
 if (!cString.prototype.trim)
-	fAMLExporter_exportMember(cString.prototype, function() {
+	fExporter_export(function() {
 		return this.replace(/^\s+|\s+$/g, '');
-	}, "trim");
+	}, "trim", cString.prototype);
 
 if (!cString.prototype.trimLeft)
-	fAMLExporter_exportMember(cString.prototype, function(fCallback, oReceiver) {
+	fExporter_export(function(fCallback, oReceiver) {
 		return this.replace(/^\s+/, '');
-	}, "trimLeft");
+	}, "trimLeft", cString.prototype);
 
 if (!cString.prototype.trimRight)
-	fAMLExporter_exportMember(cString.prototype, function(fCallback, oReceiver) {
+	fExporter_export(function(fCallback, oReceiver) {
 		return this.replace(/\s+$/, '');
-	}, "trimRight");
+	}, "trimRight", cString.prototype);
 
 // JSON
 function fJSON_doublizeInteger(n) {
@@ -377,26 +371,26 @@ function fJSON_doublizeInteger(n) {
 };
 
 if (!cDate.prototype.toJSON)
-	fAMLExporter_exportMember(cDate.prototype, function(sKey) {
+	fExporter_export(function(sKey) {
 		return this.getUTCFullYear()	+ '-' +
 			fJSON_doublizeInteger(this.getUTCMonth() + 1)	+ '-' +
 			fJSON_doublizeInteger(this.getUTCDate())		+ 'T' +
 			fJSON_doublizeInteger(this.getUTCHours())		+ ':' +
 			fJSON_doublizeInteger(this.getUTCMinutes())		+ ':' +
 			fJSON_doublizeInteger(this.getUTCSeconds())		+ 'Z';
-	}, "toJSON");
+	}, "toJSON", cDate.prototype);
 
 if (!cString.prototype.toJSON)
-	fAMLExporter_exportMember(cString.prototype, function(sKey) {
+	fExporter_export(function(sKey) {
 		return this.valueOf();
-	}, "toJSON");
+	}, "toJSON", cString.prototype);
 
 if (!cNumber.prototype.toJSON)
-	fAMLExporter_exportMember(cNumber.prototype, function(sKey) {
+	fExporter_export(function(sKey) {
 		return this.valueOf();
-	}, "toJSON");
+	}, "toJSON", cNumber.prototype);
 
 if (!cBoolean.prototype.toJSON)
-	fAMLExporter_exportMember(cBoolean.prototype, function(sKey) {
+	fExporter_export(function(sKey) {
 		return this.valueOf();
-	}, "toJSON");
+	}, "toJSON", cBoolean.prototype);

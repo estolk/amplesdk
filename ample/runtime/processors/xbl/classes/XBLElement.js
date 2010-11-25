@@ -10,7 +10,7 @@
 var cXBLElement	= function(sLocalName) {
 	this.localName	= sLocalName;
 };
-cXBLElement.prototype	= new cAMLElement;
+cXBLElement.prototype	= new cElement;
 cXBLElement.prototype.namespaceURI	= "http://www.w3.org/ns/xbl";
 cXBLElement.prototype.localName		= "#element";
 
@@ -23,44 +23,44 @@ cXBLElement.prototype.$getTag	= function() {
 fAmple_extend(cXBLElement);
 
 // Attaching to Ample SDK
-// AMLDocument
-cAMLDocument.prototype.bindingDocuments	= null;
+// Document
+cDocument.prototype.bindingDocuments	= null;
 
-cAMLDocument.prototype.loadBindingDocument	= function(sDocumentUri) {
-	// Validate arguments
+cDocument.prototype.loadBindingDocument	= function(sDocumentUri) {
+//->Guard
 	fGuard(arguments, [
 		["documentURI",	cString]
 	]);
+//<-Guard
 
-	//
 };
 
-//AMLElement
-cAMLElement.prototype.xblImplementations	= null;
+//Element
+cElement.prototype.xblImplementations	= null;
 
-cAMLElement.prototype.addBinding	= function(sBindingUri) {
-	// Validate arguments
+cElement.prototype.addBinding	= function(sBindingUri) {
+//->Guard
 	fGuard(arguments, [
 		["bindingURI",	cString]
 	]);
+//<-Guard
 
-	//
 };
 
-cAMLElement.prototype.removeBinding	= function(sBindingUri) {
-	// Validate arguments
+cElement.prototype.removeBinding	= function(sBindingUri) {
+//->Guard
 	fGuard(arguments, [
 		["bindingURI",	cString]
 	]);
+//<-Guard
 
-	//
 };
 
-cAMLElement.prototype.hasBinding	= function(sBindingUri) {
-	// Validate arguments
+cElement.prototype.hasBinding	= function(sBindingUri) {
+//->Guard
 	fGuard(arguments, [
 		["bindingURI",	cString]
 	]);
+//<-Guard
 
-	//
 };

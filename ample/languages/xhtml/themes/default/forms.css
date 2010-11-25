@@ -1,3 +1,4 @@
+/* */
 datalist {
 	display: none;
 }
@@ -5,27 +6,39 @@ datalist {
 input,
 textarea,
 select {
-	border: solid 1px silver;
 	padding: 1px 0px;
-	margin:	0;
+	margin:	1px;
 	width: 200px;
 	display: inline-block;
-	height: 16px;
-	outline-color: white;
 }
 
+input[type=text],
+input[type=password],
+input[type=number],
+input[type=color],
+input[type=email],
+input[type=search],
+input[type=url],
+input[type=datetime],
+input[type=datetime-local],
+input[type=date],
+input[type=time],
+input[type=month],
+input[type=week],
+input[type=tel],
 textarea,
-select[multiple] {
+select {
+	border-radius: 2px;
+	border: solid 1px silver;
+}
+
+input {
+	height: 16px;
+	vertical-align: middle;
+}
+
+textarea {
 	height: 100px;
-}
-
-select[multiple] {
-	overflow: auto;
-	overflow-x: hidden;
-}
-
-select[multiple]::field {
-	display: none;
 }
 
 input[type=hidden] {
@@ -33,10 +46,16 @@ input[type=hidden] {
 }
 
 input[type=file],
+input[type=range],
 input[type=checkbox],
 input[type=radio] {
-	border: none;
+	border-color: transparent;
 	width: 18px;
+}
+
+input[type=checkbox]::value,
+input[type=radio]::value {
+	opacity: 0;
 }
 
 input[type=button],
@@ -48,38 +67,122 @@ input[type=submit] {
 
 input[type=range] {
 	width:	200px;
+	height: 6px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+input[type=range]::value {
+	display: none;
+}
+
+input[type=range]::field,
+input[type=range]::before,
+input[type=range]::after {
+	height: 6px;
+	background-image: url("media/forms.png");
+}
+
+input[type=range]::before,
+input[type=range]::after {
+	width:	6px;
+}
+
+input[type=range]::field {
+	margin-left: 6px;
+	margin-right: 6px;
+	background-position: 0px -261px;
+	background-repeat: repeat-x;
+}
+
+input[type=range]::before {
+	background-position: -10px -230px;
+}
+
+input[type=range]::after {
+	background-position: 0px -245px;
 }
 
 input[type=datetime],
 input[type=datetime-local] {
-	width:	140px;
+	width:	130px;
 }
 
 input[type=date] {
 	width:	90px;
 }
 
+input[type=color] {
+	width: 70px;
+}
+
 input[type=time] {
-	width:	70px;
+	width:	54px;
 }
 
 input[type=month] {
-	width:	40px;
+	width:	70px;
 }
 
 input[type=week] {
-	width:	40px;
+	width:	80px;
 }
 
 input[type=number] {
 	width: 60px;
 }
 
+input[type=text],
+input[type=password],
+input[type=number],
+input[type=color],
+input[type=email],
+input[type=search],
+input[type=url],
+input[type=datetime],
+input[type=datetime-local],
+input[type=date],
+input[type=time],
+input[type=month],
+input[type=week],
+input[type=tel],
+textarea,
+select {
+	background-color: white;
+}
+
+
 /* pseudo-states */
 input:focus,
 textarea:focus,
 select:focus {
-	outline: solid 1px blue;
+	margin: 0;
+	background-color: lightyellow;
+	border-color: lightblue;
+	border-width: 2px;
+}
+
+input[type=file].input_focus,
+input[type=checkbox].input_focus,
+input[type=radio].input_focus,
+input[type=range].input_focus {
+	background: none;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+}
+
+input[type=button].input_focus,
+input[type=submit].input_focus,
+input[type=reset].input_focus {
+	background: none;
+	border: none;
+	margin: 1px;
+}
+
+input[type=range].input_focus {
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 /* pseudo-elements */
@@ -94,10 +197,6 @@ select::value {
 	margin:	0;
 	vertical-align:top;
 	width: 100%;
-}
-
-input[type=range]::value {
-	display: none;
 }
 
 input[type=file]::field {
@@ -130,16 +229,157 @@ input[type=file]::button,
 input[type=search]::button,
 select::button {
 	position:absolute;
-	background-color: red;
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	background-image: url("media/forms.png");
 	width: 16px;
 	height: 16px;
 	margin: 0 1px;
 }
 
+input[type=time]::button,
+input[type=number]::button {
+	background-position: 0px 16px;;
+}
+
+select::button {					background-position: 0px 0px;	}
+select:hover select::button {		background-position: -16px 0px;	}
+select:disabled select::button {	background-position: -32px 0px;	}
+select:active select::button {		background-position: -48px 0px;	}
+
+input[type=search]::button {				background-position: 0 -96px;		}
+input:hover input[type=search]::button {	background-position: -16px -96px;	}
+input:disabled input[type=search]::button {	background-position: -32px -96px;	}
+input:active input[type=search]::button {	background-position: -48px -96px;	}
+
+input[type=file]::button {					background-position: 0 -192px;		}
+input:hover input[type=file]::button {		background-position: -16px -192px;	}
+input:disabled input[type=file]::button {	background-position: -32px -192px;	}
+input:active input[type=file]::button {		background-position: -48px -192px;	}
+
+input[type=datetime-local]::button,
+input[type=datetime]::button,
+input[type=date]::button {					background-position: 0 -32px;		}
+input:hover input[type=datetime-local]::button,
+input:hover input[type=datetime]::button,
+input:hover input[type=date]::button {		background-position: -16px -32px;	}
+input:disabled input[type=datetime-local]::button,
+input:disabled input[type=datetime]::button,
+input:disabled input[type=date]::button {	background-position: -32px -32px;	}
+input:active input[type=datetime-local]::button,
+input:active input[type=datetime]::button,
+input:active input[type=date]::button {		background-position: -48px -32px;	}
+
+input[type=week]::button {					background-position: 0 -64px;	}
+input:hover input[type=week]::button {		background-position: -16px -64px;	}
+input:disabled input[type=week]::button {	background-position: -32px -64px;	}
+input:active input[type=week]::button {		background-position: -48px -64px;	}
+
+input[type=month]::button {					background-position: 0 -48px;	}
+input:hover input[type=month]::button {		background-position: -16px -48px;	}
+input:disabled input[type=month]::button {	background-position: -32px -48px;	}
+input:active input[type=month]::button {	background-position: -48px -48px;	}
+
+input[type=color]::button {					background-position: 0 -208px;	}
+input:hover input[type=color]::button {		background-position: -16px -208px;	}
+input:disabled input[type=color]::button {	background-position: -32px -208px;	}
+input:active input[type=color]::button {	background-position: -48px -208px;	}
+
+input[type=range]::button {					background-position: 0 -176px;	margin-left: -8px;	margin-top:	-6px;}
+input:hover input[type=range]::button {		background-position: -16px -176px;	}
+input:disabled input[type=range]::button {	background-position: -32px -176px;	}
+input:active input[type=range]::button {	background-position: -48px -176px;	}
+
+input[type=checkbox]::button {					background-position: 0 -144px;		}
+input:hover input[type=checkbox]::button {		background-position: -16px -144px;	}
+input:disabled input[type=checkbox]::button {	background-position: -32px -144px;	}
+input:checked input[type=checkbox]::button {			background-position: 0 -160px;		}
+input:hover:checked input[type=checkbox]::button {		background-position: -16px -160px;	}
+input:disabled:checked input[type=checkbox]::button {	background-position: -32px -160px;	}
+input[type=radio]::button {						background-position: 0 -112px;		}
+input:hover input[type=radio]::button {			background-position: -16px -112px;	}
+input:disabled input[type=radio]::button {		background-position: -32px -112px;	}
+input:checked input[type=radio]::button {				background-position: 0 -128px;		}
+input:hover:checked input[type=radio]::button {			background-position: -16px -128px;	}
+input:disabled:checked input[type=radio]::button {		background-position: -32px -128px;	}
+
+input[type=button]::field,
+input[type=reset]::field,
+input[type=submit]::field,
+input[type=button]::before,
+input[type=reset]::before,
+input[type=submit]::before,
+input[type=button]::after,
+input[type=reset]::after,
+input[type=submit]::after {
+	background-image: url("media/button.png");
+	height: 20px;
+}
+
+input[type=button]::field,
+input[type=reset]::field,
+input[type=submit]::field {
+	background-repeat: repeat-x;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+input[type=button]::before,
+input[type=reset]::before,
+input[type=submit]::before,
+input[type=button]::after,
+input[type=reset]::after,
+input[type=submit]::after {
+	width: 5px;
+	width: 5px;
+}
+
+input[type=button]::field,
+input[type=reset]::field,
+input[type=submit]::field {			background-position: 0 -40px;	}
+input:hover input[type=button]::field,
+input:hover input[type=reset]::field,
+input:hover input[type=submit]::field {		background-position: 0 -60px;	}
+input:disabled input[type=button]::field,
+input:disabled input[type=reset]::field,
+input:disabled input[type=submit]::field {	background-position: 0 -80px;	}
+input:focus input[type=button]::field,
+input:focus input[type=reset]::field,
+input:focus input[type=submit]::field {		background-position: 0 -100px;	}
+
+input[type=button]::before,
+input[type=reset]::before,
+input[type=submit]::before {		background-position: -15px 0px;	}
+input:hover input[type=button]::before,
+input:hover input[type=reset]::before,
+input:hover input[type=submit]::before {	background-position: -35px 0px;	}
+input:disabled input[type=button]::before,
+input:disabled input[type=reset]::before,
+input:disabled input[type=submit]::before {	background-position: -55px 0px;	}
+input:focus input[type=button]::before,
+input:focus input[type=reset]::before,
+input:focus input[type=submit]::before {	background-position: -75px 0px;	}
+
+input[type=button]::after,
+input[type=reset]::after,
+input[type=submit]::after {			background-position: 0px -20px;	}
+input:hover input[type=button]::after,
+input:hover input[type=reset]::after,
+input:hover input[type=submit]::after {		background-position: -20px -20px;	}
+input:disabled input[type=button]::after,
+input:disabled input[type=reset]::after,
+input:disabled input[type=submit]::after {	background-position: -40px -20px;	}
+input:focus input[type=button]::after,
+input:focus input[type=reset]::after,
+input:focus input[type=submit]::after {		background-position: -60px -20px;	}
+
+/* */
 input[type=date]::field,
 input[type=time]::field,
 input[type=datetime]::field,
 input[type=datetime-local]::field,
+input[type=week]::field,
+input[type=month]::field,
 input[type=number]::field,
 input[type=color]::field,
 input[type=search]::field,
@@ -148,45 +388,101 @@ select::field {
 }
 
 /* */
-input[type=range]::before,
-input[type=range]::after {
-	vertical-align:top;
-	width:2px;
-	height: 16px;
+select::popup {
+	height: 100px;
+	overflow: auto;
+	overflow-x: hidden;
+	background-color: white;
+	border: solid 1px silver;
+	width: inherit;
 }
 
-input::before {
-	background-color: green;
-}
-
-input::after {
-	background-color: blue;
-}
-
-/* */
 select::value {
 	cursor: default;
 }
 
-input::popup,
-select::popup {
-	border: solid 1px silver;
-	background-color: pink;
-	width: inherit;
+select[multiple]::popup {
+	padding: 0;
+	border: none;
 }
 
-optgroup::gateway {
-	padding-left: 20px;
+optgroup::value {
+	font-style: italic;
 }
 
 option,
 optgroup::value {
-	background-color: lightblue;
 	cursor: default;
 }
 
-option:hover,
-optgroup::value:hover {
-	background-color: white;
+option:hover {
+	background-color: lightblue;
 	color: black;
+}
+
+select:focus option:selected {
+	background-color: blue;
+	color: white;
+}
+
+option:selected {
+	background-color: gray;
+	color: white;
+}
+
+button {
+
+}
+
+button::before,
+button::after {
+
+}
+
+button::before {
+
+}
+
+button::after {
+
+}
+
+button::label {
+
+}
+
+/* spinbuttons */
+spinbuttons {
+	width: 16px;
+}
+
+spinbuttons::button-up,
+spinbuttons::button-down {
+	position:absolute;
+	right: 0;
+	height: 8px;
+	width: 16px;
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	background-image: url("media/forms.png");
+	font-size: 1px;
+	line-height: 8px;
+}
+
+spinbuttons::button-up {						background-position: 0px -16px;	top: 0px;	}
+spinbuttons::button-up:hover {					background-position: -16px -16px;		}
+spinbuttons:disabled spinbuttons::button-up {	background-position: -32px -16px;		}
+spinbuttons::button-up:active {					background-position: -48px -16px;		}
+spinbuttons::button-down {						background-position: 0px -24px;	top: 8px;	}
+spinbuttons::button-down:hover {				background-position: -16px -24px;	}
+spinbuttons:disabled spinbuttons::button-down {	background-position: -32px -24px;	}
+spinbuttons::button-down:active {				background-position: -48px -24px;	}
+
+/* pickers */
+colorpicker,
+datepicker {
+	position:	absolute;
+	background-color: white;
+	border: outset 1px gray;
+	padding: 2px;
 }

@@ -9,7 +9,7 @@
 
 var cXULElement_listitem	= function() {
     // Collections
-    this.cells  = new AMLNodeList;
+    this.cells  = new ample.classes.NodeList;
 };
 cXULElement_listitem.prototype   = new cXULElement("listitem");
 cXULElement_listitem.prototype.$hoverable	= true;
@@ -87,7 +87,7 @@ cXULElement_listitem.prototype._onCommandClick   = function(oEvent) {
 // Element Render: open
 cXULElement_listitem.prototype.$getTagOpen	= function() {
 	var oListBox	= this.parentNode.parentNode;
-	return '<tr class="xul-listitem' + (this.attributes["class"] ? " xul-listitem_" + this.attributes["class"] : "") + '" style="height:1em;vertical-align:top">' +
+	return '<tr class="xul-listitem' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '" style="height:1.2em;vertical-align:top">' +
 				(this.attributes["label"] || (oListBox && (oListBox.attributes["type"] == "checkbox" || oListBox.attributes["type"] == "radio"))
 				? ('<td style="padding:0" onmousedown="event.cancelBubble=true;" class="xul-listcell">' +
 					(this.attributes["label"]
@@ -103,8 +103,7 @@ cXULElement_listitem.prototype.$getTagOpen	= function() {
 
 // Element Render: close
 cXULElement_listitem.prototype.$getTagClose	= function() {
-	return 		'<td class="xul-listcell" width="100%"></td>\
-			</tr>';
+	return '</tr>';
 };
 
 // Register Element

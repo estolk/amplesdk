@@ -11,7 +11,6 @@ var cXULElement_toolbarbutton	= function(){};
 cXULElement_toolbarbutton.prototype  = new cXULElement("toolbarbutton");
 
 cXULElement_toolbarbutton.prototype.$hoverable	= true;
-cXULElement_toolbarbutton.prototype.tabIndex	= 0;
 
 // Class Events Handlers
 cXULElement_toolbarbutton.handlers	= {
@@ -49,9 +48,15 @@ cXULElement_toolbarbutton.handlers	= {
 	            else
 	            	return;
 		    }
+
 			//
 		   	this.$setPseudoClass("active", true);
 		}
+	},
+	"click":	function(oEvent) {
+		if (oEvent.target == this && oEvent.button == 0)
+			if (this.getAttribute("type") != "menu" && this.getAttribute("type") != "menu-button")
+				this.$activate();
 	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this) {
@@ -101,6 +106,10 @@ cXULElement_toolbarbutton.handlers	= {
 					this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 			}
 		}
+	},
+	"DOMActivate":	function(oEvent) {
+		if (oEvent.target == this)
+			this.doCommand();
 	}
 };
 
@@ -121,7 +130,7 @@ cXULElement_toolbarbutton.prototype.$getTagOpen	= function() {
 						<td width="3" rowspan="3" class="xul-toolbarbutton-right"><div style="width:3px"/></td>\
 					</tr>\
 					<tr>\
-						<td>\
+						<td nowrap="nowrap">\
 							<div class="xul-toolbarbutton--label">' +
 					(this.getAttribute("image")
 						? '<img src="' + this.getAttribute("image") + '" align="absmiddle"/>'

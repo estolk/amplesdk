@@ -8,12 +8,13 @@
  */
 
 var cXHTMLElement_form	= function() {
-	this.elements	= new AMLNodeList;
+	this.elements	= new ample.classes.NodeList;
 };
 cXHTMLElement_form.prototype	= new cXHTMLElement("form");
 
 // Public Properties
 cXHTMLElement_form.prototype.elements	= null;
+cXHTMLElement_form.prototype.length		= 0;
 
 // Public Methods
 cXHTMLElement_form.prototype.submit	= function() {
@@ -55,6 +56,19 @@ cXHTMLElement_form.prototype.reset	= function() {
 	this.$getContainer().reset();
 };
 
+// Validation
+cXHTMLElement_form.prototype.checkValidity	= function() {
+
+};
+
+cXHTMLElement_form.prototype.dispatchFormInput	= function() {
+
+};
+
+cXHTMLElement_form.prototype.dispatchFormChange	= function() {
+
+};
+
 /* Event handlers */
 cXHTMLElement_form.prototype._onSubmit	= function() {
     // Fire Event
@@ -74,28 +88,6 @@ cXHTMLElement_form.prototype._onReset	= function() {
 
 // Default actions implementations
 cXHTMLElement_form.handlers	= {
-	"DOMNodeInserted":	function(oEvent) {
-		if (oEvent.target instanceof cXHTMLElement_input ||
-			oEvent.target instanceof cXHTMLElement_select ||
-			oEvent.target instanceof cXHTMLElement_textarea ||
-			oEvent.target instanceof cXHTMLElement_button) {
-				oEvent.target.form	= this;
-				this.elements.$add(oEvent.target);
-//				if (oEvent.target.hasAttribute("name"))
-//					this.elements[oEvent.target.getAttribute("name")]	= oEvent.target;
-			}
-	},
-	"DOMNodeRemoved":	function(oEvent) {
-		if (oEvent.target instanceof cXHTMLElement_input ||
-			oEvent.target instanceof cXHTMLElement_select ||
-			oEvent.target instanceof cXHTMLElement_textarea ||
-			oEvent.target instanceof cXHTMLElement_button) {
-				oEvent.target.form	= null;
-				this.elements.$remove(oEvent.target);
-//				if (oEvent.target.hasAttribute("name"))
-//					delete this.elements[oEvent.target.getAttribute("name")];
-		}
-	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this)
 			cXHTMLElement.mapAttribute(this, oEvent.attrName, oEvent.newValue);

@@ -7,11 +7,9 @@
  *
  */
 
-var cSMILTimeEvent	= function() {
+var cSMILTimeEvent	= function(){};
 
-};
-
-cSMILTimeEvent.prototype	= new cAMLEvent;
+cSMILTimeEvent.prototype	= new cEvent;
 
 cSMILTimeEvent.prototype.view	= null;
 cSMILTimeEvent.prototype.detail	= null;

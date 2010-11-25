@@ -9,6 +9,14 @@
 
 var cXULElement_rows	= function(){};
 cXULElement_rows.prototype	= new cXULElement("rows");
+cXULElement_rows.prototype.viewType	= cXULElement.VIEW_TYPE_BOXED;
+
+// Attributes Defaults
+cXULElement_rows.attributes	= {};
+cXULElement_rows.attributes.height	= "100%";
+cXULElement_rows.attributes.width	= "100%";
+cXULElement_rows.attributes.orient	= "vertical";
+
 /*
 // Class Events Handlers
 cXULElement_rows.handlers	= {

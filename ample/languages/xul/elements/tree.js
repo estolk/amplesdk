@@ -10,8 +10,8 @@
 var cXULElement_tree	= function()
 {
     // Collections
-    this.items  = new AMLNodeList;
-	this.selectedItems	= new AMLNodeList;
+    this.items  = new ample.classes.NodeList;
+	this.selectedItems	= new ample.classes.NodeList;
 };
 cXULElement_tree.prototype	= new cXULSelectElement("tree");
 
@@ -38,11 +38,6 @@ cXULElement_tree.prototype.ensureRowIsVisible    = function(nIndex) {
 
     // return true
     return true;
-};
-
-cXULElement_tree.prototype.refresh   = function() {
-    if (this.body && this.body.children)
-        this.body.children.schedule();
 };
 
 // Class Events Hadlers
@@ -143,7 +138,7 @@ cXULElement_tree.handlers	= {
 					break;
 
 				case "disabled":
-					this.$setPseudoClass("disabled", true);
+					this.$setPseudoClass("disabled", oEvent.newValue == "true");
 					break;
 
 				default:
@@ -174,7 +169,7 @@ cXULElement_tree.prototype.$getTagOpen		= function() {
     return '<div class="xul-tree' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + (!this.$isAccessible() ? " xul-tree_disabled" : "") + '" style="' + (sHeight ? 'height:' + (sHeight * 1 == sHeight ? sHeight + "px" : sHeight) + ';' : '') + (sWidth ? 'width:' + (sWidth * 1 == sWidth ? sWidth + "px" : sWidth) + ';' : '') + (this.attributes["style"] ? this.attributes["style"] + '' : '') + '">\
     			<div style="position:relative;height:100%;top:0;padding-bottom:inherit;">\
     				<div class="xul-tree--resizer" style="height:100%;position:absolute;top:0px;display:none;z-index:1"></div>\
-    				<table cellpadding="0" cellspacing="0" border="0" height="' +(sHeight ? sHeight : '100%')+ '" width="' +(sWidth ? sWidth : '100%')+ '" style="position:absolute">\
+    				<table cellpadding="0" cellspacing="0" border="0" height="100%" width="100%" style="position:absolute">\
     					<tbody class="xul-tree--gateway">';
 };
 

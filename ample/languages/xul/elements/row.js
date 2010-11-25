@@ -9,9 +9,11 @@
 
 var cXULElement_row	= function(){};
 cXULElement_row.prototype	= new cXULElement("row");
+cXULElement_row.prototype.viewType	= cXULElement.VIEW_TYPE_BOXED;
 
 // Attributes Defaults
 cXULElement_row.attributes	= {};
+//cXULElement_row.attributes.flex	= "1";
 cXULElement_row.attributes.orient	= "horizontal";
 
 // Class event handlers
@@ -20,15 +22,12 @@ cXULElement_row.handlers	= {
 		if (oEvent.target == this) {
 			this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 		}
-	},
-	"DOMNodeInsertedIntoDocument":	function(oEvent) {
-		oXULReflowManager.schedule(this);
 	}
 };
 
 // Element Render: open
 cXULElement_row.prototype.$getTagOpen		= function() {
-    return '<tr class="xul-row"' +(this.attributes["height"] ? ' height="' + this.attributes["height"] + '"' : '')+(this.attributes["hidden"] == "true" ? ' style="display:none"' : '')+'>';
+    return '<tr class="xul-row' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '"' +(this.attributes["height"] ? ' height="' + this.attributes["height"] + '"' : '')+(this.attributes["hidden"] == "true" ? ' style="display:none"' : '')+'>';
 };
 
 // Element Render: close

@@ -8,38 +8,83 @@
  */
 
 //
-cAMLQuery.prototype.offset	= function(oOffset) {
-	// Validate API call
+cQuery.prototype.offset	= function(oOffset) {
+//->Guard
 	fGuard(arguments, [
 		["offset",	cObject, true]
 	]);
+//<-Guard
 
 	if (arguments.length) {
-		//
 		return this;
 	}
 	else
-		return;
+	if (this.length) {
+		var oElementDOM	= this[0].$getContainer();
+		if (oElementDOM) {
+			var sPosition	= fBrowser_getStyle(oElementDOM, "position"),
+				oRect		= fElement_getBoundingClientRect(this[0]),
+				oPosition	= {};
+
+			oPosition.left	= oRect.left;
+			oPosition.top	= oRect.top;
+
+			if (sPosition == "relative" || sPosition == "absolute") {
+				oOffsetDOM	= oElementDOM.offsetParent;
+				if (oElementDOM != oOffsetDOM) {
+					var oOffsetParent	= fAmple_instance(oAmple_document, oOffsetDOM);
+					if (oOffsetParent) {
+						var oOffsetRect	= fElement_getBoundingClientRect(oOffsetParent);
+						oPosition.left	-= oOffsetRect.left;
+						oPosition.top	-= oOffsetRect.top;
+					}
+				}
+			}
+			return oPosition;
+		}
+	}
+	return null;
 };
 
-cAMLQuery.prototype.offsetParent	= function() {
-
+cQuery.prototype.offsetParent	= function() {
+	var oQuery	= new cQuery;
+	if (this.length) {
+		var oElementDOM	= this[0].$getContainer();
+		oQuery[oQuery.length++]	=(oElementDOM ? fAmple_instance(oAmple_document, oElementDOM.offsetParent) : null) || oAmple_root;
+	}
+	return oQuery;
 };
 
-cAMLQuery.prototype.position	= function() {
-
+cQuery.prototype.position	= function() {
+	if (this.length) {
+		var oElementDOM	= this[0].$getContainer();
+		if (oElementDOM) {
+			var oRect	= fElement_getBoundingClientRect(this[0]),
+				oPosition	= {};
+			oPosition.left	= oRect.left;
+			oPosition.top	= oRect.top;
+			return oRect;
+		}
+	}
+	return null;
 };
 
-cAMLQuery.prototype.scrollTop	= function(nValue) {
-	// Validate API call
+cQuery.prototype.scrollTop	= function(nValue) {
+//->Guard
 	fGuard(arguments, [
 		["value",	cNumber, true]
 	]);
+//<-Guard
+
+	// TODO: Implementation missing
 };
 
-cAMLQuery.prototype.scrollLeft	= function(nValue) {
-	// Validate API call
+cQuery.prototype.scrollLeft	= function(nValue) {
+//->Guard
 	fGuard(arguments, [
 		["value",	cNumber, true]
 	]);
+//<-Guard
+
+	// TODO: Implementation missing
 };

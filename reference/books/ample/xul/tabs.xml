@@ -18,7 +18,7 @@
 		<methods>
 			<method name="advanceSelectedTab" type="Void">
 				<arguments>
-					<argument name="nDir" type="Number" required="false">
+					<argument name="dir" type="Number" required="false">
 						<description>
 							<locale>
 								Direction of tab advancement.
@@ -39,7 +39,7 @@
 					</locale>
 				</description>
 			</method>
-			<method name="appendItem" type="AMLElement">
+			<method name="appendItem" type="Element">
 				<arguments>
 					<argument name="label" type="String" required="true">
 						<description>
@@ -73,9 +73,9 @@
 					</locale>
 				</description>
 			</method>
-			<method name="insertItemAt" type="AMLElement">
+			<method name="insertItemAt" type="Element">
 				<arguments>
-					<argument name="nIndex" type="Number" required="true">
+					<argument name="index" type="Number" required="true">
 						<description>
 							<locale>
 								Tab position.
@@ -116,9 +116,9 @@
 					</locale>
 				</description>
 			</method>
-			<method name="removeItemAt" type="AMLElement">
+			<method name="removeItemAt" type="Element">
 				<arguments>
-					<argument name="nIndex" type="Number" required="true">
+					<argument name="index" type="Number" required="true">
 						<description>
 							<locale>
 								Tab position.
@@ -151,7 +151,7 @@
 					</locale>
 				</description>
 			</property>
-			<property name="selectedItem" type="AMLElement" readonly="true">
+			<property name="selectedItem" type="Element" readonly="true">
 				<description>
 					<locale>
 						Holds the currently selected item.
@@ -162,7 +162,7 @@
 					</locale>
 				</description>
 			</property>
-			<property name="items" type="AMLNodeList" readonly="true">
+			<property name="items" type="NodeList" readonly="true">
 				<description>
 					<locale>
 						Contains s collection of <link type="element">tab</link> child elements.
@@ -174,7 +174,7 @@
 			</property>
 		</properties>
 		<events>
-			<event name="select" type="Event" cancelable="false" bubbles="true">
+			<event name="select" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						This event is sent to the tabs element when this <link type="element">tab</link> is changed.

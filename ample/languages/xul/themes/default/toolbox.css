@@ -8,6 +8,8 @@ xul|menubar {
     background-color:	#F1F0E8;
 	border-bottom: solid 1px #D8D2BD;
 	border-top: solid 1px #FFF;
+	border-right: solid 1px #D8D2BD;
+	border-left: solid 1px #FFF;
 }
 
 xul|toolbarseparator {
@@ -34,6 +36,7 @@ xul|menubar xul|toolbargrippy {
 xul|toolbarbutton {
 	height: 30px;
 	white-space: nowrap;
+	background-color: #F1F0E8;
 }
 
 xul|toolbarbutton::label {
@@ -44,12 +47,13 @@ xul|toolbarbutton::label {
 
 xul|toolbarbutton::arrow {
 	width:	8px;
+	height: 24px;
 	background: url(media/toolbarbutton_arrow.gif) no-repeat center;
 }
 
 /* hover */
 xul|toolbarbutton:hover {
-	background-color: transparent;
+
 }
 
 xul|toolbarbutton:hover xul|toolbarbutton-top {
@@ -98,7 +102,7 @@ xul|toolbarbutton:active xul|toolbarbutton-bottom {
 
 /* disabled */
 xul|toolbarbutton:disabled {
-	color: GrayText;
+	color: #808080;
 }
 xul|toolbarbutton:disabled xul|toolbarbutton-right,
 xul|toolbarbutton:disabled xul|toolbarbutton-top,

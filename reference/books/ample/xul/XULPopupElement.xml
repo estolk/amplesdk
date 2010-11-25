@@ -14,7 +14,7 @@
 		<methods>
 			<method name="showPopup" type="Void">
 				<arguments>
-					<argument name="oElement" type="String" required="true">
+					<argument name="node" type="String" required="true">
 						<description>
 							<locale>
 								Anchor element.
@@ -25,7 +25,7 @@
 							</locale>
 						</description>
 					</argument>
-					<argument name="nLeft" type="Number" required="true">
+					<argument name="left" type="Number" required="true">
 						<description>
 							<locale>
 								Left position.
@@ -35,7 +35,7 @@
 							</locale>
 						</description>
 					</argument>
-					<argument name="nTop" type="Number" required="true">
+					<argument name="top" type="Number" required="true">
 						<description>
 							<locale>
 								Top position.
@@ -45,7 +45,7 @@
 							</locale>
 						</description>
 					</argument>
-					<argument name="sPopupType" type="String" required="true">
+					<argument name="popupType" type="String" required="true">
 						<description>
 							<locale>
 								Popup type, one of the following: "popup", "context", "tooltip"
@@ -55,7 +55,7 @@
 							</locale>
 						</description>
 					</argument>
-					<argument name="sAnchor" type="String" required="true">
+					<argument name="anchor" type="String" required="true">
 						<description>
 							<locale>
 								Corresponds to popupanchor attribute of oElement.
@@ -65,7 +65,7 @@
 							</locale>
 						</description>
 					</argument>
-					<argument name="sAlign" type="String" required="false">
+					<argument name="align" type="String" required="false">
 						<description>
 							<locale>
 								Corresponds to popupalign of oElement.
@@ -294,7 +294,7 @@
 		</attributes>
 		<properties />
 		<events>
-			<event name="popuphidden" type="Event" cancelable="false" bubbles="false">
+			<event name="popuphidden" type="Event" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						This event is sent to a popup after it has been hidden.
@@ -304,7 +304,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="popuphiding" type="Event" cancelable="true" bubbles="false">
+			<event name="popuphiding" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						This event is sent to a popup when it is about to be hidden.
@@ -314,7 +314,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="popupshowing" type="Event" cancelable="true" bubbles="false">
+			<event name="popupshowing" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						This event is sent to a popup just before it is opened. This handler is usually used to dynamically set the contents when the user requests to display it.
@@ -327,7 +327,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="popupshown" type="Event" cancelable="false" bubbles="false">
+			<event name="popupshown" type="Event" cancelable="false" bubbles="true">
 				<description>
 					<locale>
 						This event is sent to a popup after it has been opened, much like the onload event is sent to a window when it is opened.

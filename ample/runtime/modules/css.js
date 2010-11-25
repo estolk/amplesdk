@@ -7,23 +7,23 @@
  *
  */
 
-cAMLQuery.prototype.css	= function(sName, sValue) {
-	// Validate API call
+cQuery.prototype.css	= function(sName, sValue) {
+//->Guard
 	fGuard(arguments, [
 		["name",	cString],
-		["value",	cString, true]
+		["value",	cObject,	true,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
-	sName	= fUtilities_toCssPropertyName(sName);
 	if (arguments.length > 1) {
-		fAMLQuery_each(this, function() {
+		sValue	= sValue == null ? '' : cString(sValue);
+		fQuery_each(this, function() {
 			this.$setStyle(sName, sValue);
 		});
 		return this;
 	}
 	else
-	if (this.length) {
+	if (this.length)
 		return this[0].$getStyleComputed(sName);
-	}
+	return null;
 };

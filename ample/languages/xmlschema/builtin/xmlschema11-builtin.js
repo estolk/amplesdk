@@ -8,26 +8,26 @@
  */
 
 // Create Built-in datatypes XML Schema
-var oAMLXMLSchema11_namespaceDataTypes	= new cAMLXSNamespaceItem,
-	oAMLXMLSchema11_builtinDataTypes	= oAMLXMLSchema11_namespaceDataTypes.$types,
-	oAMLXMLSchema11_primitiveDataTypes	= {};
-oAMLXMLSchema11_namespaceDataTypes.schemaNamespace	= sAMLXMLSchema11_namespaceURI;
-oAMLXMLSchema11_model.namespaces.$add(sAMLXMLSchema11_namespaceURI);
-oAMLXMLSchema11_model.namespaceItems.$add(oAMLXMLSchema11_namespaceDataTypes);
+var oXMLSchema11_namespaceDataTypes	= new cXSNamespaceItem,
+	oXMLSchema11_builtinDataTypes	= oXMLSchema11_namespaceDataTypes.$types,
+	oXMLSchema11_primitiveDataTypes	= {};
+oXMLSchema11_namespaceDataTypes.schemaNamespace	= sXMLSchema11_namespaceURI;
+oXMLSchema11_model.namespaces.$add(sXMLSchema11_namespaceURI);
+oXMLSchema11_model.namespaceItems.$add(oXMLSchema11_namespaceDataTypes);
 
 
 /* Builtin datatypes */
-function fAMLXMLSchema11_createBuiltType(nType, nBaseType, aFacets, aMultiValueFacets) {
-	var oType	= new cAMLXSSimpleTypeDefinition;
+function fXMLSchema11_createBuiltType(nType, nBaseType, aFacets, aMultiValueFacets) {
+	var oType	= new cXSSimpleTypeDefinition;
 	// XSTypeDefinition interface
-	oType.typeCategory	= cAMLXSTypeDefinition.SIMPLE_TYPE;
-	oType.baseType		= oAMLXMLSchema11_builtinDataTypes[nBaseType];
+	oType.typeCategory	= cXSTypeDefinition.SIMPLE_TYPE;
+	oType.baseType		= oXMLSchema11_builtinDataTypes[nBaseType];
 	oType.anonymous		= false;
 	// XSSimpleTypeDefinition interface
-	if (nType == cAMLXSConstants.ANYTYPE_DT || nType == cAMLXSConstants.ANYSIMPLETYPE_DT)
-		oType.variety	= cAMLXSSimpleTypeDefinition.VARIETY_ABSENT;
+	if (nType == cXSConstants.ANYTYPE_DT || nType == cXSConstants.ANYSIMPLETYPE_DT)
+		oType.variety	= cXSSimpleTypeDefinition.VARIETY_ABSENT;
 	else
-		oType.variety	= cAMLXSSimpleTypeDefinition.VARIETY_ATOMIC;
+		oType.variety	= cXSSimpleTypeDefinition.VARIETY_ATOMIC;
 	oType.builtInKind	= nType;
 
 	if (aFacets)
@@ -40,15 +40,15 @@ function fAMLXMLSchema11_createBuiltType(nType, nBaseType, aFacets, aMultiValueF
 	return oType;
 };
 
-function fAMLXMLSchema11_createBuiltListType(nType, nItemType, aFacets, aMultiValueFacets) {
-	var oType	= new cAMLXSSimpleTypeDefinition;
+function fXMLSchema11_createBuiltListType(nType, nItemType, aFacets, aMultiValueFacets) {
+	var oType	= new cXSSimpleTypeDefinition;
 	// XSTypeDefinition interface
-	oType.typeCategory	= cAMLXSTypeDefinition.SIMPLE_TYPE;
-	oType.baseType		= oAMLXMLSchema11_builtinDataTypes[cAMLXSConstants.ANYSIMPLETYPE_DT];
+	oType.typeCategory	= cXSTypeDefinition.SIMPLE_TYPE;
+	oType.baseType		= oXMLSchema11_builtinDataTypes[cXSConstants.ANYSIMPLETYPE_DT];
 	oType.anonymous		= false;
 	// XSSimpleTypeDefinition interface
-	oType.variety		= cAMLXSSimpleTypeDefinition.VARIETY_LIST;
-	oType.itemType		= oAMLXMLSchema11_builtinDataTypes[nItemType];
+	oType.variety		= cXSSimpleTypeDefinition.VARIETY_LIST;
+	oType.itemType		= oXMLSchema11_builtinDataTypes[nItemType];
 	oType.builtInKind	= nType;
 
 	if (aFacets)
@@ -61,8 +61,8 @@ function fAMLXMLSchema11_createBuiltListType(nType, nItemType, aFacets, aMultiVa
 	return oType;
 };
 
-function fAMLXMLSchema11_createFacet(nFacet, sValue, bFixed) {
-	var oFacet	= new cAMLXSFacet;
+function fXMLSchema11_createFacet(nFacet, sValue, bFixed) {
+	var oFacet	= new cXSFacet;
 	oFacet.lexicalFacetValue	= sValue;
 	oFacet.fixed		= !!bFixed;
 	oFacet.facetKind	= nFacet;
@@ -70,8 +70,8 @@ function fAMLXMLSchema11_createFacet(nFacet, sValue, bFixed) {
 	return oFacet;
 };
 
-function fAMLXMLSchema11_createMultiValueFacet(nFacet, aValues, bFixed) {
-	var oFacet	= new cAMLXSMultiValueFacet;
+function fXMLSchema11_createMultiValueFacet(nFacet, aValues, bFixed) {
+	var oFacet	= new cXSMultiValueFacet;
 	oFacet.fixed		= !!bFixed;
 	oFacet.facetKind	= nFacet;
 	for (var nIndex = 0; nIndex < aValues.length; nIndex++)
@@ -81,80 +81,80 @@ function fAMLXMLSchema11_createMultiValueFacet(nFacet, aValues, bFixed) {
 };
 
 // Datatypes initialization
-oAMLXMLSchema11_builtinDataTypes["anyType"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.ANYTYPE_DT, 0);
-	oAMLXMLSchema11_builtinDataTypes["anySimpleType"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.ANYSIMPLETYPE_DT, cAMLXSConstants.ANYTYPE_DT);
-		oAMLXMLSchema11_builtinDataTypes["anyAtomicType"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.ANYATOMICTYPE_DT, cAMLXSConstants.ANYSIMPLETYPE_DT);
+oXMLSchema11_builtinDataTypes["anyType"]	= fXMLSchema11_createBuiltType(cXSConstants.ANYTYPE_DT, 0);
+	oXMLSchema11_builtinDataTypes["anySimpleType"]	= fXMLSchema11_createBuiltType(cXSConstants.ANYSIMPLETYPE_DT, cXSConstants.ANYTYPE_DT);
+		oXMLSchema11_builtinDataTypes["anyAtomicType"]	= fXMLSchema11_createBuiltType(cXSConstants.ANYATOMICTYPE_DT, cXSConstants.ANYSIMPLETYPE_DT);
 			// primititve types
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.ANYURI_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["anyURI"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.ANYURI_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.BASE64BINARY_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["base64Binary"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.BASE64BINARY_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.BOOLEAN_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["boolean"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.BOOLEAN_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.DATE_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["date"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DATE_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.DATETIME_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["dateTime"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DATETIME_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.ANYURI_DT]	=
+			oXMLSchema11_builtinDataTypes["anyURI"]			= fXMLSchema11_createBuiltType(cXSConstants.ANYURI_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.BASE64BINARY_DT]	=
+			oXMLSchema11_builtinDataTypes["base64Binary"]	= fXMLSchema11_createBuiltType(cXSConstants.BASE64BINARY_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.BOOLEAN_DT]	=
+			oXMLSchema11_builtinDataTypes["boolean"]			= fXMLSchema11_createBuiltType(cXSConstants.BOOLEAN_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.DATE_DT]	=
+			oXMLSchema11_builtinDataTypes["date"]			= fXMLSchema11_createBuiltType(cXSConstants.DATE_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.DATETIME_DT]	=
+			oXMLSchema11_builtinDataTypes["dateTime"]		= fXMLSchema11_createBuiltType(cXSConstants.DATETIME_DT, cXSConstants.ANYATOMICTYPE_DT);
 				// Other built-in atomic types
-				oAMLXMLSchema11_builtinDataTypes["dateTimeStamp"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DATETIMESTAMP_DT, cAMLXSConstants.DATETIME_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.DECIMAL_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["decimal"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DECIMAL_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
+				oXMLSchema11_builtinDataTypes["dateTimeStamp"]	= fXMLSchema11_createBuiltType(cXSConstants.DATETIMESTAMP_DT, cXSConstants.DATETIME_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.DECIMAL_DT]	=
+			oXMLSchema11_builtinDataTypes["decimal"]			= fXMLSchema11_createBuiltType(cXSConstants.DECIMAL_DT, cXSConstants.ANYATOMICTYPE_DT);
 				// Other built-in atomic types
-				oAMLXMLSchema11_builtinDataTypes["integer"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.INTEGER_DT, cAMLXSConstants.DECIMAL_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_FRACTIONDIGITS, '0', true)], [fAMLXMLSchema11_createMultiValueFacet(cAMLXSSimpleTypeDefinition.FACET_PATTERN, ['[\\-+]?[0-9]+'])]);
-					oAMLXMLSchema11_builtinDataTypes["long"]				= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.LONG_DT, cAMLXSConstants.INTEGER_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-9223372036854775808'), fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '9223372036854775807')]);
-						oAMLXMLSchema11_builtinDataTypes["int"]					= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.INT_DT, cAMLXSConstants.LONG_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-2147483648'), fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '2147483647')]);
-							oAMLXMLSchema11_builtinDataTypes["short"]				= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.SHORT_DT, cAMLXSConstants.INT_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-32768'), fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '32767')]);
-								oAMLXMLSchema11_builtinDataTypes["byte"]				= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.BYTE_DT, cAMLXSConstants.SHORT_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-128'), fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '127')]);
-					oAMLXMLSchema11_builtinDataTypes["nonNegativeInteger"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NONNEGATIVEINTEGER_DT, cAMLXSConstants.INTEGER_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MININCLUSIVE, '0')]);
-						oAMLXMLSchema11_builtinDataTypes["positiveInteger"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.POSITIVEINTEGER_DT, cAMLXSConstants.NONNEGATIVEINTEGER_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MININCLUSIVE, '1')]);
-						oAMLXMLSchema11_builtinDataTypes["unsignedLong"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.UNSIGNEDLONG_DT, cAMLXSConstants.NONNEGATIVEINTEGER_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '18446744073709551615')]);
-							oAMLXMLSchema11_builtinDataTypes["unsignedInt"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.UNSIGNEDINT_DT, cAMLXSConstants.UNSIGNEDLONG_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '4294967295')]);
-								oAMLXMLSchema11_builtinDataTypes["unsignedShort"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.UNSIGNEDSHORT_DT, cAMLXSConstants.UNSIGNEDINT_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '65535')]);
-									oAMLXMLSchema11_builtinDataTypes["unsignedByte"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.UNSIGNEDBYTE_DT, cAMLXSConstants.UNSIGNEDSHORT_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '255')]);
-					oAMLXMLSchema11_builtinDataTypes["nonPositiveInteger"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NONPOSITIVEINTEGER_DT, cAMLXSConstants.INTEGER_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '0')]);
-						oAMLXMLSchema11_builtinDataTypes["negativeInteger"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NEGATIVEINTEGER_DT, cAMLXSConstants.NONPOSITIVEINTEGER_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '-1')]);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.DOUBLE_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["double"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DOUBLE_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.DURATION_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["duration"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DURATION_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-				oAMLXMLSchema11_builtinDataTypes["dayTimeDuration"]	= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DAYTIMEDURATION_DT, cAMLXSConstants.DURATION_DT);
-				oAMLXMLSchema11_builtinDataTypes["dayMonthDuration"]= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.DAYMONTHDURATION_DT, cAMLXSConstants.DURATION_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.FLOAT_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["float"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.FLOAT_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.GDAY_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["gDay"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.GDAY_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.GMONTH_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["gMonth"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.GMONTH_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.GMONTHDAY_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["gMonthDay"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.GMONTHDAY_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.GYEAR_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["gYear"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.GYEAR_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.GYEARMONTH_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["gYearMonth"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.GYEARMONTH_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.HEXBINARY_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["hexBinary"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.HEXBINARY_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.NOTATION_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["NOTATION"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NOTATION_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.PRECISIONDECIMAL_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["precisionDecimal"]= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.PRECISIONDECIMAL_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.QNAME_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["QName"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.QNAME_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.STRING_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["string"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.STRING_DT, cAMLXSConstants.ANYATOMICTYPE_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "preserve")]);
+				oXMLSchema11_builtinDataTypes["integer"]			= fXMLSchema11_createBuiltType(cXSConstants.INTEGER_DT, cXSConstants.DECIMAL_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_FRACTIONDIGITS, '0', true)], [fXMLSchema11_createMultiValueFacet(cXSSimpleTypeDefinition.FACET_PATTERN, ['[\\-+]?[0-9]+'])]);
+					oXMLSchema11_builtinDataTypes["long"]				= fXMLSchema11_createBuiltType(cXSConstants.LONG_DT, cXSConstants.INTEGER_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-9223372036854775808'), fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '9223372036854775807')]);
+						oXMLSchema11_builtinDataTypes["int"]					= fXMLSchema11_createBuiltType(cXSConstants.INT_DT, cXSConstants.LONG_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-2147483648'), fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '2147483647')]);
+							oXMLSchema11_builtinDataTypes["short"]				= fXMLSchema11_createBuiltType(cXSConstants.SHORT_DT, cXSConstants.INT_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-32768'), fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '32767')]);
+								oXMLSchema11_builtinDataTypes["byte"]				= fXMLSchema11_createBuiltType(cXSConstants.BYTE_DT, cXSConstants.SHORT_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MININCLUSIVE, '-128'), fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '127')]);
+					oXMLSchema11_builtinDataTypes["nonNegativeInteger"]	= fXMLSchema11_createBuiltType(cXSConstants.NONNEGATIVEINTEGER_DT, cXSConstants.INTEGER_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MININCLUSIVE, '0')]);
+						oXMLSchema11_builtinDataTypes["positiveInteger"]		= fXMLSchema11_createBuiltType(cXSConstants.POSITIVEINTEGER_DT, cXSConstants.NONNEGATIVEINTEGER_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MININCLUSIVE, '1')]);
+						oXMLSchema11_builtinDataTypes["unsignedLong"]		= fXMLSchema11_createBuiltType(cXSConstants.UNSIGNEDLONG_DT, cXSConstants.NONNEGATIVEINTEGER_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '18446744073709551615')]);
+							oXMLSchema11_builtinDataTypes["unsignedInt"]			= fXMLSchema11_createBuiltType(cXSConstants.UNSIGNEDINT_DT, cXSConstants.UNSIGNEDLONG_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '4294967295')]);
+								oXMLSchema11_builtinDataTypes["unsignedShort"]		= fXMLSchema11_createBuiltType(cXSConstants.UNSIGNEDSHORT_DT, cXSConstants.UNSIGNEDINT_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '65535')]);
+									oXMLSchema11_builtinDataTypes["unsignedByte"]		= fXMLSchema11_createBuiltType(cXSConstants.UNSIGNEDBYTE_DT, cXSConstants.UNSIGNEDSHORT_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '255')]);
+					oXMLSchema11_builtinDataTypes["nonPositiveInteger"]	= fXMLSchema11_createBuiltType(cXSConstants.NONPOSITIVEINTEGER_DT, cXSConstants.INTEGER_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '0')]);
+						oXMLSchema11_builtinDataTypes["negativeInteger"]		= fXMLSchema11_createBuiltType(cXSConstants.NEGATIVEINTEGER_DT, cXSConstants.NONPOSITIVEINTEGER_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_MAXINCLUSIVE, '-1')]);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.DOUBLE_DT]	=
+			oXMLSchema11_builtinDataTypes["double"]			= fXMLSchema11_createBuiltType(cXSConstants.DOUBLE_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.DURATION_DT]	=
+			oXMLSchema11_builtinDataTypes["duration"]		= fXMLSchema11_createBuiltType(cXSConstants.DURATION_DT, cXSConstants.ANYATOMICTYPE_DT);
+				oXMLSchema11_builtinDataTypes["dayTimeDuration"]	= fXMLSchema11_createBuiltType(cXSConstants.DAYTIMEDURATION_DT, cXSConstants.DURATION_DT);
+				oXMLSchema11_builtinDataTypes["dayMonthDuration"]= fXMLSchema11_createBuiltType(cXSConstants.DAYMONTHDURATION_DT, cXSConstants.DURATION_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.FLOAT_DT]	=
+			oXMLSchema11_builtinDataTypes["float"]			= fXMLSchema11_createBuiltType(cXSConstants.FLOAT_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.GDAY_DT]	=
+			oXMLSchema11_builtinDataTypes["gDay"]			= fXMLSchema11_createBuiltType(cXSConstants.GDAY_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.GMONTH_DT]	=
+			oXMLSchema11_builtinDataTypes["gMonth"]			= fXMLSchema11_createBuiltType(cXSConstants.GMONTH_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.GMONTHDAY_DT]	=
+			oXMLSchema11_builtinDataTypes["gMonthDay"]		= fXMLSchema11_createBuiltType(cXSConstants.GMONTHDAY_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.GYEAR_DT]	=
+			oXMLSchema11_builtinDataTypes["gYear"]			= fXMLSchema11_createBuiltType(cXSConstants.GYEAR_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.GYEARMONTH_DT]	=
+			oXMLSchema11_builtinDataTypes["gYearMonth"]		= fXMLSchema11_createBuiltType(cXSConstants.GYEARMONTH_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.HEXBINARY_DT]	=
+			oXMLSchema11_builtinDataTypes["hexBinary"]		= fXMLSchema11_createBuiltType(cXSConstants.HEXBINARY_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.NOTATION_DT]	=
+			oXMLSchema11_builtinDataTypes["NOTATION"]		= fXMLSchema11_createBuiltType(cXSConstants.NOTATION_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.PRECISIONDECIMAL_DT]	=
+			oXMLSchema11_builtinDataTypes["precisionDecimal"]= fXMLSchema11_createBuiltType(cXSConstants.PRECISIONDECIMAL_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.QNAME_DT]	=
+			oXMLSchema11_builtinDataTypes["QName"]			= fXMLSchema11_createBuiltType(cXSConstants.QNAME_DT, cXSConstants.ANYATOMICTYPE_DT);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.STRING_DT]	=
+			oXMLSchema11_builtinDataTypes["string"]			= fXMLSchema11_createBuiltType(cXSConstants.STRING_DT, cXSConstants.ANYATOMICTYPE_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "preserve")]);
 				// Other built-in atomic types
-				oAMLXMLSchema11_builtinDataTypes["normalizedString"]= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NORMALIZEDSTRING_DT, cAMLXSConstants.STRING_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "replace")]);
-					oAMLXMLSchema11_builtinDataTypes["token"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.TOKEN_DT, cAMLXSConstants.NORMALIZEDSTRING_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
-						oAMLXMLSchema11_builtinDataTypes["language"]		= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.LANGUAGE_DT, cAMLXSConstants.TOKEN_DT, [], [fAMLXMLSchema11_createMultiValueFacet(cAMLXSSimpleTypeDefinition.FACET_PATTERN, ['[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*'])]);
-						oAMLXMLSchema11_builtinDataTypes["Name"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NAME_DT, cAMLXSConstants.TOKEN_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")], [fAMLXMLSchema11_createMultiValueFacet(cAMLXSSimpleTypeDefinition.FACET_PATTERN, ['\\i\\c*'])]);
-							oAMLXMLSchema11_builtinDataTypes["NCName"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NCNAME_DT, cAMLXSConstants.NAME_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")], [fAMLXMLSchema11_createMultiValueFacet(cAMLXSSimpleTypeDefinition.FACET_PATTERN, ['[\\i-[:]][\\c-[:]]*'])]);
-								oAMLXMLSchema11_builtinDataTypes["ENTITY"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.ENITITY_DT, cAMLXSConstants.NCNAME_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
-								oAMLXMLSchema11_builtinDataTypes["ID"]				= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.ID_DT, cAMLXSConstants.NCNAME_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
-								oAMLXMLSchema11_builtinDataTypes["IDREF"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.IDREF_DT, cAMLXSConstants.NCNAME_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
-						oAMLXMLSchema11_builtinDataTypes["NMTOKEN"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.NMTOKEN_DT, cAMLXSConstants.TOKEN_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")], [fAMLXMLSchema11_createMultiValueFacet(cAMLXSSimpleTypeDefinition.FACET_PATTERN, ["\\c"])]);
-			oAMLXMLSchema11_primitiveDataTypes[cAMLXSConstants.TIME_DT]	=
-			oAMLXMLSchema11_builtinDataTypes["time"]			= fAMLXMLSchema11_createBuiltType(cAMLXSConstants.TIME_DT, cAMLXSConstants.ANYATOMICTYPE_DT);
+				oXMLSchema11_builtinDataTypes["normalizedString"]= fXMLSchema11_createBuiltType(cXSConstants.NORMALIZEDSTRING_DT, cXSConstants.STRING_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "replace")]);
+					oXMLSchema11_builtinDataTypes["token"]			= fXMLSchema11_createBuiltType(cXSConstants.TOKEN_DT, cXSConstants.NORMALIZEDSTRING_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
+						oXMLSchema11_builtinDataTypes["language"]		= fXMLSchema11_createBuiltType(cXSConstants.LANGUAGE_DT, cXSConstants.TOKEN_DT, [], [fXMLSchema11_createMultiValueFacet(cXSSimpleTypeDefinition.FACET_PATTERN, ['[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*'])]);
+						oXMLSchema11_builtinDataTypes["Name"]			= fXMLSchema11_createBuiltType(cXSConstants.NAME_DT, cXSConstants.TOKEN_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")], [fXMLSchema11_createMultiValueFacet(cXSSimpleTypeDefinition.FACET_PATTERN, ['\\i\\c*'])]);
+							oXMLSchema11_builtinDataTypes["NCName"]			= fXMLSchema11_createBuiltType(cXSConstants.NCNAME_DT, cXSConstants.NAME_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")], [fXMLSchema11_createMultiValueFacet(cXSSimpleTypeDefinition.FACET_PATTERN, ['[\\i-[:]][\\c-[:]]*'])]);
+								oXMLSchema11_builtinDataTypes["ENTITY"]			= fXMLSchema11_createBuiltType(cXSConstants.ENITITY_DT, cXSConstants.NCNAME_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
+								oXMLSchema11_builtinDataTypes["ID"]				= fXMLSchema11_createBuiltType(cXSConstants.ID_DT, cXSConstants.NCNAME_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
+								oXMLSchema11_builtinDataTypes["IDREF"]			= fXMLSchema11_createBuiltType(cXSConstants.IDREF_DT, cXSConstants.NCNAME_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")]);
+						oXMLSchema11_builtinDataTypes["NMTOKEN"]			= fXMLSchema11_createBuiltType(cXSConstants.NMTOKEN_DT, cXSConstants.TOKEN_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse")], [fXMLSchema11_createMultiValueFacet(cXSSimpleTypeDefinition.FACET_PATTERN, ["\\c"])]);
+			oXMLSchema11_primitiveDataTypes[cXSConstants.TIME_DT]	=
+			oXMLSchema11_builtinDataTypes["time"]			= fXMLSchema11_createBuiltType(cXSConstants.TIME_DT, cXSConstants.ANYATOMICTYPE_DT);
 		// Built-in list types
-		oAMLXMLSchema11_builtinDataTypes["ENTITIES"]		= fAMLXMLSchema11_createBuiltListType(cAMLXSConstants.LIST_DT, cAMLXSConstants.ENITITY_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse"), fAMLXMLSchema11_createFacet("minLength", '1')]);
-		oAMLXMLSchema11_builtinDataTypes["IDREFS"]			= fAMLXMLSchema11_createBuiltListType(cAMLXSConstants.LIST_DT, cAMLXSConstants.IDREF_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse"), fAMLXMLSchema11_createFacet("minLength", '1')]);
-		oAMLXMLSchema11_builtinDataTypes["NMTOKENS"]		= fAMLXMLSchema11_createBuiltListType(cAMLXSConstants.LIST_DT, cAMLXSConstants.NMTOKEN_DT, [fAMLXMLSchema11_createFacet(cAMLXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse"), fAMLXMLSchema11_createFacet("minLength", '1')]);
+		oXMLSchema11_builtinDataTypes["ENTITIES"]		= fXMLSchema11_createBuiltListType(cXSConstants.LIST_DT, cXSConstants.ENITITY_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse"), fXMLSchema11_createFacet("minLength", '1')]);
+		oXMLSchema11_builtinDataTypes["IDREFS"]			= fXMLSchema11_createBuiltListType(cXSConstants.LIST_DT, cXSConstants.IDREF_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse"), fXMLSchema11_createFacet("minLength", '1')]);
+		oXMLSchema11_builtinDataTypes["NMTOKENS"]		= fXMLSchema11_createBuiltListType(cXSConstants.LIST_DT, cXSConstants.NMTOKEN_DT, [fXMLSchema11_createFacet(cXSSimpleTypeDefinition.FACET_WHITESPACE, "collapse"), fXMLSchema11_createFacet("minLength", '1')]);
 

@@ -7,16 +7,10 @@
  *
  */
 
-var cXHTMLElement_textarea	= function(){};
-cXHTMLElement_textarea.prototype	= new cXHTMLElement("textarea");
-cXHTMLElement_textarea.prototype.tabIndex	= 0;
-
-// Public Properties
-cXHTMLElement_textarea.prototype.form		= null;
-
-cXHTMLElement_textarea.prototype.$getValue	= function(sValue) {
-	return this.$getContainer().value;
+var cXHTMLElement_textarea	= function(){
+	this.validity	= new cXHTMLValidityState;
 };
+cXHTMLElement_textarea.prototype	= new cXHTMLInputElement("textarea");
 
 // Public methods
 cXHTMLElement_textarea.prototype.select	= function() {
@@ -35,10 +29,15 @@ cXHTMLElement_textarea.prototype._onChange	= function(oEvent) {
 // Events Handlers
 cXHTMLElement_textarea.handlers	= {
 	"focus":	function(oEvent) {
-		this.$getContainer().focus();
+		this.$getContainer("value").focus();
 	},
-	"blur":		function(oEvent) {
-		this.$getContainer().blur();
+	"DOMNodeInsertedIntoDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.register(this);
+	},
+	"DOMNodeRemovedFromDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.unregister(this);
 	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this)

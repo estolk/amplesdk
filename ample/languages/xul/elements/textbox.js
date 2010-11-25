@@ -7,8 +7,22 @@
  *
  */
 
-var cXULElement_textbox	= function(){};
+var cXULElement_textbox	= function(){
+	//
+	this.contentFragment	= ample.createDocumentFragment();
+	this.spinButtons		= this.contentFragment.appendChild(ample.createElementNS(this.namespaceURI, "xul:spinbuttons"));
+	//
+	var that	= this;
+	this.spinButtons.addEventListener("spin", function(oEvent) {
+		var nValue	=(that.getAttribute("value") * 1 || 0) + (oEvent.detail ? 1 :-1);
+		if (nValue >= that.getAttribute("min") * 1 && nValue <= that.getAttribute("max") * 1) {
+			that.setAttribute("value", nValue);
+			cXULInputElement.dispatchChange(this);
+		}
+	}, false);
+};
 cXULElement_textbox.prototype	= new cXULInputElement("textbox");
+cXULElement_textbox.prototype.$selectable	= true;
 
 // Attributes Defaults
 cXULElement_textbox.attributes	= {
@@ -85,26 +99,8 @@ cXULElement_textbox.handlers	= {
 			}
 		}
 	},
-	"DOMNodeInserted":	function(oEvent) {
-		if (oEvent.target == this) {
-			this.spinButtons	= this.ownerDocument.createElementNS(this.namespaceURI, "xul:spinbuttons");
-			this.spinButtons.setAttribute("disabled", this.$isAccessible() ? "false" : "true");
-			var that	= this;
-			this.spinButtons.addEventListener("spin", function(oEvent) {
-				var nValue	=(that.getAttribute("value") * 1 || 0) + (oEvent.detail ? 1 :-1);
-				if (nValue >= that.getAttribute("min") * 1 && nValue <= that.getAttribute("max") * 1) {
-					that.setAttribute("value", nValue);
-					cXULInputElement.dispatchChange(this);
-				}
-			}, false);
-			this.$appendChildAnonymous(this.spinButtons);
-		}
-	},
-	"DOMNodeRemoved":	function(oEvent) {
-		if (oEvent.target == this) {
-			this.$removeChildAnonymous(this.spinButtons);
-			this.spinButtons	= null;
-		}
+	"DOMNodeInsertedIntoDocument":	function(oEvent) {
+		this.spinButtons.setAttribute("disabled", this.$isAccessible() ? "false" : "true");
 	}
 };
 
@@ -116,7 +112,7 @@ cXULElement_textbox.prototype._onChange  = function(oEvent) {
 // Element Render: open
 cXULElement_textbox.prototype.$getTagOpen	= function(oElement) {
 	var bMultiline	= this.attributes["multiline"] == "true";
-    return	'<div class="xul-textbox' + (bMultiline ? ' xul-textbox-multiline-true' : '') + " xul-textbox-type-" + (this.attributes["type"] || '') + (!this.$isAccessible() ? " xul-textbox_disabled" : '')+ '" style="'+
+    return	'<div class="xul-textbox' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + (bMultiline ? ' xul-textbox-multiline-true' : '') + " xul-textbox-type-" + (this.attributes["type"] || '') + (!this.$isAccessible() ? " xul-textbox_disabled" : '')+ '" style="'+
 				(this.attributes["height"] ? 'height:' + this.attributes["height"] + ';' : '')+
 				(this.attributes["width"] ? 'width:' + this.attributes["width"] + ';' : '')+
 				(this.attributes["style"] ? this.attributes["style"] : '')+'">\

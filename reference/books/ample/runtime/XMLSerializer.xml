@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<class name="XMLSerialier">
+<class name="XMLSerializer">
 	<abstract>
 		<locale>
 			Implements capabilities of serialization DOM structure to XML string.
@@ -15,7 +15,7 @@
 		<methods>
 			<method name="serializeToString" type="String">
 				<arguments>
-					<argument name="oNode" required="true" type="Node">
+					<argument name="node" required="true" type="XMLNode">
 						<description>
 							<locale>
 								The root of the subtree to be serialized. This could be any node, including a Document.

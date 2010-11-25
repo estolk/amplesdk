@@ -10,10 +10,9 @@
 var cXULElement_menubar	= function()
 {
     // Collections
-    this.items  = new AMLNodeList;
+    this.items  = new ample.classes.NodeList;
 };
 cXULElement_menubar.prototype	= new cXULElement("menubar");
-cXULElement_menubar.prototype.tabIndex		= 0;
 cXULElement_menubar.prototype.$selectable	= false;
 
 // Public Properties
@@ -77,7 +76,7 @@ cXULElement_menubar.handlers	= {
 // Element Render: open
 cXULElement_menubar.prototype.$getTagOpen		= function()
 {
-	return '<div class="xul-menubar">\
+	return '<div class="xul-menubar' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '">\
     			<table cellpadding="0" cellspacing="0" border="0" width="100%">\
     				<tbody>\
     					<tr class="xul-menubar--gateway">';

@@ -7,8 +7,10 @@
  *
  */
 
-var cXHTMLElement_keygen	= function(){};
-cXHTMLElement_keygen.prototype	= new cXHTMLElement("keygen");
+var cXHTMLElement_keygen	= function(){
+   	this.validity	= new cXHTMLValidityState;
+};
+cXHTMLElement_keygen.prototype	= new cXHTMLInputElement("keygen");
 
 // Class Events Handlers
 cXHTMLElement_keygen.handlers	= {

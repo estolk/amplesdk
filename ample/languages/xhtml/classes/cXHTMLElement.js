@@ -11,7 +11,7 @@ var cXHTMLElement	= function(sLocalName) {
 	this.localName	= sLocalName;
 };
 
-cXHTMLElement.prototype	= new AMLElement;
+cXHTMLElement.prototype	= new ample.classes.Element;
 cXHTMLElement.prototype.namespaceURI= "http://www.w3.org/1999/xhtml";
 cXHTMLElement.prototype.localName	= "#element";
 cXHTMLElement.prototype.accessKey	= null;
@@ -51,7 +51,6 @@ cXHTMLElement.html524	= {
 	"nav":		"div",
 	//
 	"datalist":	"div",
-	"option":	"div",
 	"output":	"span"
 };
 

@@ -10,7 +10,7 @@
 var cSVGElement	= function(sLocalName) {
 	this.localName	= sLocalName;
 };
-cSVGElement.prototype	= new AMLElement;
+cSVGElement.prototype	= new ample.classes.Element;
 cSVGElement.prototype.namespaceURI	= "http://www.w3.org/2000/svg";
 cSVGElement.prototype.localName		= "-element";
 
@@ -137,7 +137,7 @@ if (cSVGElement.useVML) {
 		var oElementDOM	= oElement.$getContainer(),
 			aAspect	= cSVGElement.getAspectRatio(oElement);
 
-		if (oElement instanceof cSVGElement_image) {
+		if (oElement instanceof cSVGElement_image || oElement instanceof cSVGElement_foreignObject) {
 			// Different transformation for images
 			var oMatrix	= oElementDOM.filters.item('DXImageTransform.Microsoft.Matrix');
 			if (aMatrix[0][0] != 1 || aMatrix[1][1] != 1 || aMatrix[0][1] != 0 || aMatrix[1][0] != 0) {
@@ -563,7 +563,7 @@ if (cSVGElement.useVML) {
 				nValue	= nValue * 12;
 			case "pt":	// point (1 pt is the same as 1/72 inch)
 				nValue	= nValue / 72;	// in
-			case "in":	// 1 inch = 1.57828283 × 10-5 mi
+			case "in":	// 1 inch = 1.57828283 ï¿½ 10-5 mi
 				nValue	= nValue * 2.54;
 			case "cm":
 				nValue	= nValue * 10;
@@ -808,7 +808,7 @@ else {
 			oElementDOM.setAttribute(sName, sValue);
 
 		//
-		AMLElement.prototype.setAttribute.call(this, sName, sValue);
+		ample.classes.Element.prototype.setAttribute.call(this, sName, sValue);
 	};
 
 	cSVGElement.prototype.removeAttribute	= function(sName) {
@@ -818,7 +818,7 @@ else {
 			oElementDOM.removeAttribute(sName);
 
 		//
-		AMLElement.prototype.removeAttribute.call(this, sName);
+		ample.classes.Element.prototype.removeAttribute.call(this, sName);
 	};
 
 	cSVGElement.prototype.getBBox	= function() {
@@ -843,28 +843,5 @@ else {
 	};
 };
 
-// Map SMIL
-function copyElement(sTarget, sSource) {
-	var aTarget	= sTarget.split('#'),
-		fSource	= ample.$element(sSource),
-		oSource	= new fSource;
-	//
-	oSource.namespaceURI= aTarget[0];
-	oSource.localName	= aTarget[1];
-	var fTarget	= function() {
-		fSource.call(this);
-	};
-	fTarget.prototype	= oSource;
-	// Statics Object Members
-	fTarget.handlers	= fSource.handlers;
-	fTarget.attributes	= fSource.attributes;
-	//
-	ample.extend(fTarget);
-}
-copyElement("http://www.w3.org/2000/svg#set", "http://www.w3.org/2008/SMIL30/#set");
-copyElement("http://www.w3.org/2000/svg#animate", "http://www.w3.org/2008/SMIL30/#animate");
-copyElement("http://www.w3.org/2000/svg#animateColor", "http://www.w3.org/2008/SMIL30/#animateColor");
-copyElement("http://www.w3.org/2000/svg#animateMotion", "http://www.w3.org/2008/SMIL30/#animateMotion");
-copyElement("http://www.w3.org/2000/svg#animateTransform", "http://www.w3.org/2008/SMIL30/#animateTransform");
 // Register Element
 ample.extend(cSVGElement);

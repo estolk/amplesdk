@@ -14,8 +14,9 @@ cXULElement_window.prototype.viewType	= cXULElement.VIEW_TYPE_BOXED;
 // Attributes Defaults
 cXULElement_window.attributes	= {};
 cXULElement_window.attributes.orient	= "vertical";
-cXULElement_window.attributes.width		= "100%";
-cXULElement_window.attributes.height	= "100%";
+cXULElement_window.attributes.flex		= "1";
+cXULElement_window.attributes.width		= "400";
+cXULElement_window.attributes.height	= "300";
 
 // Class Events Handlers
 cXULElement_window.handlers	= {
@@ -30,16 +31,8 @@ cXULElement_window.handlers	= {
 	"dragstart":	function(oEvent) {
 		if (oEvent.target == this && oEvent.$pseudoTarget != this.$getContainer("title"))
 			oEvent.preventDefault();
-//		this.$getContainer("body").style.visibility	= "hidden";
-//		this.$getContainer("foot").style.visibility	= "hidden";
-	}/*,
-	"dragend":		function(oEvent) {
-//		this.$getContainer("body").style.visibility	= "";
-//		this.$getContainer("foot").style.visibility	= "";
-	}*/
+	}
 };
-//cXULElement_window.handlers.resizestart	= cXULElement_handlers.dragstart;
-//cXULElement_window.handlers.resizedragend	= cXULElement_handlers.dragend;
 
 // Element Renders
 cXULElement_window.prototype.$getTagOpen	= function() {
@@ -53,19 +46,17 @@ cXULElement_window.prototype.$getTagOpen	= function() {
 						<tbody>\
 							<tr>\
 								<td class="xul-window--title">' +(this.attributes["title"] || " ")+ '</td>\
-								<td width="1"><div class="xul-window--button-close xul-window--button-close_normal" onclick="ample.$instance(this).setAttribute(\'hidden\', \'true\')" onmouseover="this.className=this.className.replace(\'normal\', \'hover\')" onmouseout="this.className=this.className.replace(/hover|active/, \'normal\')" onmousedown="this.className=this.className.replace(\'hover\', \'active\')" onmouseup="this.className=this.className.replace(\'active\', \'normal\')"><br /></div></td>\
+								<td width="1"><div class="xul-window--button-close xul-window--button-close_normal" onclick="ample.$instance(this).hide()" onmouseover="this.className=this.className.replace(\'normal\', \'hover\')" onmouseout="this.className=this.className.replace(/hover|active/, \'normal\')" onmousedown="this.className=this.className.replace(\'hover\', \'active\')" onmouseup="this.className=this.className.replace(\'active\', \'normal\')"><br /></div></td>\
 							</tr>\
 						</tbody>\
 					</table>\
 				</div>\
-				<div class="xul-window--body" style="height:100%">\
-					<div class="xul-window--gateway" style="height:100%">';
+				<div class="xul-window--body" style="height:100%">';
 };
 
 // Element Render: close
 cXULElement_window.prototype.$getTagClose	= function() {
-	return '		</div>\
-				</div>\
+	return '	</div>\
 			</div>';
 };
 

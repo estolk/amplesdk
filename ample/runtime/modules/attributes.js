@@ -7,26 +7,28 @@
  *
  */
 
-
-cAMLQuery.prototype.attr	= function(sName, sValue) {
-	// Validate API call
+cQuery.prototype.attr	= function(sQName, sValue) {
+//->Guard
 	fGuard(arguments, [
 		["name",	cString],
-		["value",	cObject, true]
+		["value",	cObject,	true,	true]
 	]);
+//<-Guard
 
-	// Invoke implementation
 	if (arguments.length > 1) {
-		var aQName		= sName.split(':'),
+		var aQName		= sQName.split(':'),
+			sLocalName	= aQName.pop(),
+			sPrefix		= aQName.pop() || null,
 			sNameSpaceURI	= null;
-		if (aQName.length > 1)
-			sNameSpaceURI	=(this.resolver || fAmple_resolver)(aQName[0]) || null;
-		fAMLQuery_each(this, function() {
-			fAMLElement_setAttributeNS(this, sNameSpaceURI, sName, cString(sValue));
+		if (sPrefix != null)
+			sNameSpaceURI	= this.resolver ? this.resolver(sPrefix) : oAmple.prefixes[sPrefix] || null;
+		fQuery_each(this, function() {
+			sValue == null ? fElement_removeAttributeNS(this, sNameSpaceURI, sLocalName) : fElement_setAttributeNS(this, sNameSpaceURI, sQName, cString(sValue));
 		});
 		return this;
 	}
 	else
 	if (this.length)
-		return fAMLElement_getAttribute(this[0], sName);
+		return fElement_getAttribute(this[0], sQName);
+	return null;
 };

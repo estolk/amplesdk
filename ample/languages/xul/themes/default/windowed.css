@@ -1,12 +1,18 @@
+xul|page,
 xul|dialog,
 xul|wizard,
 xul|window {
-	position:	absolute;
+	background-color: #ECE9D8;
+	position: absolute;
+}
+
+xul|dialog,
+xul|wizard,
+xul|window {
 	width: 400px;
 	height:300px;
 	min-width:	150px;
-	background-color: #ECE9D8;/*Window*/
-	border: 1px #7F9DB9 solid;
+	border: 2px #7F9DB9 solid;
 	padding-top:	22px;
 }
 
@@ -28,13 +34,14 @@ xul|window::head {
 	height:	22px;
 	margin-top:	-22px;
 	cursor: default;
-	background-color:	#0033CC;
+	background-color:	#336699;
 }
 
-xul|dialog::gateway,
-xul|window::gateway,
-xul|wizard::gateway {
-	overflow:	hidden;
+xul|dialog::body,
+xul|window::body,
+xul|wizardpage {
+	overflow:	auto;
+	overflow-x: hidden;
 }
 
 xul|wizard::footer,
@@ -43,6 +50,12 @@ xul|dialog::footer {
 	border-top:	solid 1px gray;
 }
 
+xul|dialog::footer xul|button.help {
+	margin-left: 5px;
+}
+
+xul|dialog::footer xul|button.extra1,
+xul|dialog::footer xul|button.extra2,
 xul|dialog::footer xul|button.accept,
 xul|dialog::footer xul|button.cancel,
 xul|dialog::footer xul|button.help,
@@ -99,4 +112,30 @@ xul|dialogheader::description,
 xul|wizardheader::description {
 	padding-top: 3px;
 	padding-left: 20px;
+}
+
+/* */
+xul|dialog:resize, xul|dialog:drag,
+xul|wizard:resize, xul|wizard:drag,
+xul|window:resize, xul|window:drag {
+	opacity: 0.5;
+}
+
+/* hide contents while resizing/dragging */
+xul|dialog:resize xul|dialog::header,
+xul|dialog:resize xul|dialog::body,
+xul|dialog:resize xul|dialog::footer,
+xul|dialog:drag xul|dialog::header,
+xul|dialog:drag xul|dialog::body,
+xul|dialog:drag xul|dialog::footer,
+xul|wizard:resize xul|wizard::header,
+xul|wizard:resize xul|wizard::body,
+xul|wizard:resize xul|wizard::footer,
+xul|wizard:drag xul|wizard::header,
+xul|wizard:drag xul|wizard::body,
+xul|wizard:drag xul|wizard::footer,
+xul|window:resize xul|window::body,
+xul|window:drag xul|window::body,
+xul|window:drag xul|window::footer {
+	display: none;
 }

@@ -19,14 +19,14 @@
 		<attributes />
 		<methods>
 <!--
-			<method name="appendItem" type="AMLElement">
+			<method name="appendItem" type="Element">
 				<arguments>
-					<argument name="sLabel" type="String" required="true">
+					<argument name="label" type="String" required="true">
 						<description>
 							Label to appear next to the button.
 						</description>
 					</argument>
-					<argument name="sValue" type="String" required="false">
+					<argument name="value" type="String" required="false">
 						<description>
 							 A data value associated with new item.
 						</description>
@@ -36,19 +36,19 @@
 					Creates a new <link type="element">radio</link> element and adds it to the end of the <link type="element">radiogroup</link>. You may optionally set a value. The function returns the new item.
 				</description>
 			</method>
-			<method name="insertItemAt" type="AMLElement">
+			<method name="insertItemAt" type="Element">
 				<arguments>
-					<argument name="nIndex" type="Number" required="true">
+					<argument name="index" type="Number" required="true">
 						<description>
 							Position index.
 						</description>
 					</argument>
-					<argument name="sLabel" type="String" required="true">
+					<argument name="label" type="String" required="true">
 						<description>
 							Label to appear next to the button.
 						</description>
 					</argument>
-					<argument name="sValue" type="String" required="false">
+					<argument name="value" type="String" required="false">
 						<description>
 							 A data value associated with new item.
 						</description>
@@ -58,9 +58,9 @@
 					  Creates a new <link type="element">radio</link> element and inserts it at a specific position in the <link type="element">radiogroup</link>.
 				</description>
 			</method>
-			<method name="removeItemAt" type="AMLElement">
+			<method name="removeItemAt" type="Element">
 				<arguments>
-					<argument name="nIndex" type="Number" required="true">
+					<argument name="index" type="Number" required="true">
 						<description>
 							Position index.
 						</description>
@@ -73,7 +73,7 @@
 -->
 		</methods>
 		<properties>
-			<property name="items" type="AMLNodeList">
+			<property name="items" type="NodeList">
 				<description>
 					<locale>
 						Contains collection of <link type="element">radio</link> child elements.

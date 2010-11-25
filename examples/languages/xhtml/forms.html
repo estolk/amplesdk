@@ -4,7 +4,7 @@
 <title>Web forms 2 Demo page by Shwetank Dixit</title>
 		<script type="text/javascript" src="../../../ample/runtime.js"></script>
 		<script type="text/javascript" src="../../../ample/languages/xhtml/xhtml.js"></script>
-		<link type="text/css" href="../../../ample/languages/xhtml/themes/default/style.css" rel="stylesheet"/>
+		<link type="text/ample+css" href="../../../ample/languages/xhtml/themes/default/style.css" rel="stylesheet"/>
 <style>
 html {
 	font-family:Verdana;
@@ -35,9 +35,10 @@ label {
 	width: 130px;
 	padding: 0;
 	text-align: right;
+	margin-right: 10px;
 }
 input, textarea, select {
-	margin-left:10px;
+
 }
 .entry-button {
 	padding-left:140px;
@@ -46,6 +47,7 @@ input, textarea, select {
 }
 input:required {
 	outline: 1px red solid;
+	outline-radius: 3px;
 	color:red;
 }
 </style>
@@ -103,23 +105,23 @@ input:required {
     <!-- entry end -->
     <div class="entry">
         <label for="form-7">Datetime of Birth</label>
-        <input id="form-7"  name="dob" type="datetime" value="1990-12-05T12:33:44"/>
+        <input id="form-7"  name="dob" type="datetime" value="1990-12-05T12:33Z"/>
     </div>
     <!-- entry end -->
     <div class="entry">
         <label for="form-70">Datetime of Birth 1</label>
-        <input id="form-70"  name="dob" type="datetime-local" value="1990-12-05T12:33:44"/>
+        <input id="form-70"  name="dob" type="datetime-local" value="1990-12-05T12:33"/>
     </div>
     <!-- entry end -->
     <div class="entry">
         <label for="form-71">Datetime of Birth 2</label>
         <input id="form-71"  name="dob_date" type="date" value="1990-12-05"/>
-        <input id="form-72"  name="dob_time" type="time" value="12:33:44"/>
+        <input id="form-72"  name="dob_time" type="time" value="12:33"/>
     </div>
     <div class="entry">
         <label for="form-91">Datetime of Birth 3</label>
-        <input id="form-91"  name="dob_month" type="month" value="12"/>
-        <input id="form-92"  name="dob_week" type="week" value="45"/>
+        <input id="form-91"  name="dob_month" type="month" value="2010-10"/>
+        <input id="form-92"  name="dob_week" type="week" value="2010-W45"/>
     </div>
     <!-- entry end -->
     <div class="entry">
@@ -138,7 +140,7 @@ input:required {
     		<label for="form-11-1">female</label>
     	</div>
     	<div class="entry">
-    		<input id="form-11-2" name="sex" type="radio" value="male"/>
+    		<input id="form-11-2" name="sex" type="radio" value="male" checked="true"/>
     		<label for="form-11-2">male</label>
     	</div>
     </div>
@@ -146,10 +148,14 @@ input:required {
     	<label for="form-12">Option</label>
     	<input id="form-12" type="checkbox"/>
     </div>
+    <div class="entry">
+    	<label for="form-121">Option (checked)</label>
+    	<input id="form-121" type="checkbox" checked="true"/>
+    </div>
     <!-- entry end -->
     <div class="entry">
         <label for="form-8">Attractiveness </label>
-        <input id="form-8"  name="a" type="range" min="1" max="10" value="0" />
+        <input id="form-8"  name="a" type="range" min="1" max="10" value="1" />
         <output name="result"  onforminput="value=a.value"  >0</output>
     </div>
     <!-- entry end -->

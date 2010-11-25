@@ -7,12 +7,22 @@
  *
  */
 
-var cXHTMLElement_input	= function(){};
-cXHTMLElement_input.prototype	= new cXHTMLElement("input");
-cXHTMLElement_input.prototype.tabIndex	= 0;
+var cXHTMLElement_input	= function(){
+	this.validity	= new cXHTMLValidityState;
+	// Shadow Tree
+	this.contentFragment	= ample.createDocumentFragment();
+	var that	= this;
+	this._spinButtons	= ample.createElement("spinbuttons");
+	this._spinButtons.addEventListener("spin", function(oEvent) {
+		oEvent.detail ? that.stepUp() : that.stepDown();
+		// Dispatch input event
+		cXHTMLElement_input.dispatchInputEvent(that);
+	});
+	this.contentFragment.appendChild(this._spinButtons);
+};
+cXHTMLElement_input.prototype	= new cXHTMLInputElement("input");
 
 // Public Properties
-cXHTMLElement_input.prototype.form	= null;
 cXHTMLElement_input.prototype.value	= "";
 cXHTMLElement_input.prototype.checked	= false;
 
@@ -22,6 +32,12 @@ cXHTMLElement_input.prototype.selectionEnd		= null;
 cXHTMLElement_input.prototype.list	= null;
 cXHTMLElement_input.prototype.selectedOption	= null;
 
+//
+cXHTMLElement_input.prototype.valueAsNumber	= NaN;
+cXHTMLElement_input.prototype.valueAsDate	= null;
+
+// Private properties
+cXHTMLElement_input.prototype.$captured	= false;
 
 cXHTMLElement_input.prototype.$isAccessible	= function() {
 	return cXHTMLElement.prototype.$isAccessible.call(this) && this.attributes["type"] != "hidden";
@@ -37,11 +53,55 @@ cXHTMLElement_input.prototype.setSelectionRange	= function() {
 };
 
 cXHTMLElement_input.prototype.stepUp	= function() {
+	var nValue	= parseFloat(this.attributes["value"]),
+		nStep	= parseFloat(this.attributes["step"]) || 1,
+		nMin	= parseFloat(this.attributes["min"]),
+		nMax	= parseFloat(this.attributes["max"]);
 
+	if (isNaN(nMin))
+		nMin	= 0;
+	if (isNaN(nMax))
+		nMax	= 100;
+	if (nMax < nMin)
+		nMax	= nMin;
+
+	if (isNaN(nValue))
+		nValue	= nMax;
+	else
+	if (nValue + nStep > nMax)
+		nValue	= nMax;
+	else
+		nValue	+= nStep;
+
+	this.value	= '' + nValue;
+	this.valueAsNumber	= nValue;
+	this.setAttribute("value", nValue);
 };
 
 cXHTMLElement_input.prototype.stepDown	= function() {
+	var nValue	= parseFloat(this.attributes["value"]),
+		nStep	= parseFloat(this.attributes["step"]) || 1,
+		nMin	= parseFloat(this.attributes["min"]),
+		nMax	= parseFloat(this.attributes["max"]);
 
+	if (isNaN(nMin))
+		nMin	= 0;
+	if (isNaN(nMax))
+		nMax	= 100;
+	if (nMax < nMin)
+		nMax	= nMin;
+
+	if (isNaN(nValue))
+		nValue	= nMin;
+	else
+	if (nValue - nStep < nMin)
+		nValue	= nMin;
+	else
+		nValue	-= nStep;
+
+	this.value	= '' + nValue;
+	this.valueAsNumber	= nValue;
+	this.setAttribute("value", nValue);
 };
 
 // Class Events Handlers
@@ -54,30 +114,183 @@ cXHTMLElement_input.handlers	= {
 	"blur":		function(oEvent) {
 //		try {this.$getContainer("value").blur();}catch(e){}
 		this.$getContainer("placeholder").style.display	= this.attributes.value ? "none" : "";
+		// Hide popup
+		switch (this.attributes["type"]) {
+			case "date":
+			case "color":
+			case "datetime":
+			case "datetime-local":
+			case "month":
+			case "week":
+				cXHTMLElement_input.toggle(this, false);
+				break;
+		}
 	},
 	"click":	function(oEvent) {
-		if (oEvent.target == this && oEvent.$pseudoTarget == this.$getContainer("button"))
-			switch (this.attributes["type"]) {
-				case "file":
-					this.$activate();
-					break
+		if (oEvent.target == this) {
+			if (oEvent.$pseudoTarget == this.$getContainer("button")) {
+				switch (this.attributes["type"]) {
+					case "file":
+					case "date":
+					case "color":
+					case "datetime":
+					case "datetime-local":
+					case "month":
+					case "week":
+						this.$activate();
+						break;
+				}
 			}
+			else {
+				switch (this.attributes["type"]) {
+					case "radio":
+					case "checkbox":
+						this.$activate();
+						break;
+				}
+			}
+		}
+	},
+	"mousedown":	function(oEvent) {
+		if (oEvent.target == this) {
+			switch (this.attributes["type"]) {
+				case "range":
+					if (oEvent.$pseudoTarget == this.$getContainer("button")) {
+						this.$captured	= true;
+						this.setCapture(true);
+						this.$setPseudoClass("active", true);
+					}
+					break;
+			}
+		}
+	},
+	"mouseup":	function(oEvent) {
+		if (oEvent.target == this) {
+			switch (this.attributes["type"]) {
+				case "range":
+					if (this.$captured) {
+						this.$captured	= false;
+						this.releaseCapture();
+						this.$setPseudoClass("active", false);
+						//
+						this.setAttribute("value", this.valueAsNumber);
+					}
+					break;
+			}
+		}
+	},
+	"mousemove":	function(oEvent) {
+		if (oEvent.target == this) {
+			switch (this.attributes["type"]) {
+				case "range":
+					if (this.$captured) {
+						var oRect	= this.getBoundingClientRect("field"),
+							nLeft	= Math.max(oRect.left, Math.min(oEvent.clientX, oRect.right)),
+							nRatio	= (nLeft - oRect.left) / (oRect.right - oRect.left);
+
+						var nStep	= parseFloat(this.attributes["step"]) || 1,
+							nMin	= parseFloat(this.attributes["min"]),
+							nMax	= parseFloat(this.attributes["max"]);
+
+						if (isNaN(nMin))
+							nMin	= 0;
+						if (isNaN(nMax))
+							nMax	= 100;
+						if (nMax < nMin)
+							nMax	= nMin;
+						// Save current value
+						this.valueAsNumber	= Math.round(nStep * (nMin + (nMax - nMin) * nRatio)) / nStep;
+						// Update thumb position
+						this.$getContainer("button").style.left	= cXHTMLElement_input.getRangeOffset(this, this.valueAsNumber);
+					}
+					break;
+			}
+		}
+	},
+	"keydown":	function(oEvent) {
+		// Handle spin buttons
+		if (oEvent.target == this) {
+			var sKey	= oEvent.keyIdentifier;
+			switch (this.attributes["type"]) {
+				case "range":
+					if (sKey == "Right") {
+						this.stepUp();
+						cXHTMLElement_input.dispatchInputEvent(this);
+					}
+					else
+					if (sKey == "Left") {
+						this.stepDown();
+						cXHTMLElement_input.dispatchInputEvent(this);
+					}
+					break;
+
+				case "number":
+					if (sKey == "Up") {
+						this.stepUp();
+						cXHTMLElement_input.dispatchInputEvent(this);
+					}
+					else
+					if (sKey == "Down") {
+						this.stepDown();
+						cXHTMLElement_input.dispatchInputEvent(this);
+					}
+					break;
+
+				case "radio":
+					break;
+
+				case "checkbox":
+					if (sKey == "U+0020") 	// Space
+						// TODO: Use keydown instead of click
+//						this.$activate();
+						break;
+			}
+		}
+	},
+	"keyup":	function(oEvent) {
+		// Handle spin buttons
 	},
 	"DOMActivate":	function(oEvent) {
-		if (oEvent.target == this)
+		if (oEvent.target == this) {
 			switch (this.attributes["type"]) {
 				case "file":
 					this.$getContainer("value").click();
 					break;
+
+				case "color":
+				case "date":
+				case "datetime":
+				case "datetime-local":
+				case "month":
+				case "week":
+					cXHTMLElement_input.toggle(this);
+					break;
+
+				case "checkbox":
+					this.setAttribute("checked", this.attributes["checked"] == "true" ? "false" : "true");
+					break;
+
+				case "radio":
+					var sName	= this.attributes["name"];
+					if (sName && this.form)
+						for (var nIndex = 0, oElement; nIndex < this.form.elements.length; nIndex++)
+							if ((oElement = this.form.elements[nIndex]) && oElement.attributes["type"] == "radio" && oElement.attributes["name"] == sName)
+								if (oElement.attributes["checked"] == "true")
+									this.form.elements[nIndex].removeAttribute("checked");
+					this.setAttribute("checked", "true");
+					break;
 			}
+		}
 	},
 	"DOMNodeInsertedIntoDocument":	function(oEvent) {
-		if (!isNaN(this.getAttribute("tabIndex")))
-			this.tabIndex	= this.getAttribute("tabIndex") * 1;
-		if (this.hasAttribute("accessKey"))
-			this.accessKey	= this.getAttribute("accessKey");
-		if (this.attributes["autofocus"])
-			this.focus();
+		//
+		cXHTMLInputElement.register(this);
+		//
+		this.$selectable	= this.attributes["type"] != "range";
+	},
+	"DOMNodeRemovedFromDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.unregister(this);
 	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this) {
@@ -89,10 +302,89 @@ cXHTMLElement_input.handlers	= {
 					oFactory.innerHTML	= this.$getTag();
 					oElementDOM.parentNode.replaceChild(oFactory.firstChild, oElementDOM);
 					break;
+
+				case "placeholder":
+					this.$getContainer("placeholder").innerHTML	= oEvent.newValue || '';
+					break;
+
+				case "checked":
+					this.$setPseudoClass("checked", oEvent.newValue != null && oEvent.newValue != "false");
+					break
+
+				case "value":
+					switch (this.attributes["type"]) {
+						case "range":
+							this.$getContainer("button").style.left	= cXHTMLElement_input.getRangeOffset(this, oEvent.newValue || '');
+							break;
+
+						default:
+							this.$getContainer("value").value	= oEvent.newValue || '';
+					}
+					break;
 			}
 			cXHTMLElement.mapAttribute(this, oEvent.attrName, oEvent.newValue);
 		}
 	}
+};
+
+// Static Members
+cXHTMLElement_input.toggle	= function(oInstance, bForce) {
+	// Toggle popup
+	var oPopup	= oInstance.$getContainer("popup");
+	if ((arguments.length > 1 && bForce == true) || !(arguments.length > 1 || oPopup.style.display != "none")) {
+		oInstance.$setPseudoClass("active", true);
+		oPopup.style.display	= "";
+	}
+	else {
+		oInstance.$setPseudoClass("active", false);
+		oPopup.style.display	= "none";
+	}
+
+	switch (oInstance.attributes.type) {
+		case "date":
+		case "datetime":
+		case "datetime-local":
+		case "month":
+		case "week":
+			if (!oInstance.datepicker) {
+				var oElement	= ample.createElement("datepicker");
+				oPopup.innerHTML	= oElement.$getTag();
+				oInstance.contentFragment.appendChild(oElement);
+				oInstance.datepicker	= oElement;
+			}
+			oInstance.datepicker.setAttribute("value", "2010-11-23"/*oInstance.attributes["value"]*/);
+			break;
+
+		case "color":
+			if (!oInstance.colorpicker) {
+				var oElement	= ample.createElement("colorpicker");
+				oPopup.innerHTML	= oElement.$getTag();
+				oInstance.contentFragment.appendChild(oElement);
+				oInstance.colorpicker	= oElement;
+			}
+			oInstance.colorpicker.setAttribute("value", "#ffffff"/*oInstance.attributes["value"]*/);
+			break;
+	}
+};
+
+cXHTMLElement_input.getRangeOffset	= function(oInstance, nValue) {
+	var nMax	= parseFloat(oInstance.attributes.max),
+		nMin	= parseFloat(oInstance.attributes.min);
+
+	if (isNaN(nMin))
+		nMin	= 0;
+	if (isNaN(nMax))
+		nMax	= 100;
+	if (nMax < nMin)
+		nMax	= nMin;
+
+	return 100 * (Math.max(nMin, Math.min(nMax, nValue)) - nMin) / (nMax - nMin) + '%';
+};
+
+cXHTMLElement_input.dispatchInputEvent	= function(oInstance) {
+	var oEvent	= oInstance.ownerDocument.createEvent("Events");
+	oEvent.initEvent("input", false, false);
+	oInstance.dispatchEvent(oEvent);
 };
 
 cXHTMLElement_input.html524	= {
@@ -111,17 +403,28 @@ cXHTMLElement_input.html524	= {
 cXHTMLElement_input.prototype.$getTagOpen		= function() {
 	var sClassName	=(this.prefix ? this.prefix + '-' : '') + this.localName,
 		sClassNameType	= sClassName + '-type-' +(this.attributes["type"] || "text"),
+		bChecked	= this.attributes["checked"] && this.attributes["checked"] != "false",
+		bRequired	= this.attributes["required"] && this.attributes["required"] != "false",
+		bDisabled	= this.attributes["disabled"] && this.attributes["disabled"] != "false",
+		bReadonly	= this.attributes["readonly"] && this.attributes["readonly"] != "false",
+		bValid		= cXHTMLInputElement.isValid(this),
 		aHtml	= [];
 	aHtml.push('<span class="' + sClassName + ' ' + sClassNameType +
-						("class" in this.attributes ? ' ' + this.attributes["class"] : '')+
-						(this.attributes["required"] ? ' ' + sClassName + '_required' : '')+
-						(this.attributes["disabled"] ? ' ' + sClassName + '_disabled' : '')+
+						("class" in this.attributes ? ' ' + this.attributes["class"] : '') +
+						' ' + sClassName + '_' + (bChecked ? 'checked' : '') + ' '+
+						' ' + sClassName + '_' + (bRequired ? 'required' : 'optional') + ' '+
+						' ' + sClassName + '_' + (bDisabled ? 'disabled' : 'enabled') + ' '+
+						' ' + sClassName + '_' + (bReadonly ? 'read-only' : 'read-write') + ' '+
+						' ' + sClassName + '_' + (bValid ? 'valid' : 'invalid') + ' '+
 				'" ' +(this.attributes.style ? ' style="' + this.attributes.style + '"' : '')+ '>');
-	aHtml.push(	'<div style="position:absolute;margin-top:-2px;white-space:nowrap;' + (this.getAttribute("value") == '' ? '' : 'display:none')+ '" class="' + sClassName + '--placeholder">' +(this.getAttribute("placeholder") || '')+ '</div>');
+	aHtml.push(	'<div style="position:absolute;white-space:nowrap;' + (this.getAttribute("value") == '' ? '' : 'display:none')+ '" class="' + sClassName + '--placeholder">' +(this.getAttribute("placeholder") || '')+ '</div>');
+	aHtml.push(	'<span class="' + sClassName + '--before ' + sClassNameType + '--before" style="float:left"></span>');
+	aHtml.push(	'<span class="' + sClassName + '--after ' + sClassNameType + '--after" style="float:right"></span>');
 	aHtml.push(	'<div class="' + sClassName + '--field ' + sClassNameType + '--field" style="position:relative">');
-	aHtml.push(		'<span class="' + sClassName + '--before ' + sClassNameType + '--before" style="float:left"></span>');
-	aHtml.push(		'<span class="' + sClassName + '--after ' + sClassNameType + '--after" style="float:right"></span>');
-	aHtml.push(		'<span class="' + sClassName + '--button ' + sClassNameType + '--button" style="right:0;"></span>');
+	aHtml.push(		'<span class="' + sClassName + '--button ' + sClassNameType + '--button" style="' +(this.attributes["type"] == "range" ? "left:" + cXHTMLElement_input.getRangeOffset(this, this.attributes.value) : "right:0")+ '">');
+	if (this.attributes["type"] == "number" || this.attributes["type"] == "time")
+		aHtml.push(this._spinButtons.$getTag());
+	aHtml.push('</span>');
 	switch (this.attributes["type"]) {
 		// Hidden
 		// .value

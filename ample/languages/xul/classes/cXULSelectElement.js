@@ -31,7 +31,7 @@ cXULSelectElement.prototype.selectAll	= function()
     if (this.getAttribute("type") == "radio" || this.getAttribute("seltype") == "single")
         return;
 
-    this.selectedItems  = new AMLNodeList;
+    this.selectedItems  = new ample.classes.NodeList;
     for (var nIndex = 0; nIndex < this.items.length; nIndex++)
     {
         this.items[nIndex].setAttribute("selected", "true");
@@ -50,7 +50,7 @@ cXULSelectElement.prototype.clearSelection	= function()
 
     for (var nIndex = 0; nIndex < this.selectedItems.length; nIndex++)
         this.selectedItems[nIndex].setAttribute("selected", "false");
-    this.selectedItems  = new AMLNodeList;
+    this.selectedItems  = new ample.classes.NodeList;
 
     // Fire event
     cXULSelectElement.fireEventOnSelect(this);
@@ -58,13 +58,16 @@ cXULSelectElement.prototype.clearSelection	= function()
 
 cXULSelectElement.prototype.selectItem	= function(oElement)
 {
+	if (this.selectedItems.length == 1 && this.selectedItems[0] == oElement)
+		return;
+
     // Fire event onbeforeselect
     if (!cXULSelectElement.fireEventOnBeforeSelect(this))
         return;
 
     for (var nIndex = 0; nIndex < this.selectedItems.length; nIndex++)
         this.selectedItems[nIndex].setAttribute("selected", "false");
-    this.selectedItems  = new AMLNodeList;
+    this.selectedItems  = new ample.classes.NodeList;
 
     oElement.setAttribute("selected", "true");
 
@@ -87,7 +90,7 @@ cXULSelectElement.prototype.toggleItemSelection	= function(oElement)
         if (this.selectedItems.length && this.selectedItems[0] != oElement)
             return;
 
-    var aElements   = new AMLNodeList;
+    var aElements   = new ample.classes.NodeList;
     for (var nIndex = 0; nIndex < this.selectedItems.length; nIndex++)
     {
         if (this.selectedItems[nIndex] == oElement)
@@ -137,7 +140,7 @@ cXULSelectElement.prototype.removeItemFromSelection	= function(oElement)
     if (!cXULSelectElement.fireEventOnBeforeSelect(this))
         return;
 
-    var aElements   = new AMLNodeList;
+    var aElements   = new ample.classes.NodeList;
     for (var nIndex = 0; nIndex < this.selectedItems.length; nIndex++)
     {
         if (this.selectedItems[nIndex] == oElement)
@@ -170,7 +173,7 @@ cXULSelectElement.prototype.selectItemRange	= function(oElement1, oElement2)
 
     for (var nIndex = 0; nIndex < this.selectedItems.length; nIndex++)
         this.selectedItems[nIndex].setAttribute("selected", "false");
-    this.selectedItems  = new AMLNodeList;
+    this.selectedItems  = new ample.classes.NodeList;
 
     var nIndex1 = this.items.$indexOf(oElement1);
     var nIndex2 = this.items.$indexOf(oElement2);
@@ -222,15 +225,8 @@ cXULSelectElement.fireEventOnSelect	= function(oInstance)
         	oInstance.head.$getContainer("command").checked    = oInstance.selectedItems.length != 0;
     }
 
-	if (oInstance.selectedItems.length)
-	{
-	    var oEvent  = oInstance.ownerDocument.createEvent("Events");
-	    oEvent.initEvent("select", false, true);
-	    oInstance.selectedItems[0].dispatchEvent(oEvent);
-	}
-
     var oEvent  = oInstance.ownerDocument.createEvent("Events");
-    oEvent.initEvent("select", false, true);
+    oEvent.initEvent("select", true, true);
     oInstance.dispatchEvent(oEvent);
 
     oInstance.doCommand();

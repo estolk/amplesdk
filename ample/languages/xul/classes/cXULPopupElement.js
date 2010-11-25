@@ -33,6 +33,7 @@ cXULPopupElement.prototype.showPopup	= function(oElement, nLeft, nTop, nType, oA
 
     // Show popup
     this.$getContainer().style.display	= "block";
+	this.setAttribute("hidden", "false");
 	if (this.popupType == cXULPopupElement.POPUP_TYPE_MODAL)
 		this.setCapture(true);
 
@@ -43,7 +44,7 @@ cXULPopupElement.prototype.showPopup	= function(oElement, nLeft, nTop, nType, oA
     		oPosition2	= {"top":0, "left":0, "bottom":0, "right":0};
     	// If within windows (which are positioned absolutely)
     	for (var oNode = this; oNode; oNode = oNode.parentNode)
-    		if (oNode instanceof cXULElement_window || oNode instanceof cXULElement_dialog || oNode instanceof cXULElement_wizard) {
+    		if (oNode instanceof cXULWindowElement) {
     			oPosition2	= oNode.getBoundingClientRect();
     			break;
     		}
@@ -107,20 +108,19 @@ cXULPopupElement.prototype.showPopup	= function(oElement, nLeft, nTop, nType, oA
             this.ownerDocument.$getContainer("popup").style.display	= "block";
     }
 */
-    if (navigator.userAgent.match(/MSIE ([\d\.]+)/)) {
-    	if (RegExp.$1 < 8) {
-    		var oPosition2	= this.getBoundingClientRect();
-    		this.$getContainer("shadow-right").style.height	= (oPosition2.bottom - oPosition2.top - 3)+ "px";
-    		this.$getContainer("shadow-bottom").style.width	= (oPosition2.right - oPosition2.left - 3)+ "px";
-    	}
+    var bIE	= navigator.userAgent.match(/MSIE ([\d\.]+)/),
+    	nVersion	= bIE ? RegExp.$1 : 0;
+    // Position shadows
+    if (bIE && nVersion < 8) {
+		var oPosition2	= this.getBoundingClientRect();
+		this.$getContainer("shadow-right").style.height	= (oPosition2.bottom - oPosition2.top - 3)+ "px";
+		this.$getContainer("shadow-bottom").style.width	= (oPosition2.right - oPosition2.left - 3)+ "px";
     }
-    else {
+    // Aply transition
+    if (!(bIE && nVersion < 9)) {
 	    // Play effect
-		this.$getContainer().style.opacity	= "0";
-		ample.query(this).animate({"opacity":"1"}, 100);
+    	ample.query(this).css("opacity", "0").animate({"opacity":"1"}, "fast");
     }
-
-	this.setAttribute("hidden", "false");
 
     // fire event
     cXULPopupElement.fireEventOnPopup(this, "shown");
@@ -171,7 +171,7 @@ cXULPopupElement.prototype.sizeTo	= function(nWidth, nHeight)
 cXULPopupElement.fireEventOnPopup	= function(oInstance, sName)
 {
     var oEvent  = oInstance.ownerDocument.createEvent("Events");
-    oEvent.initEvent("popup" + sName, false, true);
+    oEvent.initEvent("popup" + sName, true, true);
 
     return oInstance.dispatchEvent(oEvent);
 };

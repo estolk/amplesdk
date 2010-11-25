@@ -18,9 +18,6 @@ cXULElement_stack.handlers	= {
 		if (oEvent.target == this) {
 			this.$mapAttribute(oEvent.attrName, oEvent.newValue);
 		}
-	},
-	"DOMNodeInsertedIntoDocument":	function(oEvent) {
-		oXULReflowManager.schedule(this);
 	}
 };
 
@@ -33,7 +30,7 @@ cXULElement_stack.prototype.reflow	= function() {
 
 // Element Render: open
 cXULElement_stack.prototype.$getTagOpen	= function() {
-    return '<div class="xul-stack" style="position:relative">';
+    return '<div class="xul-stack' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + '" style="position:relative">';
 };
 
 // Element Render: close

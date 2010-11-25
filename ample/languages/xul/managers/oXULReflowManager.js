@@ -8,7 +8,6 @@
  */
 
 var oXULReflowManager	= (function () {
-
 	// Private Variables
 	var nTimeout	= null,
 		aReflowStack	= [];
@@ -16,8 +15,8 @@ var oXULReflowManager	= (function () {
 	// Private Functions
 	function fOnTimeout() {
 		nTimeout	= null;
-		for (var oElement; oElement = aReflowStack.pop();)
-			oElement.reflow();
+		while (aReflowStack.length)
+			aReflowStack.shift().reflow();
 	};
 
 	function fSchedule(oElement) {
@@ -28,11 +27,41 @@ var oXULReflowManager	= (function () {
 	};
 
 	// Add handlers
+	// Elements added at build-time
 	ample.bind("DOMNodeInsertedIntoDocument", function(oEvent) {
 		// Add to the stack for reflow
-		if (oEvent.target instanceof cXULElement && oEvent.target.viewType == cXULElement.VIEW_TYPE_BOXED)
+		if (oEvent.target instanceof cXULElement_page)
 			fSchedule(oEvent.target);
 	}, true);
+
+	// Elements added at runtime
+	ample.bind("DOMNodeInserted", function(oEvent) {
+		if (oEvent.target.parentNode instanceof cXULElement && oEvent.target.parentNode.viewType == cXULElement.VIEW_TYPE_BOXED)
+			fSchedule(oEvent.target.parentNode);
+/*		else
+		if (oEvent.target instanceof cXULElement && oEvent.target.viewType == cXULElement.VIEW_TYPE_BOXED)
+			fSchedule(oEvent.target);*/
+	});
+
+	// on browser window resize reflow page
+	ample.bind("resize", function(oEvent) {
+		if (!(oEvent instanceof ample.classes.ResizeEvent)) {
+			var oElement	= this.querySelector("xul|page", function(){return cXULElement.prototype.namespaceURI});
+			if (oElement)
+				fSchedule(oElement);
+		}
+	});
+
+	// on windowed element resize reflow it
+	ample.bind("resizeend", function(oEvent) {
+		var oElement	= oEvent.target;
+		if (oElement instanceof cXULWindowElement) {
+			oElement.setAttribute("width", parseInt(oElement.$getContainer().style.width));
+			oElement.setAttribute("height", parseInt(oElement.$getContainer().style.height));
+			//
+			fSchedule(oElement);
+		}
+	});
 
 	// Public Object
 	return {

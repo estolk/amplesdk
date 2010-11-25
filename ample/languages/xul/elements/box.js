@@ -24,5 +24,18 @@ cXULElement_box.handlers	= {
 	}
 };
 
+cXULElement_box.prototype.$getTagOpen	= function() {
+	var sWidth	= this.attributes.width,
+		sHeight	= this.attributes.height;
+	return '<div class="xul-' + this.localName +(this.attributes["class"] ? " " + this.attributes["class"] : "") + '" style="' +
+		(sWidth ? 'width:' + (isNaN(parseInt(sWidth)) ? sWidth : sWidth + 'px;') : '')+
+		(sHeight ? 'height:' + (isNaN(parseInt(sHeight)) ? sHeight : sHeight + 'px;') : '')+
+	'">';
+};
+
+cXULElement_box.prototype.$getTagClose	= function() {
+	return '</div>';
+};
+
 // Register Element
 ample.extend(cXULElement_box);

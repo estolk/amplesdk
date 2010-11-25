@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../stylesheets/page.xsl"?>
-<element extends="xul:XULElement" name="wizard">
+<element extends="xul:XULWindowElement" name="wizard">
 	<implements />
 	<abstract>
 		<locale>
@@ -47,7 +47,7 @@
 		<methods>
 			<method name="advance" type="Void">
 				<arguments>
-					<argument name="sPageID" type="String" required="false">
+					<argument name="pageId" type="String" required="false">
 						<description>
 							<locale>
 								Page identifier.
@@ -102,7 +102,7 @@
 			</method>
 			<method name="goTo" type="Void">
 				<arguments>
-					<argument name="sPageID" type="String" required="true">
+					<argument name="pageId" type="String" required="true">
 						<description>
 							<locale>
 								Page identifier.
@@ -124,9 +124,9 @@
 					</locale>
 				</description>
 			</method>
-			<method name="getPageById" type="AMLElement">
+			<method name="getPageById" type="Element">
 				<arguments>
-					<argument name="sPageID" type="String" required="true">
+					<argument name="pageId" type="String" required="true">
 						<description>
 							<locale>
 								Page identifier.
@@ -146,9 +146,9 @@
 					</locale>
 				</description>
 			</method>
-			<method name="getButton" type="AMLElement">
+			<method name="getButton" type="Element">
 				<arguments>
-					<argument name="sButtonType" type="String" required="true">
+					<argument name="type" type="String" required="true">
 						<description>
 							<locale>
 								Button type. Allowed values are: "back", "next", "finish" and "cancel".
@@ -171,7 +171,7 @@
 			</method>
 		</methods>
 		<properties>
-			<property name="currentPage" type="AMLElement" readonly="true">
+			<property name="currentPage" type="Element" readonly="true">
 				<description>
 					<locale>
 						This property returns the <link type="element">wizardpage</link> element that is currently displayed.
@@ -183,7 +183,7 @@
 					</locale>
 				</description>
 			</property>
-			<property name="wizardPages" type="AMLNodeList" readonly="readonly">
+			<property name="wizardPages" type="NodeList" readonly="readonly">
 				<description>
 					<locale>
 						This property holds the list of <link type="element">wizardpage</link> elements in the <link type="element">wizard</link>.
@@ -195,7 +195,7 @@
 			</property>
 		</properties>
 		<events>
-			<event name="wizardback" type="Event" cancelable="true" bubbles="false">
+			<event name="wizardback" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Called when the user presses the Back button.
@@ -208,7 +208,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="wizardcancel" type="Event" cancelable="true" bubbles="false">
+			<event name="wizardcancel" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Called when the user presses the Cancel button.
@@ -221,7 +221,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="wizardfinish" type="Event" cancelable="true" bubbles="false">
+			<event name="wizardfinish" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						Called when the user presses the Finish button, which would appear in place of the Next button on the last page of the wizard.
@@ -234,7 +234,7 @@
 					</locale>
 				</description>
 			</event>
-			<event name="wizardnext" type="Event" cancelable="true" bubbles="false">
+			<event name="wizardnext" type="Event" cancelable="true" bubbles="true">
 				<description>
 					<locale>
 						This should be set to code which is called when the user presses the Next button.

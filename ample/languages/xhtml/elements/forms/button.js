@@ -7,12 +7,10 @@
  *
  */
 
-var cXHTMLElement_button	= function(){};
-cXHTMLElement_button.prototype	= new cXHTMLElement("button");
-cXHTMLElement_button.prototype.tabIndex		= 0;
-
-// Public Properties
-cXHTMLElement_button.prototype.form	= null;
+var cXHTMLElement_button	= function(){
+   	this.validity	= new cXHTMLValidityState;
+};
+cXHTMLElement_button.prototype	= new cXHTMLInputElement("button");
 
 // Class Events Handlers
 cXHTMLElement_button.handlers	= {
@@ -22,9 +20,21 @@ cXHTMLElement_button.handlers	= {
 	"blur":		function(oEvent) {
 		this.$getContainer().blur();
 	},
+	"DOMNodeInsertedIntoDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.register(this);
+	},
+	"DOMNodeRemovedFromDocument":	function(oEvent) {
+		//
+		cXHTMLInputElement.unregister(this);
+	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this)
 			cXHTMLElement.mapAttribute(this, oEvent.attrName, oEvent.newValue);
+	},
+	"click":	function(oEvent) {
+		if (oEvent.button == 0)
+			this.$activate();
 	}
 };
 

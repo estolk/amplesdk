@@ -9,11 +9,28 @@
 
 // component constructor
 var cXULElement_datepicker	= function() {
+	//
+	this.contentFragment	= ample.createDocumentFragment();
+	this.popup		= this.contentFragment.appendChild(ample.createElementNS(this.namespaceURI, "xul:datepicker-pane"));
+	this.popup.setAttribute("hidden", "true");
+	//
+	var that	= this;
+	this.popup.addEventListener("change", function(oEvent) {
+		// hide pane
+		this.hidePopup();
 
+		that.setAttribute("value", this.getAttribute("value"));
+
+		// dispatch change event
+		cXULInputElement.dispatchChange(that);
+
+		that.focus();
+	}, false);
 };
 
 // component prototype
 cXULElement_datepicker.prototype  = new cXULInputElement("datepicker");
+cXULElement_datepicker.prototype.$selectable	= true;
 
 //
 cXULElement_datepicker.prototype.popup	= true;
@@ -73,31 +90,6 @@ cXULElement_datepicker.handlers	= {
 		if (this.popup.getAttribute("hidden") != "true")
 			this.toggle(false);
 		this.$getContainer("input").blur();
-	},
-	"DOMNodeInserted":	function(oEvent) {
-		if (oEvent.target == this) {
-			var that	= this;
-			// create a shared pane and hide it
-			this.popup	= this.$appendChildAnonymous(this.ownerDocument.createElementNS(this.namespaceURI, "xul:datepicker-pane"));
-			this.popup.setAttribute("hidden", "true");
-			this.popup.addEventListener("change", function(oEvent) {
-				// hide pane
-				this.hidePopup();
-
-				that.setAttribute("value", this.getAttribute("value"));
-
-				// dispatch change event
-				cXULInputElement.dispatchChange(that);
-
-				that.focus();
-			}, false);
-		}
-	},
-	"DOMNodeRemoved":	function(oEvent) {
-		if (oEvent.target == this) {
-			this.$removeChildAnonymous(this.popup);
-			this.popup	= null;
-		}
 	},
 	"DOMAttrModified":	function(oEvent) {
 		if (oEvent.target == this)

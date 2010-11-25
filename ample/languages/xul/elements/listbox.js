@@ -9,8 +9,8 @@
 
 var cXULElement_listbox	= function() {
     // Collections
-    this.items  = new AMLNodeList;
-	this.selectedItems	= new AMLNodeList;
+    this.items  = new ample.classes.NodeList;
+	this.selectedItems	= new ample.classes.NodeList;
 };
 cXULElement_listbox.prototype    = new cXULSelectElement("listbox");
 
@@ -75,7 +75,7 @@ cXULElement_listbox.handlers	= {
 		if (oEvent.target == this) {
 			switch (oEvent.attrName) {
 				case "disabled":
-					this.$setPseudoClass("disabled", true);
+					this.$setPseudoClass("disabled", oEvent.newValue == "true");
 					break;
 
 				case "seltype":
@@ -104,7 +104,7 @@ cXULElement_listbox.sort   = function(oInstance, nCell, bDir) {
 		for (var nIndex = 0; nIndex < oInstance.items.length; nIndex++)
 			aElements.push(oInstance.items[nIndex]);
 		aElements.sort(function(oElement1, oElement2){return oElement1.cells[nCell-1].attributes["label"] > oElement2.cells[nCell-1].attributes["label"] ? bDir ? 1 :-1 : oElement1.cells[nCell-1].attributes["label"] == oElement2.cells[nCell-1].attributes["label"] ? 0 : bDir ?-1 : 1;});
-		oInstance.items	= new AMLNodeList;
+		oInstance.items	= new ample.classes.NodeList;
 		for (var nIndex = 0; nIndex < aElements.length; nIndex++)
 			oInstance.items.$add(aElements[nIndex]);
 
@@ -124,7 +124,7 @@ cXULElement_listbox.prototype.$getTagOpen	= function() {
     return '<div class="xul-listbox' + (this.attributes["class"] ? " " + this.attributes["class"] : "") + (!this.$isAccessible() ? " xul-listbox_disabled" : "") + '" style="' + (sHeight ? 'height:' + (sHeight * 1 == sHeight ? sHeight + "px" : sHeight) + ';' : '') + (sWidth ? 'width:' + (sWidth * 1 == sWidth ? sWidth + "px" : sWidth) + ';' : '') + (this.attributes["style"] ? this.attributes["style"] + '' : '') + '">\
     			<div style="position:relative;height:100%;top:0;padding-bottom:inherit;">\
     				<div class="xul-listbox--resizer" style="height:100%;position:absolute;top:0px;display:none;z-index:1"></div>\
-    				<table cellpadding="0" cellspacing="0" border="0" height="' +(sHeight ? sHeight : '100%')+ '" width="' +(sWidth ? sWidth : '100%')+ '" style="position:absolute">\
+    				<table cellpadding="0" cellspacing="0" border="0" height="100%" width="100%" style="position:absolute">\
 						<tbody class="xul-listbox--gateway">';
 };
 
